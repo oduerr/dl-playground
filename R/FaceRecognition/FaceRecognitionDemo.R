@@ -7,23 +7,20 @@ source("Utils.R")
 # Loading the Data
 # Loading the training set
 dumm <- read.table(trainingFile, sep=",", stringsAsFactors = FALSE)
-ddd <- as.matrix(dumm)
-X_training <- ddd[,-1]
-y_training <- ddd[,1]
+ddd <- as.matrix(dumm);X_training <- ddd[,-1];y_training <- ddd[,1]
 N <- sqrt(ncol(X_training))
 cat("Loaded Training set ", dim(X_training), " Dimension of pixels: ", N, "x", N)
 plotExamples(y_training,X_training, title = "Training ")
 
 # Loading the test set
 dumm <- read.table(testFile, sep=",", stringsAsFactors = FALSE)
-ddd <- as.matrix(dumm)
-X_testing <- ddd[,-1]
-y_testing <- ddd[,1]
+ddd <- as.matrix(dumm);X_testing <- ddd[,-1];y_testing <- ddd[,1]
 N <- sqrt(ncol(X_testing))
 cat("Loaded Test set ", dim(X_testing), " Dimension of pixels: ", N, "x", N, " number of y ", length(y_testing))
 plotExamples(y_testing,X_testing, title = "Testing ")
 
 ##### 
+# Detecting the principal components and diplaying them (the spucky images)
 # Eigenfaces (for illustration)
 fit <- princomp(t(X_training), cor=TRUE)
 res.sc <- fit$scores # the principal components
@@ -75,6 +72,7 @@ test.svm <- predict(model, X.test.pca)
 table(test.svm)
 sum(test.svm == y_testing)/ length(y_testing) 
 
-# Running a 'deep-neural-net' using the 
+
+
 
 
