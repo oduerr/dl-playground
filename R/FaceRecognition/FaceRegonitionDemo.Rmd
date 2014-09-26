@@ -4,7 +4,7 @@ author: Oliver Dürr
 output: pdf_document 
 ---
 ```{r, eval=TRUE,echo=TRUE}
-  EVAL = FALSE
+  EVAL = TRUE
 ```
 
 
@@ -19,8 +19,29 @@ We evaluate the performance with a training and a test set of aligned and croppe
 * **TODO** add the tricks with downscaling for performance increase. 
 * In a first step faces are detected from the picture using the Viola-Jones Algorithm provided in `openCV` library. This boosting algorithm worked quite well and is descriped in XXX.
 * **TODO** include a typical image.
-* For the **alignment** the eyes are detected and a linear transformation is applied so that the eyes can be found at a fixed possition in the transformed image. The image is further scaled to `48x48` pixels. The alignemnt turns out to be crucial. Not doing the aligenent will reduced the accurracy from XX to XX in our crossvalidation study.
+* For the **alignment** the eyes are detected and a linear transformation is applied so that the eyes can be found at a fixed possition in the transformed image. The image is further scaled to `48x48` pixels. The alignemnt turns out to be crucial. Not doing the aligenent will reduced the accurracy from 95% to 25% in our crossvalidation study (see below).
+Below is a comparison of the pictures without and with the simple "two eyes" same position alignment. 
+
+### Unaligned images
+The following images are not aligned, the cropping happend using the detected face (Viola-Jones).
+```{r, eval=EVAL,echo=FALSE, fig.width=12, fig.height=6}
+  source("Utils.R")
+  trainingFile = "../../data/training_48x48_unaligned_large.p_R.csv.gz"
+  dumm <- read.table(trainingFile, sep=",", stringsAsFactors = FALSE)
+  ddd <- as.matrix(dumm);X_training <- ddd[,-1];y_training <- ddd[,1]
+  plotExamples(y_training,X_training, title = "Training ", mfrow=c(3,6))
+```
+
+### Aligned images
+```{r, eval=EVAL,echo=FALSE, fig.width=12, fig.height=6}
+  trainingFile = "../../data/training_48x48_aligned_large.p_R.csv.gz"
+  dumm <- read.table(trainingFile, sep=",", stringsAsFactors = FALSE)
+  ddd <- as.matrix(dumm);X_training <- ddd[,-1];y_training <- ddd[,1]
+  plotExamples(y_training,X_training, title = "Training ", mfrow=c(3,6))
+```
+
 * An ellipse around the face is set to zero (weak effect)
+
 * The image is split into 3 vertcial stripes and each stripe is normalized (**TODO** provide details)
 
 In the following the base-line classification algorithms are descriped. Slighty better results can be obtained when local binary pattern instead of the original grey values per pixels are used. This can be further enhanced by applying the LBP at different resolution of (patches) the image (which decreases the runtime). See end to this report for some notes.
@@ -30,6 +51,8 @@ The following loads the 226 aligned faces from the training set and plots severa
 ```{r, eval=EVAL,echo=TRUE, fig.width=12, fig.height=6}
   trainingFile = "../../data/training_48x48_aligned_large.p_R.csv.gz"
   testFile = "../../data/testing_48x48_aligned_large.p_R.csv.gz"
+  #trainingFile = "../../data/training_48x48_unaligned_large.p_R.csv.gz"
+  #testFile = "../../data/testing_48x48_unaligned_large.p_R.csv.gz" #TODO check this testfile can be wrong
   source("Utils.R")
   dumm <- read.table(trainingFile, sep=",", stringsAsFactors = FALSE)
   ddd <- as.matrix(dumm);X_training <- ddd[,-1];y_training <- ddd[,1]
@@ -61,7 +84,7 @@ The covariance matrix is simply $X^T X$.
   dim(cov) #2304 x 2304
 ```
 To get the direction of with maximal covariance, we simply have to calculate the Eigenvectors of the matrix
-```{r, eval=EVAL,echo=TRUE, fig.width=12, fig.height=6}
+```{r, eval=FALSE,echo=TRUE, fig.width=12, fig.height=6}
   cov = t(X)%*%X
   e <- eigen(cov)
 ```
@@ -151,30 +174,29 @@ sum(test.svm == y_testing)/ length(y_testing)
 Result from our openCV-pipeline (Build 246) 3|4 (Simple unrolling FE) 0.874418605
 
 
-### Notes on advanced algorithms 
-**TODO** A bit more detail please...
-
+#Notes on advanced algorithms and the performance of variantions
+Note: the following methods are not implemented in R (yet).
 
 The face detection can be enhanced by taking not the original pixels as a starting point but use methods to extract features from them. We tested the following feature extractors
 
-  0 Nothing needed for the original openCV faceregonizers
-  1 SimpleLBHPFeatureExtractor (Whole Image)
-  2 dito +1 Zooming
-  3 dito +2 Zooming
-  4 Unrolling FE, just use the pixels as in the above methods
-  5 LBPHFeatureExtractor, extract patches near the nose and eyes and calculate LBP at these regions in various zoomings. 
+  * 0 : Nothing needed for the original openCV faceregonizers
+  * 1 : SimpleLBHPFeatureExtractor (Whole Image)
+  * 2 : dito +1 Zooming
+  * 3 : dito +2 Zooming
+  * 4 : Unrolling FE, just use the pixels as in the above methods
+  * 5 : LBPHFeatureExtractor, extract patches near the nose and eyes and calculate LBP at these regions in various zoomings. 
 
 The extracted features are then used in the following classifiers
 
-* 0 LBHP from openCV
-* 1 FisherFaceRecognizer from openCV
-* 2 EigenfaceRecognizer from openCV
-* 3 SVM after PCA
-* 4 Same as 3 but different implementation (small deviations are expected)
+* LBHP: from openCV
+* Fisher: FisherFaceRecognizer from openCV
+* Eigen:  EigenfaceRecognizer from openCV
+* SVN: SVM after PCA
+* SVN1: Same as SVN but different implementation (small deviations are expected)
 
 For the aligned 48x48 pictures from above we get the following results (rev = revision number of SVN repository)
 
-rev  | LBPH	| Fisher | Eigen |	SVN/1 |	SVN/2 |	SVN/3	| SVN/4 | SVN/5 | 4/1	| 4/4
+rev  | LBPH	| Fisher | Eigen |	SVN/1 |	SVN/2 |	SVN/3	| SVN/4 | SVN/5 | SVN1/4| SVN1/4
 -----|------|--------|-------|--------|-------|-------|-------|-------|-----|----
 246  | 0.7813|	0.8930|	0.7209|	0.9720|	0.9674|	0.9488|	0.8744|	0.93488|	0.9813|	0.9116
 
@@ -182,7 +204,7 @@ We see that taking the LBHP features (feature extractor 1) instead of the origin
 
 The more complex feature extractors 2,3 and 5 play their strength only for larger images. The next table shows the result when using 120x120 images instead of the 48x48. (Small remark images from Dejan just have been included starting from approx rev. <= 244).
 
-rev  | LBPH   | Fisher | Eigen  |	SVN/1  |	SVN/2 |	SVN/3	 | SVN/4 | SVN/5 | 4/1	  | 4/4
+rev  | LBPH   | Fisher | Eigen  |	SVN/1  |	SVN/2 |	SVN/3	 | SVN/4 | SVN/5 | SVN1/1	  | SVN1/4
 -----|--------|--------|--------|--------|--------|--------|-------|-------|--------|----
 164  | 0.8461 |0.9230  | 0.7252 |	0.9560 |	0.9505|	0.95604|0.89010| 0.9725|	0.9505|	0.901
 163  | 0.2362 |0.2472  | 0.26373|	0.2472 |	0.2142|	0.14285|0.24725| 0.1703|	0.3076|	0.247
@@ -195,12 +217,12 @@ In revision 163 we switched off the alignment and observe a dramic drop of the p
 
 The effect of the different preprocessing method is evaluated in the following table:
 
-rev  | LBPH   | Fisher | Eigen  |  SVN/1  |	SVN/2 |	SVN/3	 | SVN/4 | SVN/5 | 4/1	  | 4/4   | Comment
+rev  | LBPH   | Fisher | Eigen  |  SVN/1  |	SVN/2 |	SVN/3	 | SVN/4 | SVN/5 | SVN1/1	  | SVN1/4   | Comment
 -----|--------|--------|--------|---------|-------|--------|-------|-------|--------|-------
 161  |0.868	  |0.874   |0.522   |   0.868 |0.852  |0.841   |0.874  | 0.857 | 0.868  | 0.868 | Simple preprocessing
 173  |0.863   |0.890   |0.692   |   0.956 |0.945  |0.945   |0.907  | 0.967 | 0.951  | 0.863 | Single hist. prep.
 183  |0.830   |0.918   |0.725   |   0.956 |0.951  |0.956   |0.912  | 0.978 | 0.956  | 0.918 | No Masking of ellipse aroud face
-164  |0.846   |0.9230  |0.7252  |   0.956 |0.951  |0.956   |0.890  | 0.972 | 0.9505 |	0.901 | "Full" preprocessinfg
+164  |0.846   |0.9230  |0.7252  |   0.956 |0.951  |0.956   |0.890  | 0.972 | 0.9505 |	0.901 | Full preprocessinfg
 
 
 ### Full preprocessing
@@ -239,8 +261,8 @@ Is actually not to simple
   X = tau * np.tanh(X / tau)
 ```
 
-
-
+### Evaluation with existing 
+http://vis-www.cs.umass.edu/lfw/
 
 
 

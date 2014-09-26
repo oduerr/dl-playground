@@ -2,6 +2,7 @@ plotExamples <- function(y,X, title="", mfrow = c(4,4)) {
   par(mfrow=mfrow)
   par(mai=c(0.1,0.1,0.1,0.1))
   idx = NULL
+  N = sqrt(ncol(X))
   for (i in unique(y)){
     idx.y = which(y == i)
     idx <- append(idx, idx.y[1:min(3, length(idx.y))])
