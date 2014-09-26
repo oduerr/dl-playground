@@ -1,0 +1,103 @@
+---
+title: Algorithmic Notes on Face Recognition 
+author: Oliver Dürr
+output: pdf_document 
+---
+## Introduction
+These algorithmic notes eluciade the classifiers used in the SoE project *piVision*. For illustrating purpose the algrithms orignially implemented in python using the openCV and scikit library are partly reimplemented in R.
+
+To evaluate the algorithm we used the picam and the `Rasberry Pi` to take several photographs for each person of the team in two batches, indoors and outdoors. We use the indoor pictures as a training set to learn the classifier and the outdoor batch for evaluation. (**TODO** or other way around?)
+
+## What happend before / Preprocessing?
+We evaluate the performance with a training and a test set of aligned and cropped faces from the photos. These patches have been extracted from the original photos by the following method.
+
+**TODO** add the tricks with downscaling for performance increase. 
+**TODO** check if order is correct
+* In a first step faces are detected from the picture using the Viola-Jones Algorithm provided in `openCV` library. This boosting algorithm worked quite well and is descriped in XXX.
+**TODO** include a typical image.
+* For the **alignment** the eyes are detected and a linear transformation is applied so that the eyes can be found at a fixed possition in the transformed image. The image is further scaled to `48x48` pixels. The alignemnt turns out to be crucial. Not doing the aligenent will reduced the accurracy from XX to XX in our crossvalidation study.
+* An ellipse around the face is set to zero (weak effect)
+* The image is split into 3 vertcial stripes and each stripe is normalized (**TODO** provide details)
+
+In the following the base-line classification algorithms are descriped. Slighty better results can be obtained when local binary pattern instead of the original grey values per pixels are used. This can be further enhanced by applying the LBP at different resolution of (patches) the image (which decreases the runtime). 
+
+# Training data. 
+The following plot shows several aligned training images.
+```{r, eval=TRUE,echo=FALSE, fig.cap="Some examples of the training set.", fig.width=12, fig.height=6}
+  trainingFile = "../../data/training_48x48_aligned_large.p_R.csv.gz"
+  testFile = "../../data/testing_48x48_aligned_large.p_R.csv.gz"
+  source("Utils.R")
+  #####
+  # Loading the Data
+  # Loading the training set
+  dumm <- read.table(trainingFile, sep=",", stringsAsFactors = FALSE)
+  ddd <- as.matrix(dumm);X_training <- ddd[,-1];y_training <- ddd[,1]
+  N <- sqrt(ncol(X_training))
+  cat("Loaded Training set ", dim(X_training), " Dimension of pixels: ", N, "x", N)
+  plotExamples(y_training,X_training, title = "Training ", mfrow=c(3,6))
+```
+
+# Test data
+dumm <- read.table(testFile, sep=",", stringsAsFactors = FALSE)
+ddd <- as.matrix(dumm);X_testing <- ddd[,-1];y_testing <- ddd[,1]
+N <- sqrt(ncol(X_testing))
+cat("Loaded Test set ", dim(X_testing), " Dimension of pixels: ", N, "x", N, " number of y ", length(y_testing))
+plotExamples(y_testing,X_testing, title = "Testing ")
+
+##### 
+# Detecting the principal components and diplaying them (the spucky images)
+# Eigenfaces (for illustration)
+fit <- princomp(t(X_training), cor=TRUE)
+res.sc <- fit$scores # the principal components
+par(mfrow=c(4,4))
+dim(res.sc)
+for (i in 1:16) {
+  m <- scale(res.sc[,i])
+  sm <- matrix(rev(m), ncol=N, byrow=TRUE)
+  image(t(sm), useRaster=TRUE, main=NULL, col=gray.colors(255), axes = FALSE)
+}
+par(mfrow=c(1,1))
+
+#####
+# PCA for dimensional reduction
+# The PCA for dimensional reduction is 
+# PCA on trainig data (learning the transformation)
+pc.cr <- prcomp(X_training, center = FALSE)
+X.train.pca <- pc.cr$x
+dim(X.train.pca)
+plot(X.train.pca[,1], X.train.pca[,2], col=y_training)
+dim(X.train.pca)
+
+# PCA on test data (applying the transformation)
+X.test.pca <- predict(pc.cr, X_testing) #
+dim(X.test.pca)
+
+##### 
+# Some simple classical Methods (Eigenfaces and Fisherfaces)
+# Using what is called Eigenfaces (a simple knn in the rotated space)
+# Result from you openCV-pipeline (Build 246) Eigenfaces 0.720930233
+# Takeing all componets (maybe restrict to the 100 best or so)
+library(class)
+sum(knn(train = X.train.pca, test = X.test.pca, cl = y_training) == y_testing) / length(y_testing)  # 0.7348837
+
+# Fisher LDA 
+# Note that the space has to smaller than the number of examples, hence use PCA for dimension reduction
+# Result from you openCV-pipeline (Build 246) Fisherfaces 0.893023256
+library(MASS)
+z <- lda(X.train.pca[,1:200], y_training)
+res <- predict(z, X.test.pca[,1:200])
+sum(res$class == y_testing) / length(y_testing) #0.9162791
+
+# Running a SVM after PCA
+# Result from you openCV-pipeline (Build 246) 3|4 (Simple unrolling FE) 0.874418605
+require(e1071)
+table(as.factor(y_training))
+model <- svm(X.train.pca, as.factor(y_training), kernel='linear', cost=1)
+test.svm <- predict(model, X.test.pca)
+table(test.svm)
+sum(test.svm == y_testing)/ length(y_testing) 
+
+
+
+
+
