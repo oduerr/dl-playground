@@ -77,4 +77,13 @@ test.svm <- predict(model, X.test.pca)
 table(test.svm)
 sum(test.svm == y_testing)/ length(y_testing) 
 
+# Random forest
+library("randomForest")
+d.train <- data.frame(y = as.factor(y_training), X=X.train.pca[,1:40])
+model <- randomForest(y ~ ., data=d.train)
+d.test <- data.frame(X=X.test.pca[,1:40])
+sum(predict(model, d.test) ==  y_testing)/ length(y_testing) 
+
+
+
 
