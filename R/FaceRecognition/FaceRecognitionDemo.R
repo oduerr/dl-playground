@@ -72,8 +72,8 @@ sum(res$class == y_testing) / length(y_testing) #0.9162791
 # Result from you openCV-pipeline (Build 246) 3|4 (Simple unrolling FE) 0.874418605
 require(e1071)
 table(as.factor(y_training))
-model <- svm(X.train.pca, as.factor(y_training), kernel='linear', cost=1)
-test.svm <- predict(model, X.test.pca)
+model <- svm(X.train.pca[,1:40], as.factor(y_training), kernel='linear', cost=1)
+test.svm <- predict(model, X.test.pca[,1:40])
 table(test.svm)
 sum(test.svm == y_testing)/ length(y_testing) 
 
@@ -85,5 +85,11 @@ d.test <- data.frame(X=X.test.pca[,1:40])
 sum(predict(model, d.test) ==  y_testing)/ length(y_testing) 
 
 
+# Mulinomial 
+require(nnet)
+d.train <- data.frame(y = as.factor(y_training), X=X.train.pca[,1:200])
+model <- randomForest(y ~ ., data=d.train)
+d.test <- data.frame(X=X.test.pca[,1:200])
+sum(predict(model, d.test) ==  y_testing)/ length(y_testing) 
 
 
