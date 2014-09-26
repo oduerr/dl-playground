@@ -1,32 +1,36 @@
-trainingFile = "../data/training_48x48_aligned_large.p_R.csv.gz"
+trainingFile = "../../data/training_48x48_aligned_large.p_R.csv.gz"
 #testFile = "/Users/oli/Proj_Large_Data/PiVision/pivision/trunk/python/pickeledStuff/testing_48x48_aligned_small.p_R.csv"
-testFile = "../data/testing_48x48_aligned_large.p_R.csv.gz"
+testFile = "../../data/testing_48x48_aligned_large.p_R.csv.gz"
 
 source("Utils.R")
 #####
 # Loading the Data
 # Loading the training set
 dumm <- read.table(trainingFile, sep=",", stringsAsFactors = FALSE)
-ddd <- as.matrix(dumm);X_training <- ddd[,-1];y_training <- ddd[,1]
+ddd <- as.matrix(dumm)
+X_training <- ddd[,-1]
+y_training <- ddd[,1]
 N <- sqrt(ncol(X_training))
 cat("Loaded Training set ", dim(X_training), " Dimension of pixels: ", N, "x", N)
-plotExamples(y_training,X_training, title = "Training ")
+plotExamples(y_training,X_training, title = "Training ", mfrow = c(3,6))
 
 # Loading the test set
 dumm <- read.table(testFile, sep=",", stringsAsFactors = FALSE)
-ddd <- as.matrix(dumm);X_testing <- ddd[,-1];y_testing <- ddd[,1]
+ddd <- as.matrix(dumm)
+X_testing <- ddd[,-1]
+y_testing <- ddd[,1]
 N <- sqrt(ncol(X_testing))
 cat("Loaded Test set ", dim(X_testing), " Dimension of pixels: ", N, "x", N, " number of y ", length(y_testing))
-plotExamples(y_testing,X_testing, title = "Testing ")
+plotExamples(y_testing,X_testing, title = "Testing ",mfrow = c(3,6))
 
 ##### 
-# Detecting the principal components and diplaying them (the spucky images)
 # Eigenfaces (for illustration)
 fit <- princomp(t(X_training), cor=TRUE)
 res.sc <- fit$scores # the principal components
-par(mfrow=c(4,4))
+par(mfrow=c(3,6))
+par(mai=c(0.1,0.1,0.1,0.1))
 dim(res.sc)
-for (i in 1:16) {
+for (i in 1:18) {
   m <- scale(res.sc[,i])
   sm <- matrix(rev(m), ncol=N, byrow=TRUE)
   image(t(sm), useRaster=TRUE, main=NULL, col=gray.colors(255), axes = FALSE)
@@ -40,6 +44,7 @@ par(mfrow=c(1,1))
 pc.cr <- prcomp(X_training, center = FALSE)
 X.train.pca <- pc.cr$x
 dim(X.train.pca)
+par(mai=c(1.02,0.82,0.82,0.42))
 plot(X.train.pca[,1], X.train.pca[,2], col=y_training)
 dim(X.train.pca)
 
@@ -72,7 +77,6 @@ test.svm <- predict(model, X.test.pca)
 table(test.svm)
 sum(test.svm == y_testing)/ length(y_testing) 
 
-
-
+# Running a 'deep-neural-net' using the 
 
 
