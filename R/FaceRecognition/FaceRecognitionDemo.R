@@ -77,6 +77,4 @@ test.svm <- predict(model, X.test.pca)
 table(test.svm)
 sum(test.svm == y_testing)/ length(y_testing) 
 
-# Running a 'deep-neural-net' using the 
-
 
