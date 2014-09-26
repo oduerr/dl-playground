@@ -3,6 +3,11 @@ title: Algorithmic Notes on Face Recognition
 author: Oliver Dürr
 output: pdf_document 
 ---
+```{r, eval=TRUE,echo=TRUE}
+  EVAL = FALSE
+```
+
+
 ## Introduction
 These algorithmic notes eluciade the classifiers used in the SoE project *piVision*. For illustrating purpose the algrithms orignially implemented in python using the openCV and scikit library are partly reimplemented in R.
 
@@ -22,7 +27,7 @@ In the following the base-line classification algorithms are descriped. Slighty 
 
 # Training data. 
 The following loads the 226 aligned faces from the training set and plots several of them.
-```{r, eval=TRUE,echo=TRUE, fig.width=12, fig.height=6}
+```{r, eval=EVAL,echo=TRUE, fig.width=12, fig.height=6}
   trainingFile = "../../data/training_48x48_aligned_large.p_R.csv.gz"
   testFile = "../../data/testing_48x48_aligned_large.p_R.csv.gz"
   source("Utils.R")
@@ -35,7 +40,7 @@ The following loads the 226 aligned faces from the training set and plots severa
 
 # Test data
 Same loading and plotting for the test-data.
-```{r, eval=TRUE,echo=TRUE, fig.cap="Some examples of the test set.", fig.width=12, fig.height=6}
+```{r, eval=EVAL,echo=TRUE, fig.cap="Some examples of the test set.", fig.width=12, fig.height=6}
 dumm <- read.table(testFile, sep=",", stringsAsFactors = FALSE)
 ddd <- as.matrix(dumm);X_testing <- ddd[,-1];y_testing <- ddd[,1]
 N <- sqrt(ncol(X_testing))
@@ -45,18 +50,18 @@ plotExamples(y_testing,X_testing, title = "Testing ", mfrow=c(3,6))
 
 # Eigenfaces, the spucky images
 We unroll the images into a $48 \cdot 48 = 2304$ dimensional vector\footnote{The data was in that format anyway}. Each image is so a point in a 2304 dimensional vector space. We now want to find a new basis in the 2304 dimensional space so that the variance (of the pixel intensities) is maximal in the first basis component, second maximal in the second component (which also needs to be othogonal to the first one). This can be achieved by first writing each image row by row into a matrix of the dimension 226x2304. The correlation matrix can be obtained by scaling the matrix so that the mean columns is 0 and the sd is 1. Due to constant values in some columns we cannot get sd = 1 and just scale the mean, resulting in using the covariance instead of the correlation.
-```{r, eval=TRUE,echo=TRUE, fig.width=12, fig.height=6}
+```{r, eval=EVAL,echo=TRUE, fig.width=12, fig.height=6}
   X = scale(X_training, center = TRUE, scale = FALSE) / N
   dim(X)
   max(colSums(X))
 ```
 The covariance matrix is simply $X^T X$.
-```{r, eval=TRUE,echo=FALSE, fig.width=12, fig.height=6}
+```{r, eval=EVAL,echo=FALSE, fig.width=12, fig.height=6}
   cov = t(X)%*%X
   dim(cov) #2304 x 2304
 ```
 To get the direction of with maximal covariance, we simply have to calculate the Eigenvectors of the matrix
-```{r, eval=FALSE,echo=TRUE, fig.width=12, fig.height=6}
+```{r, eval=EVAL,echo=TRUE, fig.width=12, fig.height=6}
   cov = t(X)%*%X
   e <- eigen(cov)
 ```
@@ -65,7 +70,7 @@ We simply roll the 2304 dimensional Eigenvectors back into an 48x48 dimensional 
 However, it take quite some time to calculate the Eigenvectorsfrom a 2304 dimensional matrix. Here we can apply the following trick\footnote{There are also other numerical ways to calculate the principal components}. Note that the singular value decomposition (SVD) decomposes a Matrix $M$ under no assumptions! (**TODO: check** ) into:
 $$ M = U \Sigma V^* $$ 
 with U consisting of the Eigenvetors of $M M^*$ with $M^*$ being the conjugate transpose of $M$, $\Sigma$ is a diagonal matrix of the Eigenvalues and $V^*$ has the Eigenvectors of $M^* M$. So to calculate the Eigenvalue of $X^T X$ we simply have to do an SVD of $X^T$ and take $U \in \mathcal{R}^{2304 x 226} $ which contains then the Eigenvectors of $X^T X$ as we wish. 
-```{r, eval=FALSE,echo=TRUE, fig.width=12, fig.height=6}
+```{r, eval=EVAL,echo=TRUE, fig.width=12, fig.height=6}
     res = svd(t(X))
     dim(res$u)
     par(mfrow=c(3,6));par(mai=c(0.1,0.1,0.1,0.1))
@@ -76,7 +81,7 @@ with U consisting of the Eigenvetors of $M M^*$ with $M^*$ being the conjugate t
 ```
 Alternatively we can also do this in R using the `princomp` function.
 **TODO** Explain the difference to R
-```{r, eval=TRUE,echo=TRUE, fig.width=12, fig.height=6}
+```{r, eval=EVAL,echo=TRUE, fig.width=12, fig.height=6}
 fit <- princomp(t(X_training), cor=FALSE)
 res.sc <- fit$scores # the principal components
 par(mfrow=c(3,6));par(mai=c(0.1,0.1,0.1,0.1))
@@ -91,7 +96,7 @@ par(mfrow=c(1,1))
 ```
 
 ## The labeled training in the Eigenspaces
-```{r, eval=TRUE,echo=TRUE, fig.width=12, fig.height=6}
+```{r, eval=EVAL,echo=TRUE, fig.width=12, fig.height=6}
 par(mai=c(1.02,0.82,0.82,0.42))
 pc.cr <- prcomp(X_training, center = FALSE)
 X.train.pca <- pc.cr$x
@@ -118,7 +123,7 @@ We now use the PCA for dimension reduction and apply serveral algorithms for cla
 The classifier is learned on the training set and the performance is evaluted on the test set. 
 
 ### Eigenfaces
-```{r, eval=TRUE,echo=TRUE, fig.width=12, fig.height=6}
+```{r, eval=EVAL,echo=TRUE, fig.width=12, fig.height=6}
 library(class)
 sum(knn(train = X.train.pca, test = X.test.pca, cl = y_training) == y_testing) / length(y_testing)  # 0.7348837
 ```
@@ -126,7 +131,7 @@ Result from our openCV-pipeline (Build 246) Eigenfaces 0.720930233
 
 ### Fisher Faces 
 Here we use the Fisher LDA in which the the space has to smaller than the number of examples, hence we need to have a dimension reduction such as the PCA.
-```{r, eval=TRUE,echo=TRUE, fig.width=12, fig.height=6}
+```{r, eval=EVAL,echo=TRUE, fig.width=12, fig.height=6}
 library(MASS)
 z <- lda(X.train.pca[,1:200], y_training)
 res <- predict(z, X.test.pca[,1:200])
@@ -135,7 +140,7 @@ sum(res$class == y_testing) / length(y_testing) #0.9162791
 Result from our openCV-pipeline (Build 246) Fisherfaces 0.893023256
 
 ### Running a SVM after PCA
-```{r, eval=TRUE,echo=TRUE, fig.width=12, fig.height=6}
+```{r, eval=EVAL,echo=TRUE, fig.width=12, fig.height=6}
 require(e1071)
 #table(as.factor(y_training))
 model <- svm(X.train.pca, as.factor(y_training), kernel='linear', cost=1)
@@ -145,12 +150,97 @@ sum(test.svm == y_testing)/ length(y_testing)
 ```
 Result from our openCV-pipeline (Build 246) 3|4 (Simple unrolling FE) 0.874418605
 
+
 ### Notes on advanced algorithms 
+**TODO** A bit more detail please...
 
-**TODO**
 
-* Take LBH instead of original pixels
-* 
+The face detection can be enhanced by taking not the original pixels as a starting point but use methods to extract features from them. We tested the following feature extractors
+
+  0 Nothing needed for the original openCV faceregonizers
+  1 SimpleLBHPFeatureExtractor (Whole Image)
+  2 dito +1 Zooming
+  3 dito +2 Zooming
+  4 Unrolling FE, just use the pixels as in the above methods
+  5 LBPHFeatureExtractor, extract patches near the nose and eyes and calculate LBP at these regions in various zoomings. 
+
+The extracted features are then used in the following classifiers
+
+* 0 LBHP from openCV
+* 1 FisherFaceRecognizer from openCV
+* 2 EigenfaceRecognizer from openCV
+* 3 SVM after PCA
+* 4 Same as 3 but different implementation (small deviations are expected)
+
+For the aligned 48x48 pictures from above we get the following results (rev = revision number of SVN repository)
+
+rev  | LBPH	| Fisher | Eigen |	SVN/1 |	SVN/2 |	SVN/3	| SVN/4 | SVN/5 | 4/1	| 4/4
+-----|------|--------|-------|--------|-------|-------|-------|-------|-----|----
+246  | 0.7813|	0.8930|	0.7209|	0.9720|	0.9674|	0.9488|	0.8744|	0.93488|	0.9813|	0.9116
+
+We see that taking the LBHP features (feature extractor 1) instead of the original pixels (feature extractor 5) results in a performance increase of about 4% from `SVN/5` to `SVN/1`. 
+
+The more complex feature extractors 2,3 and 5 play their strength only for larger images. The next table shows the result when using 120x120 images instead of the 48x48. (Small remark images from Dejan just have been included starting from approx rev. <= 244).
+
+rev  | LBPH   | Fisher | Eigen  |	SVN/1  |	SVN/2 |	SVN/3	 | SVN/4 | SVN/5 | 4/1	  | 4/4
+-----|--------|--------|--------|--------|--------|--------|-------|-------|--------|----
+164  | 0.8461 |0.9230  | 0.7252 |	0.9560 |	0.9505|	0.95604|0.89010| 0.9725|	0.9505|	0.901
+163  | 0.2362 |0.2472  | 0.26373|	0.2472 |	0.2142|	0.14285|0.24725| 0.1703|	0.3076|	0.247
+
+We see that for larger images the complex feature extractors become relevant, SVN/5 is now better than SVN/1.
+However, the increase is not dramatic. The need for more complex FE should be evaluated probably with more challenging data-sets. We note also that for smaller images the simple FE 1 is as good as the complex FE 5 on larger images. This strongly suggest to use 48x48 images with the simple and LBHP feature extractor (**TODO** use in final revisions). Especially since the running time for the classification of one image of approx 250ms using  SVN/1 increases by a factor of approximately 4 **TODO loma check**. 
+
+In revision 163 we switched off the alignment and observe a dramic drop of the performance pointing out the primodal importtance of good alignment.
+
+
+The effect of the different preprocessing method is evaluated in the following table:
+
+rev  | LBPH   | Fisher | Eigen  |  SVN/1  |	SVN/2 |	SVN/3	 | SVN/4 | SVN/5 | 4/1	  | 4/4   | Comment
+-----|--------|--------|--------|---------|-------|--------|-------|-------|--------|-------
+161  |0.868	  |0.874   |0.522   |   0.868 |0.852  |0.841   |0.874  | 0.857 | 0.868  | 0.868 | Simple preprocessing
+173  |0.863   |0.890   |0.692   |   0.956 |0.945  |0.945   |0.907  | 0.967 | 0.951  | 0.863 | Single hist. prep.
+183  |0.830   |0.918   |0.725   |   0.956 |0.951  |0.956   |0.912  | 0.978 | 0.956  | 0.918 | No Masking of ellipse aroud face
+164  |0.846   |0.9230  |0.7252  |   0.956 |0.951  |0.956   |0.890  | 0.972 | 0.9505 |	0.901 | "Full" preprocessinfg
+
+
+### Full preprocessing
+The best preprocessing so far splits the image into 3 vertical parts and equalizers the histogram for each part of the  seperately
+```
+  X1 = cv2.equalizeHist(X[0:, 0:SIZE_FOR_PCA[1] / 3])
+  X2 = cv2.equalizeHist(X[0:, SIZE_FOR_PCA[1] / 3:(SIZE_FOR_PCA[1] * 2 / 3)])
+  X3 = cv2.equalizeHist(X[0:, (SIZE_FOR_PCA[1] * 2 / 3):SIZE_FOR_PCA[1]])
+  X = np.append(np.append(X1, X2, 1), X3, 1)
+```
+
+### Simple preprocessing
+Use histogram equalization
+```
+ X = cv2.equalizeHist(X)
+```
+
+### Simple preprocessing
+Is actually not to simple
+```
+  # From https://github.com/bytefish/facerec/blob/master/py/facerec/preprocessing.py
+  alpha = 0.1
+  tau = 10.0
+  gamma = 0.2
+  sigma0 = 1.0
+  sigma1 = 2.0
+  
+  sigma0 = 2.0
+  sigma1 = 5.0
+  
+  X = np.array(X, dtype=np.float32)
+  X = np.power(X, gamma)
+  X = np.asarray(ndimage.gaussian_filter(X, sigma1) - ndimage.gaussian_filter(X, sigma0))
+  X = X / np.power(np.mean(np.power(np.abs(X), alpha)), 1.0 / alpha)
+  X = X / np.power(np.mean(np.power(np.minimum(np.abs(X), tau), alpha)), 1.0 / alpha)
+  X = tau * np.tanh(X / tau)
+```
+
+
+
 
 
 
