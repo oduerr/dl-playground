@@ -11,15 +11,14 @@ To evaluate the algorithm we used the picam and the `Rasberry Pi` to take severa
 ## What happend before / Preprocessing?
 We evaluate the performance with a training and a test set of aligned and cropped faces from the photos. These patches have been extracted from the original photos by the following method.
 
-**TODO** add the tricks with downscaling for performance increase. 
-**TODO** check if order is correct
+* **TODO** add the tricks with downscaling for performance increase. 
 * In a first step faces are detected from the picture using the Viola-Jones Algorithm provided in `openCV` library. This boosting algorithm worked quite well and is descriped in XXX.
-**TODO** include a typical image.
+* **TODO** include a typical image.
 * For the **alignment** the eyes are detected and a linear transformation is applied so that the eyes can be found at a fixed possition in the transformed image. The image is further scaled to `48x48` pixels. The alignemnt turns out to be crucial. Not doing the aligenent will reduced the accurracy from XX to XX in our crossvalidation study.
 * An ellipse around the face is set to zero (weak effect)
 * The image is split into 3 vertcial stripes and each stripe is normalized (**TODO** provide details)
 
-In the following the base-line classification algorithms are descriped. Slighty better results can be obtained when local binary pattern instead of the original grey values per pixels are used. This can be further enhanced by applying the LBP at different resolution of (patches) the image (which decreases the runtime). 
+In the following the base-line classification algorithms are descriped. Slighty better results can be obtained when local binary pattern instead of the original grey values per pixels are used. This can be further enhanced by applying the LBP at different resolution of (patches) the image (which decreases the runtime). See end to this report for some notes.
 
 # Training data. 
 The following loads the 226 aligned faces from the training set and plots several of them.
@@ -41,32 +40,48 @@ dumm <- read.table(testFile, sep=",", stringsAsFactors = FALSE)
 ddd <- as.matrix(dumm);X_testing <- ddd[,-1];y_testing <- ddd[,1]
 N <- sqrt(ncol(X_testing))
 cat("Loaded Test set ", dim(X_testing), " Dimension of pixels: ", N, "x", N, " number of y ", length(y_testing))
-plotExamples(y_testing,X_testing, title = "Testing ")
+plotExamples(y_testing,X_testing, title = "Testing ", mfrow=c(3,6))
 ```
 
 # Eigenfaces, the spucky images
-We unroll the images into a $48 \cdot 48 = 2304$ dimensional vector\footnote{The data was in that format anyway}. Each image is a point in a 2304 dimensional vector space. We now want to find a new basis in the 2304 dimensional space so that the variance (of the pixel intensities) is maximal in the first basis component, second maximal in the second component\footnote{which also needs to be othogonal to the first one.}
-
-
-Foccussing on the training-set 
-
-we write image after image and get a matrix of the dimension
-
-
-```{r, eval=TRUE,echo=TRUE fig.width=12, fig.height=6}
-  X = X_training #
-  dim(X)
-```
-We want to calculate the correlation 
-
-
+We unroll the images into a $48 \cdot 48 = 2304$ dimensional vector\footnote{The data was in that format anyway}. Each image is so a point in a 2304 dimensional vector space. We now want to find a new basis in the 2304 dimensional space so that the variance (of the pixel intensities) is maximal in the first basis component, second maximal in the second component (which also needs to be othogonal to the first one). This can be achieved by first writing each image row by row into a matrix of the dimension 226x2304. The correlation matrix can be obtained by scaling the matrix so that the mean columns is 0 and the sd is 1. Due to constant values in some columns we cannot get sd = 1 and just scale the mean, resulting in using the covariance instead of the correlation.
 ```{r, eval=TRUE,echo=TRUE, fig.width=12, fig.height=6}
-fit <- princomp(t(X_training), cor=TRUE)
+  X = scale(X_training, center = TRUE, scale = FALSE) / N
+  dim(X)
+  max(colSums(X))
+```
+The covariance matrix is simply $X^T X$.
+```{r, eval=TRUE,echo=FALSE, fig.width=12, fig.height=6}
+  cov = t(X)%*%X
+  dim(cov) #2304 x 2304
+```
+To get the direction of with maximal covariance, we simply have to calculate the Eigenvectors of the matrix
+```{r, eval=FALSE,echo=TRUE, fig.width=12, fig.height=6}
+  cov = t(X)%*%X
+  e <- eigen(cov)
+```
+We simply roll the 2304 dimensional Eigenvectors back into an 48x48 dimensional images and have the infamous first Eigenfaces. 
+
+However, it take quite some time to calculate the Eigenvectorsfrom a 2304 dimensional matrix. Here we can apply the following trick\footnote{There are also other numerical ways to calculate the principal components}. Note that the singular value decomposition (SVD) decomposes a Matrix $M$ under no assumptions! (**TODO: check** ) into:
+$$ M = U \Sigma V^* $$ 
+with U consisting of the Eigenvetors of $M M^*$ with $M^*$ being the conjugate transpose of $M$, $\Sigma$ is a diagonal matrix of the Eigenvalues and $V^*$ has the Eigenvectors of $M^* M$. So to calculate the Eigenvalue of $X^T X$ we simply have to do an SVD of $X^T$ and take $U \in \mathcal{R}^{2304 x 226} $ which contains then the Eigenvectors of $X^T X$ as we wish. 
+```{r, eval=FALSE,echo=TRUE, fig.width=12, fig.height=6}
+    res = svd(t(X))
+    dim(res$u)
+    par(mfrow=c(3,6));par(mai=c(0.1,0.1,0.1,0.1))
+    for (i in 1:18) {
+      sm <- matrix(rev(res$u[,i]), ncol=N, byrow=TRUE)
+      image(t(sm), useRaster=TRUE, main=NULL, col=gray.colors(255), axes = FALSE)
+    }
+```
+Alternatively we can also do this in R using the `princomp` function.
+**TODO** Explain the difference to R
+```{r, eval=TRUE,echo=TRUE, fig.width=12, fig.height=6}
+fit <- princomp(t(X_training), cor=FALSE)
 res.sc <- fit$scores # the principal components
-par(mfrow=c(4,4))
-par(mai=c(0.1,0.1,0.1,0.1))
+par(mfrow=c(3,6));par(mai=c(0.1,0.1,0.1,0.1))
 dim(res.sc)
-for (i in 1:16) {
+for (i in 1:18) {
  # m <- scale(res.sc[,i])
   m <- res.sc[,i]
   sm <- matrix(rev(m), ncol=N, byrow=TRUE)
@@ -75,44 +90,73 @@ for (i in 1:16) {
 par(mfrow=c(1,1))
 ```
 
-#####
-# PCA for dimensional reduction
-# The PCA for dimensional reduction is 
-# PCA on trainig data (learning the transformation)
+## The labeled training in the Eigenspaces
+```{r, eval=TRUE,echo=TRUE, fig.width=12, fig.height=6}
+par(mai=c(1.02,0.82,0.82,0.42))
 pc.cr <- prcomp(X_training, center = FALSE)
 X.train.pca <- pc.cr$x
 dim(X.train.pca)
-plot(X.train.pca[,1], X.train.pca[,2], col=y_training)
+par(mfrow=c(1,2))
+plot(X.train.pca[,1], X.train.pca[,2], col=y_training, main="Training")
 dim(X.train.pca)
-
-# PCA on test data (applying the transformation)
+### ... and the test data with labels
+par(mai=c(1.02,0.82,0.82,0.42))
 X.test.pca <- predict(pc.cr, X_testing) #
 dim(X.test.pca)
+plot(X.test.pca[,1], X.test.pca[,2], col=y_testing, main="Testing")
+par(mfrow=c(1,1))
+```
+Note that the transformation is learned on the training set and then applied on the test set.
 
-##### 
-# Some simple classical Methods (Eigenfaces and Fisherfaces)
-# Using what is called Eigenfaces (a simple knn in the rotated space)
-# Result from you openCV-pipeline (Build 246) Eigenfaces 0.720930233
-# Takeing all componets (maybe restrict to the 100 best or so)
+## Classification
+We now use the PCA for dimension reduction and apply serveral algorithms for classification.
+
+* Simple KNN in the space of the Eigenfaces which is what people call: "Face Regonition with Eigenfaces"
+* Fisher LDA in the space of the Eigenfaces aka Fisherfaces
+* SVM in the space of the Eigenfaces
+
+The classifier is learned on the training set and the performance is evaluted on the test set. 
+
+### Eigenfaces
+```{r, eval=TRUE,echo=TRUE, fig.width=12, fig.height=6}
 library(class)
 sum(knn(train = X.train.pca, test = X.test.pca, cl = y_training) == y_testing) / length(y_testing)  # 0.7348837
+```
+Result from our openCV-pipeline (Build 246) Eigenfaces 0.720930233
 
-# Fisher LDA 
-# Note that the space has to smaller than the number of examples, hence use PCA for dimension reduction
-# Result from you openCV-pipeline (Build 246) Fisherfaces 0.893023256
+### Fisher Faces 
+Here we use the Fisher LDA in which the the space has to smaller than the number of examples, hence we need to have a dimension reduction such as the PCA.
+```{r, eval=TRUE,echo=TRUE, fig.width=12, fig.height=6}
 library(MASS)
 z <- lda(X.train.pca[,1:200], y_training)
 res <- predict(z, X.test.pca[,1:200])
 sum(res$class == y_testing) / length(y_testing) #0.9162791
+```
+Result from our openCV-pipeline (Build 246) Fisherfaces 0.893023256
 
-# Running a SVM after PCA
-# Result from you openCV-pipeline (Build 246) 3|4 (Simple unrolling FE) 0.874418605
+### Running a SVM after PCA
+```{r, eval=TRUE,echo=TRUE, fig.width=12, fig.height=6}
 require(e1071)
-table(as.factor(y_training))
+#table(as.factor(y_training))
 model <- svm(X.train.pca, as.factor(y_training), kernel='linear', cost=1)
 test.svm <- predict(model, X.test.pca)
-table(test.svm)
+#table(test.svm)
 sum(test.svm == y_testing)/ length(y_testing) 
+```
+Result from our openCV-pipeline (Build 246) 3|4 (Simple unrolling FE) 0.874418605
+
+### Notes on advanced algorithms 
+
+**TODO**
+
+* Take LBH instead of original pixels
+* 
+
+
+
+
+
+
 
 
 
