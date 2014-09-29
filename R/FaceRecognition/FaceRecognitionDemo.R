@@ -1,6 +1,7 @@
 trainingFile = "../../data/training_48x48_aligned_large.p_R.csv.gz"
 #testFile = "/Users/oli/Proj_Large_Data/PiVision/pivision/trunk/python/pickeledStuff/testing_48x48_aligned_small.p_R.csv"
 testFile = "../../data/testing_48x48_aligned_large.p_R.csv.gz"
+testFile = "/Users/oli/tmp/testing_48x48_aligned_large.p_R.csv"
 
 source("Utils.R")
 #####
@@ -85,11 +86,11 @@ d.test <- data.frame(X=X.test.pca[,1:40])
 sum(predict(model, d.test) ==  y_testing)/ length(y_testing) 
 
 
-# Mulinomial 
+# Mulinomial regression 
 require(nnet)
-d.train <- data.frame(y = as.factor(y_training), X=X.train.pca[,1:200])
-model <- randomForest(y ~ ., data=d.train)
-d.test <- data.frame(X=X.test.pca[,1:200])
+d.train <- data.frame(y = as.factor(y_training), X=X.train.pca[,1:40])
+model <- multinom(y ~ ., data=d.train)
+d.test <- data.frame(X=X.test.pca[,1:40])
 sum(predict(model, d.test) ==  y_testing)/ length(y_testing) 
 
 

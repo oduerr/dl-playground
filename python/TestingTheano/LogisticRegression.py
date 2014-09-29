@@ -48,6 +48,11 @@ train = theano.function(
           inputs=[x,y],
           outputs=[prediction, xent],
           updates=((w, w - 1 * gw), (b, b - 1 * gb))) #Die Learningrate war zu klein
+# Notiz ueber den update Mechanismus werden w und b uber der Gradienten gw, gb neue Werte zugewiesen.
+# Das ist wahrscheinlich auf einer GPU viel schneller zu erreichen als wenn man es immer zurueckgeben muss.
+
+
+
 predict = theano.function(inputs=[x], outputs=prediction)
 
 # Train

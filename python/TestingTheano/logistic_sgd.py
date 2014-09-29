@@ -46,6 +46,7 @@ import numpy
 import theano
 import theano.tensor as T
 
+import Utils
 
 class LogisticRegression(object):
     """Multi-class Logistic Regression Class
@@ -237,7 +238,12 @@ def sgd_optimization_mnist(learning_rate=0.13, n_epochs=1000,
                  http://www.iro.umontreal.ca/~lisa/deep/data/mnist/mnist.pkl.gz
 
     """
-    datasets = load_data(dataset)
+
+    #datasets = load_data(dataset)
+    #Oli
+    datasets = Utils.load_pictures()
+    dimension = 48
+    n_out = 6
 
     train_set_x, train_set_y = datasets[0]
     valid_set_x, valid_set_y = datasets[1]
@@ -261,7 +267,7 @@ def sgd_optimization_mnist(learning_rate=0.13, n_epochs=1000,
 
     # construct the logistic regression class
     # Each MNIST image has size 28*28
-    classifier = LogisticRegression(input=x, n_in=28 * 28, n_out=10)
+    classifier = LogisticRegression(input=x, n_in=dimension * dimension, n_out=n_out)
 
     # the cost we minimize during training is the negative log likelihood of
     # the model in symbolic format

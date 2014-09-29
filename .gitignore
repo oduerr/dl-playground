@@ -2,3 +2,6 @@
 .Rhistory
 .RData
 .DS_Store
+.pyc
+data/mnist.pkl.gz
+python/.idea/.name
