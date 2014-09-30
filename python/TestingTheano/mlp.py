@@ -211,6 +211,7 @@ def test_mlp(learning_rate=0.01, L1_reg=0.00, L2_reg=0.0001, n_epochs=1000,
 
     datasets = Utils.load_pictures()
     dimension = 28
+    Nout = 6
 
     train_set_x, train_set_y = datasets[0]
     valid_set_x, valid_set_y = datasets[1]
@@ -239,7 +240,7 @@ def test_mlp(learning_rate=0.01, L1_reg=0.00, L2_reg=0.0001, n_epochs=1000,
 
     # construct the MLP class
     classifier = MLP(rng=rng, input=x, n_in=dimension * dimension,
-                     n_hidden=n_hidden, n_out=10)
+                     n_hidden=n_hidden, n_out=Nout)
 
     # the cost we minimize during training is the negative log likelihood of
     # the model plus the regularization terms (L1 and L2); cost is expressed
