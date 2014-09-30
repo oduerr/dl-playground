@@ -242,7 +242,7 @@ def sgd_optimization_mnist(learning_rate=0.13, n_epochs=1000,
     #datasets = load_data(dataset)
     #Oli
     datasets = Utils.load_pictures()
-    dimension = 48
+    dimension = 28
     n_out = 6
 
     train_set_x, train_set_y = datasets[0]
