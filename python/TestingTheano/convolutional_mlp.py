@@ -36,6 +36,7 @@ from theano.tensor.nnet import conv
 
 from logistic_sgd import LogisticRegression, load_data
 from mlp import HiddenLayer
+import Utils
 
 
 class LeNetConvPoolLayer(object):
@@ -124,7 +125,13 @@ def evaluate_lenet5(learning_rate=0.1, n_epochs=200,
 
     rng = numpy.random.RandomState(23455)
 
-    datasets = load_data(dataset)
+    #datasets = load_data(dataset)
+    # Images for face recognition
+    datasets = Utils.load_pictures()
+    n_out = 6
+    batch_size = 30
+    n_epochs=20000
+    # Images for face recognition
 
     train_set_x, train_set_y = datasets[0]
     valid_set_x, valid_set_y = datasets[1]
@@ -145,6 +152,8 @@ def evaluate_lenet5(learning_rate=0.1, n_epochs=200,
                         # [int] labels
 
     ishape = (28, 28)  # this is the size of MNIST images
+
+
 
     ######################
     # BUILD ACTUAL MODEL #
@@ -181,7 +190,7 @@ def evaluate_lenet5(learning_rate=0.1, n_epochs=200,
                          n_out=500, activation=T.tanh)
 
     # classify the values of the fully-connected sigmoidal layer
-    layer3 = LogisticRegression(input=layer2.output, n_in=500, n_out=10)
+    layer3 = LogisticRegression(input=layer2.output, n_in=500, n_out=n_out)
 
     # the cost we minimize during training is the NLL of the model
     cost = layer3.negative_log_likelihood(y)
