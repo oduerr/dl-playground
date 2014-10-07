@@ -1,7 +1,7 @@
 trainingFile = "../../data/training_48x48_aligned_large.p_R.csv.gz"
 #testFile = "/Users/oli/Proj_Large_Data/PiVision/pivision/trunk/python/pickeledStuff/testing_48x48_aligned_small.p_R.csv"
 testFile = "../../data/testing_48x48_aligned_large.p_R.csv.gz"
-testFile = "/Users/oli/tmp/testing_48x48_aligned_large.p_R.csv"
+#testFile = "/Users/oli/tmp/testing_48x48_aligned_large.p_R.csv"
 
 source("Utils.R")
 #####
