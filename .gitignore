@@ -1,7 +1,8 @@
 .Rproj.user
 .Rhistory
-.RData
-.DS_Store
-.pyc
+*.RData
+*.DS_Store
+*.pyc
+*.pdf
 data/mnist.pkl.gz
 python/.idea/.name
