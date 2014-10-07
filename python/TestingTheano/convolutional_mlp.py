@@ -36,7 +36,7 @@ from theano.tensor.nnet import conv
 
 from logistic_sgd import LogisticRegression, load_data
 from mlp import HiddenLayer
-import Utils
+#import Utils
 
 
 class LeNetConvPoolLayer(object):
@@ -125,12 +125,15 @@ def evaluate_lenet5(learning_rate=0.1, n_epochs=200,
 
     rng = numpy.random.RandomState(23455)
 
-    #datasets = load_data(dataset)
+    #Original
+    datasets = load_data(dataset)
+    n_out = 10
+    
     # Images for face recognition
-    datasets = Utils.load_pictures()
-    n_out = 6
-    batch_size = 30
-    n_epochs=20000
+    # datasets = Utils.load_pictures()
+    # n_out = 6
+    # batch_size = 30
+    # n_epochs=20000
     # Images for face recognition
 
     train_set_x, train_set_y = datasets[0]

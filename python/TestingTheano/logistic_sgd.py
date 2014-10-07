@@ -46,7 +46,7 @@ import numpy
 import theano
 import theano.tensor as T
 
-import Utils
+#import Utils
 
 class LogisticRegression(object):
     """Multi-class Logistic Regression Class
@@ -239,11 +239,15 @@ def sgd_optimization_mnist(learning_rate=0.13, n_epochs=1000,
 
     """
 
-    #datasets = load_data(dataset)
-    #Oli
-    datasets = Utils.load_pictures()
+    #Original Set
+    datasets = load_data(dataset)
+    n_out = 10
     dimension = 28
-    n_out = 6
+    
+    #Oli
+    #datasets = Utils.load_pictures()
+    #dimension = 28
+    #n_out = 6
 
     train_set_x, train_set_y = datasets[0]
     valid_set_x, valid_set_y = datasets[1]
