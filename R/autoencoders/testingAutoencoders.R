@@ -6,7 +6,7 @@
 ## Load a training matrix with rows corresponding to training examples, 
 ## and columns corresponding to input channels (e.g., pixels in images):
 library(autoencoder)
-data('training_matrix_N=5e3_Ninput=100')[,10]
+data('training_matrix_N=5e3_Ninput=100')
 dim(training.matrix) #5000 x 100
 N = 10
 for (i in 1:10) {
