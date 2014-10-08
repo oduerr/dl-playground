@@ -130,10 +130,20 @@ def evaluate_lenet5(learning_rate=0.1, n_epochs=200,
     n_out = 10
     
     # Images for face recognition
+    # import pickle
     # datasets = Utils.load_pictures()
-    # n_out = 6
-    # batch_size = 30
-    # n_epochs=20000
+    #print("Saveing the pickeled data-set")
+    #pickle.dump(datasets, open( "Dataset.p", "wb" ) ) #Attention y is wrong
+    #print("Saveing the pickeled data-set")
+
+    #Loading the pickled images
+    import pickle
+    datasets = pickle.load(open("Dataset.p", "r"))
+    n_out = 6
+    batch_size = 30
+    n_epochs=20000
+
+
     # Images for face recognition
 
     train_set_x, train_set_y = datasets[0]
