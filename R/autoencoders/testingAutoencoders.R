@@ -28,31 +28,45 @@ epsilon <- 0.001              ## a small parameter for initialization of weights
 ## as small gaussian random numbers sampled from N(0,epsilon^2)
 max.iterations = 2000         ## number of iterations in optimizer
 
-## Train the autoencoder on training.matrix using BFGS optimization method 
-## (see help('optim') for details):
-## WARNING: the training can take a long time (~1 hour) for this dataset!
 
-## Not run: 
-autoencoder.object <- autoencode(X.train=training.matrix,nl=nl,N.hidden=N.hidden,
+if (FALSE) {
+  ## Train the autoencoder on training.matrix using BFGS optimization method 
+  ## (see help('optim') for details):
+  ## WARNING: the training can take a long time (~1 hour) for this dataset!
+  autoencoder.object <- autoencode(X.train=training.matrix,nl=nl,N.hidden=N.hidden,
                                  unit.type=unit.type,lambda=lambda,beta=beta,rho=rho,epsilon=epsilon,
                                  optim.method="BFGS",max.iterations=max.iterations,
                                  rescale.flag=TRUE,rescaling.offset=0.001)
-
-## End(Not run)
-## N.B.: Training this autoencoder takes a long time, so in this example we do not run the above 
-## autoencode function, but instead load the corresponding pre-trained autoencoder.object.
-
+  ## N.B.: Training this autoencoder takes a long time, so in this example we do not run the above 
+  ## autoencode function, but instead load the corresponding pre-trained autoencoder.object.
+  save(autoencoder.object, file = "autoencoder.object.rnd")
+} else {
+  load("autoencoder.object.rnd")
+}
 
 ## Report mean squared error for training and test sets:
-cat("autoencode(): mean squared error for training set: ",
-    round(autoencoder.object$mean.error.training.set,3),"\n")
-
-save(autoencoder.object, file = "autoencoder.object.rnd")
-## Extract weights W and biases b from autoencoder.object:
-W <- autoencoder.object$W
-b <- autoencoder.object$b
-## Visualize hidden units' learned features:
+cat("autoencode(): mean squared error for training set: ", round(autoencoder.object$mean.error.training.set,3),"\n")
+#########################
+# Inspektion des Resultats
 visualize.hidden.units(autoencoder.object,Nx.patch,Ny.patch)
 
+## Extract weights W and biases b from autoencoder.object:
+Wall <- autoencoder.object$W
+ball <- autoencoder.object$b
+## Visualize hidden units' learned features:
+str(Wall) #Wir haben zwei Layer
+W = Wall[[1]] #Die Gewichte des ersten Layers
 str(W)
-W = W[[1]] #Die ersten 
+for (i in 1:10) {
+  x_max = W[i,] / sqrt(sum(W[i,]^2))
+  cat('Sum of all pixels',sum(x_max^2), '\n')
+  image(matrix(x_max, ncol = 10), useRaster = TRUE,axes = FALSE, col=gray((0:255)/255))
+}
+
+
+
+
+
+
+
+
