@@ -47,8 +47,12 @@ autoencoder.object <- autoencode(X.train=training.matrix,nl=nl,N.hidden=N.hidden
 cat("autoencode(): mean squared error for training set: ",
     round(autoencoder.object$mean.error.training.set,3),"\n")
 
+save(autoencoder.object, file = "autoencoder.object.rnd")
 ## Extract weights W and biases b from autoencoder.object:
 W <- autoencoder.object$W
 b <- autoencoder.object$b
 ## Visualize hidden units' learned features:
 visualize.hidden.units(autoencoder.object,Nx.patch,Ny.patch)
+
+str(W)
+W = W[[1]] #Die ersten 
