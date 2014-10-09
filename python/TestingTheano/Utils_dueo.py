@@ -14,8 +14,8 @@ show = False
 
 def load_pictures():
     import sys
-    filenameTesting  = "../../data/testing_48x48_unaligned_large.p_R.csv.gz"
-    filenameTraining = "../../data/training_48x48_unaligned_large.p_R.csv.gz"
+    filenameTesting  = "../../data/testing_48x48_aligned_large.p_R.csv.gz"
+    filenameTraining = "../../data/training_48x48_aligned_large.p_R.csv.gz"
 
     def loadFromCSV(filename):
         y_tmp = []
@@ -41,8 +41,9 @@ def load_pictures():
 
     test_set_all = loadFromCSV(filenameTesting)
     N = len(test_set_all[1])
-    print(" Number of test examples " + str(N))
-    valid = int(N *0.2)
+    valid = int(N * 0.2)
+    print theano.config
+    print(" Number of test examples [" + str(N) + "] loaded from " + filenameTesting + " using " + str(valid)  + " for validation. Type " + str(type(test_set_all)))
 
     perm = np.random.permutation(N)
     perm_valid = perm[0:valid]
