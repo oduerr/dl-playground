@@ -8,7 +8,7 @@ import theano.tensor as T
 import math
 import csv
 import gzip
-import cv2
+#import cv2
 
 show = False
 

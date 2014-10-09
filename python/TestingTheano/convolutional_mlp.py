@@ -126,13 +126,12 @@ def evaluate_lenet5(learning_rate=0.1, n_epochs=200,
     rng = numpy.random.RandomState(23455)
 
     #Original
-    datasets = load_data(dataset)
-    n_out = 10
+    #datasets = load_data(dataset)
+    #n_out = 10
     
     # Images for face recognition
-    # import pickle
-    # datasets = Utils.load_pictures()
-    #print("Saveing the pickeled data-set")
+    #import pickle
+    #datasets = Utils.load_pictures()
     #pickle.dump(datasets, open( "Dataset.p", "wb" ) ) #Attention y is wrong
     #print("Saveing the pickeled data-set")
 
@@ -142,6 +141,7 @@ def evaluate_lenet5(learning_rate=0.1, n_epochs=200,
     n_out = 6
     batch_size = 30
     n_epochs=20000
+    print("Loaded the pickels data-set")
 
 
     # Images for face recognition
