@@ -4,29 +4,30 @@ author: Oliver Dürr
 output: pdf_document 
 ---
 ```{r, eval=TRUE,echo=TRUE}
-  EVAL = FALSE
-  ECHO = FALSE
+  EVAL = TRUE
+  ECHO = TRUE
 ```
 
 
 ## Introduction
 These algorithmic notes eluciade the classifiers used in the SoE project *piVision*. For illustrating purpose the algrithms orignially implemented in python using the openCV and scikit library are partly reimplemented in R.
 
-To evaluate the algorithm we used the picam and the `Rasberry Pi` to take several photographs for each person of the team in two batches, indoors and outdoors. We use the indoor pictures as a training set to learn the classifier and the outdoor batch for evaluation. (**TODO** or other way around?)
+To evaluate the algorithm we used the `Rasberry Pi` with an attached picam to take several photographs for each person of the team in two batches, indoors and outdoors. We use the indoor pictures as a training set to learn the classifier and the outdoor batch for evaluation. (**TODO** or other way around?)
 
-## What happend before / Preprocessing?
-We evaluate the performance with a training and a test set of aligned and cropped faces from the photos. These patches have been extracted from the original photos by the following method.
+## What happend before (preprocessing)?
+Before the feature extraction and classification we aligned and cropped the faces from the photos using the following method:
 
 * **TODO** add the tricks with downscaling for performance increase. 
 * In a first step faces are detected from the picture using the Viola-Jones Algorithm provided in `openCV` library. This boosting algorithm worked quite well and is descriped in XXX.
-* **TODO** include a typical image.
 
+
+* **TODO** include a typical image.
 
 * An ellipse around the face is set to zero (weak effect)
 
 * The image is split into 3 vertcial stripes and each stripe is normalized (**TODO** provide details)
 
-In the following the base-line classification algorithms are descriped. Slighty better results can be obtained when local binary pattern instead of the original grey values per pixels are used. This can be further enhanced by applying the LBP at different resolution of (patches) the image (which decreases the runtime). See end to this report for some notes.
+In the following the base-line classification algorithms are descriped and documented using the R. Slighty better results can be obtained when local binary pattern instead of the original grey values per pixels are used. This can be further enhanced by applying the LBP at different resolution on the image or parts of the image. See end to this report for some notes on these more adavanced techniques.
 
 # Training data. 
 The following loads the 226 aligned faces from the training set and plots several of them.
@@ -48,7 +49,7 @@ The following loads the 226 aligned faces from the training set and plots severa
 ```
 
 # Test data
-Same loading and plotting for the test-data.
+Same loading and plotting but now for the test-data.
 ```{r, eval=EVAL,echo=ECHO, fig.cap="Some examples of the test set.", fig.width=12, fig.height=6}
 dumm <- read.table(testFile, sep=",", stringsAsFactors = FALSE)
 ddd <- as.matrix(dumm);X_testing <- ddd[,-1];y_testing <- ddd[,1]
@@ -59,7 +60,7 @@ plotExamples(y_testing,X_testing, title = "Testing ", mfrow=c(3,6))
 ```
 
 # Eigenfaces, the spucky images
-We unroll the images into a $48 \cdot 48 = 2304$ dimensional vector\footnote{The data was in that format anyway}. Each image is so a point in a 2304 dimensional vector space. We now want to find a new basis in the 2304 dimensional space so that the variance (of the pixel intensities) is maximal in the first basis component, second maximal in the second component (which also needs to be othogonal to the first one). This can be achieved by first writing each image row by row into a matrix of the dimension 226x2304. The correlation matrix can be obtained by scaling the matrix so that the mean columns is 0 and the sd is 1. Due to constant values in some columns we cannot get sd = 1 and just scale the mean, resulting in using the covariance instead of the correlation.
+We unroll the images into a $48 \cdot 48 = 2304$ dimensional vector\footnote{The data was in that format anyway}. Each image is thus a point in a 2304 dimensional vector space. We now want to find a new basis in the 2304 dimensional space so that the variance (of the pixel intensities) is maximal in the first basis component, second maximal in the second component (which also needs to be othogonal to the first one). This can be achieved by first writing each image row by row into a matrix of the dimension 226x2304. The correlation matrix can be obtained by scaling the matrix so that the mean columns is 0 and the sd is 1. Due to constant values in some columns (e.g. in the masked regions) we cannot force the standard deviation to be 1 and therefore just scale the mean. This corresponds to using the covariance instead of the correlation.
 ```{r, eval=EVAL,echo=ECHO, fig.width=12, fig.height=6}
   X = scale(X_training, center = TRUE, scale = FALSE) / N
   dim(X)
@@ -75,11 +76,11 @@ To get the direction of with maximal covariance, we simply have to calculate the
   cov = t(X)%*%X
   e <- eigen(cov)
 ```
-We simply roll the 2304 dimensional Eigenvectors back into an 48x48 dimensional images and have the infamous first Eigenfaces. 
+We simply roll the 2304 dimensional Eigenvectors back into an 48x48 dimensional images and have the infamous  Eigenfaces. 
 
-However, it take quite some time to calculate the Eigenvectorsfrom a 2304 dimensional matrix. Here we can apply the following trick\footnote{There are also other numerical ways to calculate the principal components}. Note that the singular value decomposition (SVD) decomposes a Matrix $M$ under no assumptions! (**TODO: check** ) into:
+However, it take quite some time to calculate the Eigenvectors from a 2304 dimensional matrix. Here we can apply the following trick\footnote{There are also other numerical ways to calculate the principal components}. Note that the singular value decomposition (SVD) decomposes a Matrix $M$ under no assumptions! (**TODO: check** ) into:
 $$ M = U \Sigma V^* $$ 
-with U consisting of the Eigenvetors of $M M^*$ with $M^*$ being the conjugate transpose of $M$, $\Sigma$ is a diagonal matrix of the Eigenvalues and $V^*$ has the Eigenvectors of $M^* M$. So to calculate the Eigenvalue of $X^T X$ we simply have to do an SVD of $X^T$ and take $U \in \mathcal{R}^{2304 x 226} $ which contains then the Eigenvectors of $X^T X$ as we wish. 
+with U consisting of the Eigenvetors of $M M^*$ with $M^*$ being the conjugate transpose of $M$, $\Sigma$ is a diagonal matrix of the Eigenvalues and $V^*$ has the Eigenvectors of $M^* M$ in its columns. So to calculate the Eigenvalue of $X^T X$ we simply have to do an SVD of $X^T$ and take $U \in \mathcal{R}^{2304 x 226} $ which contains then the Eigenvectors of $X^T X$ as we wish. 
 ```{r, eval=EVAL,echo=ECHO, fig.width=12, fig.height=6}
     res = svd(t(X))
     dim(res$u)
@@ -132,7 +133,7 @@ We now use the PCA for dimension reduction and apply serveral algorithms for cla
 * Fisher LDA in the space of the Eigenfaces aka Fisherfaces
 * SVM in the space of the Eigenfaces
 
-The classifier is learned on the training set and the performance is evaluted on the test set. 
+The classifier is learned on the training set and the performance is evaluted to the test set. 
 
 ### Eigenfaces
 ```{r, eval=EVAL,echo=ECHO, fig.width=12, fig.height=6}
@@ -211,7 +212,7 @@ rev  | LBPH	| Fisher | Eigen |	SVN/1 |	SVN/2 |	SVN/3	| SVN/4 | SVN/5 | SVN1/4| S
 
 We see that taking the LBHP features (feature extractor 1) instead of the original pixels (feature extractor 5) results in a performance increase of about 4% from `SVN/5` to `SVN/1`. 
 
-The more complex feature extractors 2,3 and 5 play their strength only for larger images. The next table shows the result when using 120x120 images instead of the 48x48. (Small remark images from Dejan just have been included starting from approx rev. <= 244).
+The more complex feature extractors 2,3 and 5 play their strength only for larger images. The next table shows in the first line (rev 164) the result when using 120x120 images instead of the 48x48 ones. (Small remark images from Dejan just have been included starting from approx rev. <= 244).
 
 rev  | LBPH   | Fisher | Eigen  |	SVN/1  |	SVN/2 |	SVN/3	 | SVN/4 | SVN/5 | SVN1/1	  | SVN1/4
 -----|--------|--------|--------|--------|--------|--------|-------|-------|--------|----
@@ -221,7 +222,7 @@ rev  | LBPH   | Fisher | Eigen  |	SVN/1  |	SVN/2 |	SVN/3	 | SVN/4 | SVN/5 | SVN1
 We see that for larger images the complex feature extractors become relevant, SVN/5 is now better than SVN/1.
 However, the increase is not dramatic. The need for more complex FE should be evaluated probably with more challenging data-sets. We note also that for smaller images the simple FE 1 is as good as the complex FE 5 on larger images. This strongly suggest to use 48x48 images with the simple and LBHP feature extractor (**TODO** use in final revisions). Especially since the running time for the classification of one image of approx 250ms using  SVN/1 increases by a factor of approximately 4 **TODO loma check**. 
 
-In revision 163 we switched off the alignment and observe a dramic drop of the performance pointing out the primodal importtance of good alignment.
+In revision 163 we switched off the alignment and observe a dramic drop of the performance pointing out the primordial importance of good alignment.
 
 
 The effect of the different preprocessing method is evaluated in the following table:
@@ -271,6 +272,8 @@ Is actually not to simple
 ```
 
 ## Effect of the  alignment.
+Since the effect of the alignment is so important, we like to elucidate a bit on it in the following.
+
 Below is a comparison of the pictures without and with the simple "two eyes" same position alignment. 
 
 ### Unaligned images
