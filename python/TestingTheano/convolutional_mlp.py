@@ -36,7 +36,7 @@ from theano.tensor.nnet import conv
 
 from logistic_sgd import LogisticRegression, load_data
 from mlp import HiddenLayer
-#import Utils
+
 
 
 class LeNetConvPoolLayer(object):
@@ -104,9 +104,9 @@ class LeNetConvPoolLayer(object):
         self.params = [self.W, self.b]
 
 
-def evaluate_lenet5(learning_rate=0.1, n_epochs=200,
+def evaluate_lenet5(learning_rate=0.01, n_epochs=200,
                     dataset='mnist.pkl.gz',
-                    nkerns=[20, 50], batch_size=500):
+                    nkerns=[20, 10], batch_size=500):
     """ Demonstrates lenet on MNIST dataset
 
     :type learning_rate: float
@@ -126,29 +126,29 @@ def evaluate_lenet5(learning_rate=0.1, n_epochs=200,
     rng = numpy.random.RandomState(23455)
 
     #Original
-    #datasets = load_data(dataset)
-    #n_out = 10
+    # datasets = load_data(dataset)
+    # n_out = 10
     
     # Images for face recognition
-    #import pickle
-    #datasets = Utils.load_pictures()
-    #pickle.dump(datasets, open( "Dataset.p", "wb" ) ) #Attention y is wrong
-    #print("Saveing the pickeled data-set")
+    import pickle
+    import Utils_dueo
+    datasets = Utils_dueo.load_pictures()
+    print("Saveing the pickeled data-set")
+    pickle.dump(datasets, open( "Dataset_unal_48.p", "wb" ) ) #Attention y is wrong
+    print("Saved the pickeled data-set")
 
     #Loading the pickled images
-    import pickle
-    datasets = pickle.load(open("Dataset.p", "r"))
+    #import pickle
+    #datasets = pickle.load(open("Dataset.p", "r"))
     n_out = 6
-    batch_size = 30
-    n_epochs=20000
-    print("Loaded the pickels data-set")
-
-
+    batch_size = 20
+    n_epochs=2000
     # Images for face recognition
 
     train_set_x, train_set_y = datasets[0]
     valid_set_x, valid_set_y = datasets[1]
     test_set_x, test_set_y = datasets[2]
+
 
     # compute number of minibatches for training, validation and testing
     n_train_batches = train_set_x.get_value(borrow=True).shape[0]
@@ -164,7 +164,7 @@ def evaluate_lenet5(learning_rate=0.1, n_epochs=200,
     y = T.ivector('y')  # the labels are presented as 1D vector of
                         # [int] labels
 
-    ishape = (28, 28)  # this is the size of MNIST images
+    ishape = (48, 48)  # this is the size of MNIST images
 
 
 
@@ -175,14 +175,14 @@ def evaluate_lenet5(learning_rate=0.1, n_epochs=200,
 
     # Reshape matrix of rasterized images of shape (batch_size,28*28)
     # to a 4D tensor, compatible with our LeNetConvPoolLayer
-    layer0_input = x.reshape((batch_size, 1, 28, 28))
+    layer0_input = x.reshape((batch_size, 1, 48, 48))
 
     # Construct the first convolutional pooling layer:
     # filtering reduces the image size to (28-5+1,28-5+1)=(24,24)
     # maxpooling reduces this further to (24/2,24/2) = (12,12)
     # 4D output tensor is thus of shape (batch_size,nkerns[0],12,12)
     layer0 = LeNetConvPoolLayer(rng, input=layer0_input,
-            image_shape=(batch_size, 1, 28, 28),
+            image_shape=(batch_size, 1, 48, 48),
             filter_shape=(nkerns[0], 1, 5, 5), poolsize=(2, 2))
 
     # Construct the second convolutional pooling layer
@@ -190,7 +190,7 @@ def evaluate_lenet5(learning_rate=0.1, n_epochs=200,
     # maxpooling reduces this further to (8/2,8/2) = (4,4)
     # 4D output tensor is thus of shape (nkerns[0],nkerns[1],4,4)
     layer1 = LeNetConvPoolLayer(rng, input=layer0.output,
-            image_shape=(batch_size, nkerns[0], 12, 12),
+            image_shape=(batch_size, nkerns[0], 22, 22),
             filter_shape=(nkerns[1], nkerns[0], 5, 5), poolsize=(2, 2))
 
     # the HiddenLayer being fully-connected, it operates on 2D matrices of
@@ -199,7 +199,7 @@ def evaluate_lenet5(learning_rate=0.1, n_epochs=200,
     layer2_input = layer1.output.flatten(2)
 
     # construct a fully-connected sigmoidal layer
-    layer2 = HiddenLayer(rng, input=layer2_input, n_in=nkerns[1] * 4 * 4,
+    layer2 = HiddenLayer(rng, input=layer2_input, n_in=nkerns[1] * 9 * 9,
                          n_out=500, activation=T.tanh)
 
     # classify the values of the fully-connected sigmoidal layer
