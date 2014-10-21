@@ -104,7 +104,7 @@ class LeNetConvPoolLayer(object):
         self.params = [self.W, self.b]
 
 
-def evaluate_lenet5(learning_rate=0.1, n_epochs=200,
+def evaluate_lenet5(learning_rate=0.001, n_epochs=200,
                     dataset='mnist.pkl.gz',
                     nkerns=[20, 50], batch_size=500):
     """ Demonstrates lenet on MNIST dataset
@@ -172,6 +172,7 @@ def evaluate_lenet5(learning_rate=0.1, n_epochs=200,
     # BUILD ACTUAL MODEL #
     ######################
     print '... building the model'
+    print 'Number of Kernels' + str(nkerns)
 
     # Reshape matrix of rasterized images of shape (batch_size,28*28)
     # to a 4D tensor, compatible with our LeNetConvPoolLayer
@@ -200,10 +201,10 @@ def evaluate_lenet5(learning_rate=0.1, n_epochs=200,
 
     # construct a fully-connected sigmoidal layer
     layer2 = HiddenLayer(rng, input=layer2_input, n_in=nkerns[1] * 4 * 4,
-                         n_out=100, activation=T.tanh)
+                         n_out=300, activation=T.tanh)
 
     # classify the values of the fully-connected sigmoidal layer
-    layer3 = LogisticRegression(input=layer2.output, n_in=100, n_out=n_out)
+    layer3 = LogisticRegression(input=layer2.output, n_in=300, n_out=n_out)
 
     # the cost we minimize during training is the NLL of the model
     cost = layer3.negative_log_likelihood(y)
