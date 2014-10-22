@@ -173,36 +173,51 @@ def evaluate_lenet5(learning_rate=0.005, n_epochs=4242,
     ######################
     print '... building the model'
     print 'Number of Kernels' + str(nkerns)
-
+#   Orignial Run
+#     filter_1 = 5
+#     filter_2 = 5
+#     in_2 = 12
+#     pool_1 = 2 
+#     pool_2 = 2
+#     hidden_input = 4*4
+#     numLogisticInput = 200 
+    
+    filter_1 = 5
+    pool_1 = 3 
+    in_2 = 8      #Input in second layer (layer1)
+    filter_2 = 3
+    pool_2 = 2
+    hidden_input = 3*3
+    numLogisticInput = 200 
+    
     # Reshape matrix of rasterized images of shape (batch_size,28*28)
     # to a 4D tensor, compatible with our LeNetConvPoolLayer
-    layer0_input = x.reshape((batch_size, 1, 28, 28))
+    layer0_input = x.reshape((batch_size, 1, ishape[0], ishape[1]))
 
     # Construct the first convolutional pooling layer:
     # filtering reduces the image size to (28-5+1,28-5+1)=(24,24)
     # maxpooling reduces this further to (24/2,24/2) = (12,12)
     # 4D output tensor is thus of shape (batch_size,nkerns[0],12,12)
     layer0 = LeNetConvPoolLayer(rng, input=layer0_input,
-            image_shape=(batch_size, 1, 28, 28),
-            filter_shape=(nkerns[0], 1, 5, 5), poolsize=(2, 2))
+            image_shape=(batch_size, 1, ishape[0], ishape[0]),
+            filter_shape=(nkerns[0], 1, filter_1, filter_1), poolsize=(pool_1, pool_1))
 
     # Construct the second convolutional pooling layer
     # filtering reduces the image size to (12-5+1,12-5+1)=(8,8)
     # maxpooling reduces this further to (8/2,8/2) = (4,4)
     # 4D output tensor is thus of shape (nkerns[0],nkerns[1],4,4)
     layer1 = LeNetConvPoolLayer(rng, input=layer0.output,
-            image_shape=(batch_size, nkerns[0], 12, 12),
-            filter_shape=(nkerns[1], nkerns[0], 5, 5), poolsize=(2, 2))
+            image_shape=(batch_size, nkerns[0], in_2, in_2),
+            filter_shape=(nkerns[1], nkerns[0], filter_2, filter_2), poolsize=(pool_2, pool_2))
 
     # the HiddenLayer being fully-connected, it operates on 2D matrices of
     # shape (batch_size,num_pixels) (i.e matrix of rasterized images).
     # This will generate a matrix of shape (20,32*4*4) = (20,512)
     layer2_input = layer1.output.flatten(2)
 
-    numLogisticInput = 200 
 
     # construct a fully-connected sigmoidal layer
-    layer2 = HiddenLayer(rng, input=layer2_input, n_in=nkerns[1] * 4 * 4,
+    layer2 = HiddenLayer(rng, input=layer2_input, n_in=nkerns[1] * hidden_input,
                          n_out=numLogisticInput, activation=T.tanh)
 
     # classify the values of the fully-connected sigmoidal layer
@@ -321,14 +336,14 @@ def evaluate_lenet5(learning_rate=0.005, n_epochs=4242,
                           ' ran for %.2fm' % ((end_time - start_time) / 60.))
 
 if __name__ == '__main__':
-    evaluate_lenet5(learning_rate=0.0001, datasetName="Dataset_aligned_28.p") #Best validation score of 23.333333 % obtained at iteration 19950,with test performance 28.666667 %
-    evaluate_lenet5(learning_rate=0.001, datasetName="Dataset_aligned_28.p") #<---- Best validation score of 16.666667 % obtained at iteration 4347,with test performance 22.666667 
-    evaluate_lenet5(learning_rate=0.01, datasetName="Dataset_aligned_28.p") #Best validation score of 20.000000 % obtained at iteration 126,with test performance 35.333333 %
-    evaluate_lenet5(learning_rate=0.1, datasetName="Dataset_aligned_28.p") #Best validation score of 73.333333 % obtained at iteration 35,with test performance 81.333333 %
-    evaluate_lenet5(learning_rate=0.0001, datasetName="Dataset_unaligned_28.p") #Best validation score of 66.666667 % obtained at iteration 6804,with test performance 67.333333 %
-    evaluate_lenet5(learning_rate=0.001, datasetName="Dataset_unaligned_28.p") #<--- Best validation score of 50.000000 % obtained at iteration 3474,with test performance 66.000000 %
-    evaluate_lenet5(learning_rate=0.01, datasetName="Dataset_unaligned_28.p") #Best validation score of 56.666667 % obtained at iteration 270,with test performance 72.000000 %
-    evaluate_lenet5(learning_rate=0.1, datasetName="Dataset_unaligned_28.p") #Best validation score of 73.333333 % obtained at iteration 90,with test performance 82.000000 %
+#     evaluate_lenet5(learning_rate=0.0001, datasetName="Dataset_aligned_28.p") #Best validation score of 23.333333 % obtained at iteration 19950,with test performance 28.666667 %
+#     evaluate_lenet5(learning_rate=0.001, datasetName="Dataset_aligned_28.p") #<---- Best validation score of 16.666667 % obtained at iteration 4347,with test performance 22.666667 
+#     evaluate_lenet5(learning_rate=0.01, datasetName="Dataset_aligned_28.p") #Best validation score of 20.000000 % obtained at iteration 126,with test performance 35.333333 %
+#     evaluate_lenet5(learning_rate=0.1, datasetName="Dataset_aligned_28.p") #Best validation score of 73.333333 % obtained at iteration 35,with test performance 81.333333 %
+#     evaluate_lenet5(learning_rate=0.0001, datasetName="Dataset_unaligned_28.p") #Best validation score of 66.666667 % obtained at iteration 6804,with test performance 67.333333 %
+      evaluate_lenet5(learning_rate=0.001, datasetName="Dataset_unaligned_28.p") #<--- Best validation score of 50.000000 % obtained at iteration 3474,with test performance 66.000000 %
+      #evaluate_lenet5(learning_rate=0.01, datasetName="Dataset_unaligned_28.p") #Best validation score of 56.666667 % obtained at iteration 270,with test performance 72.000000 %
+#     evaluate_lenet5(learning_rate=0.1, datasetName="Dataset_unaligned_28.p") #Best validation score of 73.333333 % obtained at iteration 90,with test performance 82.000000 %
 
 
 def experiment(state, channel):
