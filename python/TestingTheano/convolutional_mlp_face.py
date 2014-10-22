@@ -36,7 +36,11 @@ from theano.tensor.nnet import conv
 
 from logistic_sgd import LogisticRegression, load_data
 from mlp import HiddenLayer
-#import Utils
+
+try:
+    import PIL.Image as Image
+except ImportError:
+    import Image
 
 
 class LeNetConvPoolLayer(object):
@@ -334,14 +338,32 @@ def evaluate_lenet5(learning_rate=0.005, n_epochs=4242,
     print >> sys.stderr, ('The code for file ' +
                           os.path.split(__file__)[1] +
                           ' ran for %.2fm' % ((end_time - start_time) / 60.))
+    # Oliver
+    if not os.path.isdir("conv_images"):
+        os.makedirs("conv_images")
+        os.chdir("conv_images")
+
+    d = layer0.W.get_value() #e.g.  (20, 1, 5, 5) number of filter, num of incomming filters, dim filter
+    for i in range(0, numpy.shape(d)[0]):
+        dd = d[i][0]
+        rescaled = (255.0 / dd.max() * (dd - dd.min())).astype(numpy.uint8)
+        img = Image.fromarray(rescaled)
+        img.save('filter_' + str(i) + '.png')
+
+    #image = Image.fromarray(lay)
+    #image.save('samples.png')
+    os.chdir('../')
+
+
 
 if __name__ == '__main__':
+    evaluate_lenet5(learning_rate=0.001, datasetName="Dataset_aligned_28.p", n_epochs=200)
 #     evaluate_lenet5(learning_rate=0.0001, datasetName="Dataset_aligned_28.p") #Best validation score of 23.333333 % obtained at iteration 19950,with test performance 28.666667 %
 #     evaluate_lenet5(learning_rate=0.001, datasetName="Dataset_aligned_28.p") #<---- Best validation score of 16.666667 % obtained at iteration 4347,with test performance 22.666667 
 #     evaluate_lenet5(learning_rate=0.01, datasetName="Dataset_aligned_28.p") #Best validation score of 20.000000 % obtained at iteration 126,with test performance 35.333333 %
 #     evaluate_lenet5(learning_rate=0.1, datasetName="Dataset_aligned_28.p") #Best validation score of 73.333333 % obtained at iteration 35,with test performance 81.333333 %
 #     evaluate_lenet5(learning_rate=0.0001, datasetName="Dataset_unaligned_28.p") #Best validation score of 66.666667 % obtained at iteration 6804,with test performance 67.333333 %
-      evaluate_lenet5(learning_rate=0.001, datasetName="Dataset_unaligned_28.p") #<--- Best validation score of 50.000000 % obtained at iteration 3474,with test performance 66.000000 %
+#      evaluate_lenet5(learning_rate=0.001, datasetName="Dataset_unaligned_28.p") #<--- Best validation score of 50.000000 % obtained at iteration 3474,with test performance 66.000000 %
       #evaluate_lenet5(learning_rate=0.01, datasetName="Dataset_unaligned_28.p") #Best validation score of 56.666667 % obtained at iteration 270,with test performance 72.000000 %
 #     evaluate_lenet5(learning_rate=0.1, datasetName="Dataset_unaligned_28.p") #Best validation score of 73.333333 % obtained at iteration 90,with test performance 82.000000 %
 
