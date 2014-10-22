@@ -104,9 +104,9 @@ class LeNetConvPoolLayer(object):
         self.params = [self.W, self.b]
 
 
-def evaluate_lenet5(learning_rate=0.001, n_epochs=200,
-                    dataset='mnist.pkl.gz',
-                    nkerns=[20, 50], batch_size=500):
+def evaluate_lenet5(learning_rate=0.005, n_epochs=4242,
+                    datasetName='mnist.pkl.gz',
+                    nkerns=[20, 50], batch_size=4242):
     """ Demonstrates lenet on MNIST dataset
 
     :type learning_rate: float
@@ -137,11 +137,11 @@ def evaluate_lenet5(learning_rate=0.001, n_epochs=200,
 
     #Loading the pickled images
     import pickle
-    datasets = pickle.load(open("Dataset.p", "r"))
+    print("Loading the pickels data-set " + str(datasetName))
+    datasets = pickle.load(open(datasetName, "r"))
     n_out = 6
     batch_size = 30
-    n_epochs=2000
-    print("Loaded the pickels data-set")
+    print("       Learning rate " + str(learning_rate))
 
 
     # Images for face recognition
@@ -199,12 +199,14 @@ def evaluate_lenet5(learning_rate=0.001, n_epochs=200,
     # This will generate a matrix of shape (20,32*4*4) = (20,512)
     layer2_input = layer1.output.flatten(2)
 
+    numLogisticInput = 200 
+
     # construct a fully-connected sigmoidal layer
     layer2 = HiddenLayer(rng, input=layer2_input, n_in=nkerns[1] * 4 * 4,
-                         n_out=300, activation=T.tanh)
+                         n_out=numLogisticInput, activation=T.tanh)
 
     # classify the values of the fully-connected sigmoidal layer
-    layer3 = LogisticRegression(input=layer2.output, n_in=300, n_out=n_out)
+    layer3 = LogisticRegression(input=layer2.output, n_in=numLogisticInput, n_out=n_out)
 
     # the cost we minimize during training is the NLL of the model
     cost = layer3.negative_log_likelihood(y)
@@ -319,7 +321,14 @@ def evaluate_lenet5(learning_rate=0.001, n_epochs=200,
                           ' ran for %.2fm' % ((end_time - start_time) / 60.))
 
 if __name__ == '__main__':
-    evaluate_lenet5()
+    evaluate_lenet5(learning_rate=0.0001, datasetName="Dataset_aligned_28.p") #Best validation score of 23.333333 % obtained at iteration 19950,with test performance 28.666667 %
+    evaluate_lenet5(learning_rate=0.001, datasetName="Dataset_aligned_28.p") #<---- Best validation score of 16.666667 % obtained at iteration 4347,with test performance 22.666667 
+    evaluate_lenet5(learning_rate=0.01, datasetName="Dataset_aligned_28.p") #Best validation score of 20.000000 % obtained at iteration 126,with test performance 35.333333 %
+    evaluate_lenet5(learning_rate=0.1, datasetName="Dataset_aligned_28.p") #Best validation score of 73.333333 % obtained at iteration 35,with test performance 81.333333 %
+    evaluate_lenet5(learning_rate=0.0001, datasetName="Dataset_unaligned_28.p") #Best validation score of 66.666667 % obtained at iteration 6804,with test performance 67.333333 %
+    evaluate_lenet5(learning_rate=0.001, datasetName="Dataset_unaligned_28.p") #<--- Best validation score of 50.000000 % obtained at iteration 3474,with test performance 66.000000 %
+    evaluate_lenet5(learning_rate=0.01, datasetName="Dataset_unaligned_28.p") #Best validation score of 56.666667 % obtained at iteration 270,with test performance 72.000000 %
+    evaluate_lenet5(learning_rate=0.1, datasetName="Dataset_unaligned_28.p") #Best validation score of 73.333333 % obtained at iteration 90,with test performance 82.000000 %
 
 
 def experiment(state, channel):
