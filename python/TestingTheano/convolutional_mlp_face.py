@@ -153,7 +153,7 @@ def evaluate_lenet5(learning_rate=0.005, n_epochs=4242,
     train_set_x, train_set_y = datasets[0]
     valid_set_x, valid_set_y = datasets[1]
     test_set_x, test_set_y = datasets[2]
-  
+
     # compute number of minibatches for training, validation and testing
     n_train_batches = train_set_x.get_value(borrow=True).shape[0]
     n_valid_batches = valid_set_x.get_value(borrow=True).shape[0]
@@ -358,6 +358,7 @@ def evaluate_lenet5(learning_rate=0.005, n_epochs=4242,
 
 if __name__ == '__main__':
     filename = "Dataset_extended.p"
+    evaluate_lenet5(learning_rate=0.1, datasetName=filename, n_epochs=1)
     evaluate_lenet5(learning_rate=0.1, datasetName=filename, n_epochs=2000)
     evaluate_lenet5(learning_rate=0.0001, datasetName=filename) #Best validation score of 23.333333 % obtained at iteration 19950,with test performance 28.666667 %
     evaluate_lenet5(learning_rate=0.001, datasetName=filename) #<---- Best validation score of 16.666667 % obtained at iteration 4347,with test performance 22.666667
