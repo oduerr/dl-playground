@@ -1,0 +1,163 @@
+---
+title: Covariance, SVD, PCA and Whitening
+author: Oliver Dürr
+output: pdf_document 
+---
+```{r, eval=TRUE,echo=FALSE}
+  EVAL = TRUE
+  ECHO = TRUE
+```
+
+
+## Introduction
+These algorithmic notes are about PCA, SVD and whitening. They are somehow motivated by the UDFL tutorial on whitening (http://ufldl.stanford.edu/wiki/index.php/Implementing_PCA/Whitening).
+
+We start with a simple toy example to show what happens in a SVD. First we consider the situation where we have 30 examples each having 4 pixels. We code this (in contrast to the piVision project) as a 4x30 matrix (columns code examples). Note that this is in the reversed order compared to the coding we apply in the piVision project, but it's more convenient to think in column vectors.
+
+### Calculation of the covariance matrix
+We want to investigate the covariance between the pixels. And show that such a matrix can be calculated as $\tilde{X} \tilde{X'}$ with $\tilde{X}$ is $X$ normalized so that the pixels have zero mean.
+```{r, eval=EVAL,echo=ECHO, fig.width=12, fig.height=6}
+  # http://www.mathworks.ch/help/matlab/ref/svd.html
+  ncol = 30  
+  X.org   = matrix(rnorm(4 * ncol), ncol = ncol)
+  colnames(X.org) = paste("Example", 1:ncol)
+  rownames(X.org) = paste("Pixel", 1:4)
+  avg = rowMeans(X.org)
+  X = X.org - avg
+  cov.r = cov(t(X.org))
+  XXT = (X %*% t(X)) / (ncol - 1)   
+  max(abs(XXT - cov(t(X)))) #This confirms that the covariance of the pixels is XX'
+```
+
+### Rotate into new pixel space
+Next we want to rotate into the new pixel space. This can be done via $\vec{x}_{rot} = U' \vec{x}$ where $\vec{x}$ is a 4 dimensional pixel vector.
+
+```{r, eval=EVAL,echo=ECHO, fig.width=12, fig.height=6}
+  e = eigen(XXT)
+  U = e$vectors
+  x_rot = t(U) %*% X[,1]     # Rotation for one pixel vector
+  X_rot = t(U) %*% X         # Rotation for all 30 vectors
+  plot(X_rot[1,], X_rot[2,]) # Plotting the first 2 new pixel
+  cov(X_rot[1,], X_rot[2,])  # Covariance is diagonal in the new space
+  cov(t(X_rot))              # Covariance is diagonal in the new space
+```
+
+### Comparison with R
+```{r, eval=EVAL,echo=ECHO, fig.width=12, fig.height=6}
+  fit <- princomp(t(X.org), cor=FALSE)
+  res.sc <- fit$scores # the principal components
+  max(abs(t(res.sc) - X_rot))
+```
+
+### Using svd instead of Eigenvalues $X$ of $X X'$ don't care
+This is really strange, one can use SVD of X or XXT.
+```{r, eval=EVAL,echo=ECHO, fig.width=12, fig.height=6}
+  X.org   = matrix(rnorm(4 * ncol), ncol = ncol)
+  avg = rowMeans(X.org)
+  X = X.org - avg
+  XXT = (X %*% t(X)) / (ncol - 1) #Constant terms does not matter
+  eigen(XXT)$vectors
+  svd(X)$u
+  svd(XXT)$u
+  svd(t(X))$v
+```
+
+
+## Whitening: make covariance in new pixel space the identity
+Since the covariance matrix is given by $X_rot_w$
+
+```{r, eval=EVAL,echo=ECHO, fig.width=12, fig.height=6}
+  X_rot_w = X_rot / sqrt(e$values)
+  cov(t(X_rot_w))
+```
+
+### Go back to original space 
+```{r, eval=EVAL,echo=ECHO, fig.width=12, fig.height=6}
+  X_w = U %*% X_rot_w
+  X_w_1 = U %*% diag(1/sqrt(e$values)) %*% t(U) %*% X
+  cov(t(X_w_1))
+```
+
+## More pixels then examples
+```{r, eval=EVAL,echo=ECHO, fig.width=12, fig.height=6}
+  ncol = 3
+  X.org   = matrix(rnorm(4 * ncol), ncol = ncol)
+  colnames(X.org) = paste("Example", 1:ncol)
+  rownames(X.org) = paste("Pixel", 1:4)
+  avg = rowMeans(X.org)
+  X = X.org - avg
+  XXT = (X %*% t(X)) / (ncol - 1)   
+  e = eigen(XXT)
+  U = e$vectors
+  X_w_1 = U %*% diag(1/sqrt(e$values + 1e-5)) %*% t(U) %*% X
+  cov(t(X_w_1))
+  
+  # Other possibility
+  X.org = t(X.org)
+  ncol = ncol(X.org)
+  nrow = nrow(X.org)
+  colnames(X.org) = paste("Example", 1:ncol)
+  rownames(X.org) = paste("Pixel", 1:3)
+  avg = rowMeans(X.org)
+  X = X.org - avg
+  XXT = (X %*% t(X)) / (ncol - 1)   
+  e = eigen(XXT)
+  U = e$vectors
+  X_w_1 = U %*% diag(1/sqrt(e$values + 1e-5)) %*% t(U) %*% X
+  t(X_w_1)
+  cov(t(X_w_1))
+```
+
+
+
+
+# Training data. 
+The following loads the 226 aligned faces from the training set and plots several of them.
+```{r, eval=TRUE, echo=FALSE, fig.width=12, fig.height=6}
+  source("Utils.R")
+  trainingFile = "../../data/training_48x48_aligned_large.p_R.csv.gz"
+  testFile = "../../data/testing_48x48_aligned_large.p_R.csv.gz"
+  #trainingFile = "../../data/training_48x48_unaligned_large.p_R.csv.gz"
+  #testFile = "../../data/testing_48x48_unaligned_large.p_R.csv.gz" #TODO check this testfile can be wrong
+  dumm <- read.table(trainingFile, sep=",", stringsAsFactors = FALSE)
+  ddd <- as.matrix(dumm);
+  X_training <- ddd[,-1]
+  y_training <- ddd[,1]
+  #perm <- sample(1:ncol(X_training), replace = FALSE)
+  #X_training <- X_training[,perm]
+  N <- sqrt(ncol(X_training))
+  cat("Loaded Training set ", dim(X_training), " Dimension of pixels: ", N, "x", N)
+  plotExamples(y_training,X_training, title = "Training ", mfrow=c(3,6))
+```
+
+# Test data
+Same loading and plotting but now for the test-data.
+```{r, eval=TRUE,echo=FALSE, fig.cap="Some examples of the test set.", fig.width=12, fig.height=6}
+dumm <- read.table(testFile, sep=",", stringsAsFactors = FALSE)
+ddd <- as.matrix(dumm);X_testing <- ddd[,-1];y_testing <- ddd[,1]
+#X_testing <- X_testing[,perm]
+N <- sqrt(ncol(X_testing))
+cat("Loaded Test set ", dim(X_testing), " Dimension of pixels: ", N, "x", N, " number of y ", length(y_testing))
+plotExamples(y_testing,X_testing, title = "Testing ", mfrow=c(3,6))
+```
+
+
+
+
+## Using pictures (Training set)
+```{r, eval=EVAL,echo=ECHO, fig.width=12, fig.height=6}
+  X.org = X_training
+  avg = rowMeans(X.org)
+  X = X.org - avg
+  ncol = dim(X)[1]
+  XXT = (X %*% t(X)) / (ncol - 1)   
+  e = eigen(XXT)
+  U = e$vectors
+  X_w_1 = U %*% diag(1/sqrt(e$values + 1e-5)) %*% t(U) %*% X
+  plotExamples(y_training,X_w_1, title = "Training whitend", mfrow=c(3,6))
+  cov(t(X_w_1))[1:10,1:10]
+```
+
+
+
+
