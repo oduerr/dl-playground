@@ -134,9 +134,10 @@ def evaluate_lenet5(learning_rate=0.005, n_epochs=4242,
     #n_out = 10
     
     # Images for face recognition
-    #import pickle
-    #datasets = Utils.load_pictures()
-    #pickle.dump(datasets, open( "Dataset.p", "wb" ) ) #Attention y is wrong
+    # import pickle
+    # import Utils_dueo
+    # datasets = Utils_dueo.load_pictures()
+    # pickle.dump(datasets, open( datasetName, "wb" ) ) #Attention y is wrong
     #print("Saveing the pickeled data-set")
 
     #Loading the pickled images
@@ -149,7 +150,6 @@ def evaluate_lenet5(learning_rate=0.005, n_epochs=4242,
 
 
     # Images for face recognition
-
     train_set_x, train_set_y = datasets[0]
     valid_set_x, valid_set_y = datasets[1]
     test_set_x, test_set_y = datasets[2]
@@ -178,21 +178,21 @@ def evaluate_lenet5(learning_rate=0.005, n_epochs=4242,
     print '... building the model'
     print 'Number of Kernels' + str(nkerns)
 #   Orignial Run
-#     filter_1 = 5
-#     filter_2 = 5
-#     in_2 = 12
-#     pool_1 = 2 
-#     pool_2 = 2
-#     hidden_input = 4*4
-#     numLogisticInput = 200 
-    
     filter_1 = 5
-    pool_1 = 3 
-    in_2 = 8      #Input in second layer (layer1)
-    filter_2 = 3
+    filter_2 = 5
+    in_2 = 12
+    pool_1 = 2
     pool_2 = 2
-    hidden_input = 3*3
-    numLogisticInput = 200 
+    hidden_input = 4*4
+    numLogisticInput = 200
+    
+    # filter_1 = 5
+    # pool_1 = 3
+    # in_2 = 8      #Input in second layer (layer1)
+    # filter_2 = 3
+    # pool_2 = 2
+    # hidden_input = 3*3
+    # numLogisticInput = 200
     
     # Reshape matrix of rasterized images of shape (batch_size,28*28)
     # to a 4D tensor, compatible with our LeNetConvPoolLayer
@@ -357,15 +357,16 @@ def evaluate_lenet5(learning_rate=0.005, n_epochs=4242,
 
 
 if __name__ == '__main__':
-    evaluate_lenet5(learning_rate=0.001, datasetName="Dataset_aligned_28.p", n_epochs=200)
-#     evaluate_lenet5(learning_rate=0.0001, datasetName="Dataset_aligned_28.p") #Best validation score of 23.333333 % obtained at iteration 19950,with test performance 28.666667 %
-#     evaluate_lenet5(learning_rate=0.001, datasetName="Dataset_aligned_28.p") #<---- Best validation score of 16.666667 % obtained at iteration 4347,with test performance 22.666667 
-#     evaluate_lenet5(learning_rate=0.01, datasetName="Dataset_aligned_28.p") #Best validation score of 20.000000 % obtained at iteration 126,with test performance 35.333333 %
-#     evaluate_lenet5(learning_rate=0.1, datasetName="Dataset_aligned_28.p") #Best validation score of 73.333333 % obtained at iteration 35,with test performance 81.333333 %
-#     evaluate_lenet5(learning_rate=0.0001, datasetName="Dataset_unaligned_28.p") #Best validation score of 66.666667 % obtained at iteration 6804,with test performance 67.333333 %
-#      evaluate_lenet5(learning_rate=0.001, datasetName="Dataset_unaligned_28.p") #<--- Best validation score of 50.000000 % obtained at iteration 3474,with test performance 66.000000 %
-      #evaluate_lenet5(learning_rate=0.01, datasetName="Dataset_unaligned_28.p") #Best validation score of 56.666667 % obtained at iteration 270,with test performance 72.000000 %
-#     evaluate_lenet5(learning_rate=0.1, datasetName="Dataset_unaligned_28.p") #Best validation score of 73.333333 % obtained at iteration 90,with test performance 82.000000 %
+    filename = "Dataset_extended.p"
+    evaluate_lenet5(learning_rate=0.1, datasetName=filename, n_epochs=2000)
+    evaluate_lenet5(learning_rate=0.0001, datasetName=filename) #Best validation score of 23.333333 % obtained at iteration 19950,with test performance 28.666667 %
+    evaluate_lenet5(learning_rate=0.001, datasetName=filename) #<---- Best validation score of 16.666667 % obtained at iteration 4347,with test performance 22.666667
+    evaluate_lenet5(learning_rate=0.01, datasetName=filename) #Best validation score of 20.000000 % obtained at iteration 126,with test performance 35.333333 %
+    evaluate_lenet5(learning_rate=0.1, datasetName=filename) #Best validation score of 73.333333 % obtained at iteration 35,with test performance 81.333333 %
+    evaluate_lenet5(learning_rate=0.0001, datasetName=filename) #Best validation score of 66.666667 % obtained at iteration 6804,with test performance 67.333333 %
+    evaluate_lenet5(learning_rate=0.001, datasetName=filename) #<--- Best validation score of 50.000000 % obtained at iteration 3474,with test performance 66.000000 %
+    evaluate_lenet5(learning_rate=0.01, datasetName=filename) #Best validation score of 56.666667 % obtained at iteration 270,with test performance 72.000000 %
+    evaluate_lenet5(learning_rate=0.1, datasetName=filename) #Best validation score of 73.333333 % obtained at iteration 90,with test performance 82.000000 %
 
 
 def experiment(state, channel):
