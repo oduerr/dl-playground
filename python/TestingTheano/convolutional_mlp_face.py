@@ -110,7 +110,7 @@ class LeNetConvPoolLayer(object):
 
 def evaluate_lenet5(learning_rate=0.005, n_epochs=4242,
                     datasetName='mnist.pkl.gz',
-                    nkerns=[20, 50], batch_size=4242):
+                    nkerns=[20, 50], batch_size=4242, createData=False):
     """ Demonstrates lenet on MNIST dataset
 
     :type learning_rate: float
@@ -134,11 +134,12 @@ def evaluate_lenet5(learning_rate=0.005, n_epochs=4242,
     #n_out = 10
     
     # Images for face recognition
-    # import pickle
-    # import Utils_dueo
-    # datasets = Utils_dueo.load_pictures()
-    # pickle.dump(datasets, open( datasetName, "wb" ) ) #Attention y is wrong
-    #print("Saveing the pickeled data-set")
+    if (createData):
+        import pickle
+        import Utils_dueo
+        datasets = Utils_dueo.load_pictures()
+        pickle.dump(datasets, open( datasetName, "wb" ) ) #Attention y is wrong
+        print("Saveing the pickeled data-set")
 
     #Loading the pickled images
     import pickle
@@ -352,14 +353,14 @@ def evaluate_lenet5(learning_rate=0.005, n_epochs=4242,
 
     #image = Image.fromarray(lay)
     #image.save('samples.png')
-    os.chdir('../')
+    #os.chdir('../')
 
 
 
 if __name__ == '__main__':
-    filename = "Dataset_extended.p"
-    evaluate_lenet5(learning_rate=0.1, datasetName=filename, n_epochs=1)
-    evaluate_lenet5(learning_rate=0.1, datasetName=filename, n_epochs=2000)
+    filename = "Dataset_whitend.p"
+    evaluate_lenet5(learning_rate=0.01, datasetName=filename, n_epochs=100, createData=True)
+    evaluate_lenet5(learning_rate=0.1, datasetName=filename, n_epochs=200)
     evaluate_lenet5(learning_rate=0.0001, datasetName=filename) #Best validation score of 23.333333 % obtained at iteration 19950,with test performance 28.666667 %
     evaluate_lenet5(learning_rate=0.001, datasetName=filename) #<---- Best validation score of 16.666667 % obtained at iteration 4347,with test performance 22.666667
     evaluate_lenet5(learning_rate=0.01, datasetName=filename) #Best validation score of 20.000000 % obtained at iteration 126,with test performance 35.333333 %

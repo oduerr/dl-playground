@@ -32,7 +32,6 @@ import numpy
 import theano
 import theano.tensor as T
 
-#import Utils
 
 
 from logistic_sgd import LogisticRegression, load_data
@@ -175,7 +174,7 @@ class MLP(object):
         self.params = self.hiddenLayer.params + self.logRegressionLayer.params
 
 
-def test_mlp(learning_rate=0.01, L1_reg=0.00, L2_reg=0.0001, n_epochs=1000,
+def test_mlp(learning_rate=0.0001, L1_reg=0.00, L2_reg=0.0001, n_epochs=1000,
              dataset='mnist.pkl.gz', batch_size=20, n_hidden=500):
     """
     Demonstrate stochastic gradient descent optimization for a multilayer
@@ -211,9 +210,10 @@ def test_mlp(learning_rate=0.01, L1_reg=0.00, L2_reg=0.0001, n_epochs=1000,
     Nout = 10
     
     # Images
-    #datasets = Utils.load_pictures()
-    #dimension = 28
-    #Nout = 6
+    import Utils_dueo
+    datasets = Utils_dueo.load_pictures()
+    dimension = 28
+    Nout = 6
 
     train_set_x, train_set_y = datasets[0]
     valid_set_x, valid_set_y = datasets[1]

@@ -8,16 +8,30 @@ import theano.tensor as T
 import math
 import csv
 import gzip
-#import cv2
+import cv2
 
-show = False
+import ZCA
+
+show = True
 
 def load_pictures():
     import sys
     filenameTesting  = "../../data/testing_48x48_aligned_large.p_R.csv.gz"
     filenameTraining = "../../data/training_48x48_aligned_large.p_R.csv.gz"
+    #filenameTraining = "../../data/training_48x48_aligned_large_expanded.p_R.csv.gz"
 
-    def loadFromCSV(filename):
+    def learnWhitening(filename):
+        x_tmp = []
+        with gzip.open(filename) as f:
+            reader = csv.reader(f)
+            for row in reader:
+                vals = np.asarray(row[1:], np.int)
+                x_tmp.append(np.asarray(row[1:], np.int))
+        print("Read Image for Whitening transformation")
+        ret = ZCA.ZCA()
+        return (ret.fit(x_tmp))
+
+    def loadFromCSV(filename, zca=None):
         y_tmp = []
         x_tmp = []
         if (show):
@@ -28,18 +42,32 @@ def load_pictures():
             for row in reader:
                 y_tmp.append(int(row[0]))
                 vals = np.asarray(row[1:], np.int)
+                if (zca != None):
+                    X_white = zca.transform(vals)
+                else:
+                    X_white = vals
                 NDumm = int(math.sqrt(len(vals)))
                 img = np.reshape(vals, (NDumm, NDumm)) / 255.0
-                img_small = cv2.resize(img, (28, 28))
+                mini = np.percentile(X_white,  0.01)
+                maxi = np.percentile(X_white,  99.99)
+                X_white_rx = (X_white - mini) / (maxi - mini) #Rescaling to be in between 0 and 1
+                X_white_i = np.array(X_white_rx * 255, dtype = np.uint8)
+                X_white1 = np.reshape(X_white_i, (48,48))
+                img_small = cv2.resize(X_white1, (28, 28))
+                img_small = cv2.equalizeHist(img_small)
+                #img_small = img #No resizing
                 if (show):
                     cv2.imshow('Original', img)
-                    cv2.imshow('Rescaled', img_small)
+                    cv2.imshow('Rescaled', cv2.resize(img_small, (280, 280)))
                     cv2.waitKey(1)
                 vals = np.asarray(255 * np.reshape(img_small, 28 ** 2), np.int)
+                print(str(np.amin(vals)) + "  " + str(np.amax(vals)))
                 x_tmp.append(vals)
         return (np.asarray(x_tmp, theano.config.floatX), np.asarray(y_tmp, theano.config.floatX))
 
-    test_set_all = loadFromCSV(filenameTesting)
+    zca = learnWhitening(filenameTraining)
+    #zca = None
+    test_set_all = loadFromCSV(filenameTesting, zca)
     N = len(test_set_all[1])
     valid = int(N * 0.2)
     print theano.config
@@ -51,7 +79,7 @@ def load_pictures():
     #TODO OLIVER check if permutation is bug free
     valid_set = (np.take(test_set_all[0], perm_valid, 0), np.take(test_set_all[1], perm_valid, 0))
     test_set = (np.take(test_set_all[0], perm_rest,0), np.take(test_set_all[1],perm_rest, 0))
-    train_set = loadFromCSV(filenameTraining)
+    train_set = loadFromCSV(filenameTraining, zca)
     if (show):
         cv2.destroyAllWindows()
 

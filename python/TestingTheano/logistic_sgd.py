@@ -46,7 +46,7 @@ import numpy
 import theano
 import theano.tensor as T
 
-#import Utils
+#import Utils_dueo
 
 class LogisticRegression(object):
     """Multi-class Logistic Regression Class
