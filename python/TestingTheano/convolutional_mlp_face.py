@@ -359,7 +359,7 @@ def evaluate_lenet5(learning_rate=0.005, n_epochs=4242,
 
 if __name__ == '__main__':
     filename = "Dataset_whitend.p"
-    evaluate_lenet5(learning_rate=0.01, datasetName=filename, n_epochs=100, createData=True)
+    evaluate_lenet5(learning_rate=0.01, datasetName=filename, n_epochs=100, createData=False )
     evaluate_lenet5(learning_rate=0.1, datasetName=filename, n_epochs=200)
     evaluate_lenet5(learning_rate=0.0001, datasetName=filename) #Best validation score of 23.333333 % obtained at iteration 19950,with test performance 28.666667 %
     evaluate_lenet5(learning_rate=0.001, datasetName=filename) #<---- Best validation score of 16.666667 % obtained at iteration 4347,with test performance 22.666667

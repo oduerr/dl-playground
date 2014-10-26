@@ -6,3 +6,5 @@
 *.pdf
 data/mnist.pkl.gz
 python/.idea/.name
+*.png
+*.p
