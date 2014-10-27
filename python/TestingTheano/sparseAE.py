@@ -197,7 +197,18 @@ class dA(object):
         #        corresponding example of the minibatch. We need to
         #        compute the average of all these to get the cost of
         #        the minibatch
-        cost = T.mean(L)
+
+
+        ########################################################
+        #  dueo begin Penalty for sparse autoencoder
+        rho = 0.1
+        beta = 3
+        rho_hat = T.mean(y)
+        pen = rho * T.log(rho) - rho * T.log(rho_hat) + (1-rho) * T.log(1 - rho) - (1-rho) * T.log(1 - rho_hat)
+        cost = T.mean(L) + beta * pen
+        # end
+        #######################################################################
+        #cost = T.mean(L)
 
         # compute the gradients of the cost of the `dA` with respect
         # to its parameters
@@ -213,7 +224,7 @@ class dA(object):
 
 def test_dA(learning_rate=0.1, training_epochs=15,
             dataset='mnist.pkl.gz',
-            batch_size=20, output_folder='dA_plots'):
+            batch_size=20, output_folder='sparseAE_plots'):
 
     """
     This demo is tested on MNIST
@@ -254,7 +265,7 @@ def test_dA(learning_rate=0.1, training_epochs=15,
         theano_rng=theano_rng,
         input=x,
         n_visible=28 * 28,
-        n_hidden=500
+        n_hidden=14*14     # See Ufldl Tutorial Exercise: Vectorization
     )
 
     cost, updates = da.get_cost_updates(
@@ -283,7 +294,18 @@ def test_dA(learning_rate=0.1, training_epochs=15,
         c = []
         for batch_index in xrange(n_train_batches):
             c.append(train_da(batch_index))
-
+        weights = da.W.get_value(borrow=True)
+        #dueo
+        d = numpy.zeros(14*14)
+        for i in range(0,14*14):
+             d[i] = numpy.sqrt(sum(weights[i,]**2))
+        weights1 = numpy.divide(weights, d)
+        #end
+        image = Image.fromarray(
+            tile_raster_images(X=weights1.T,
+                               img_shape=(28, 28), tile_shape=(14, 14),
+                               tile_spacing=(1, 1)))
+        image.save('filters_sparse_autoencoder_%d.png' % epoch)
         print 'Training epoch %d, cost ' % epoch, numpy.mean(c)
 
     end_time = time.clock()
@@ -293,11 +315,6 @@ def test_dA(learning_rate=0.1, training_epochs=15,
     print >> sys.stderr, ('The no corruption code for file ' +
                           os.path.split(__file__)[1] +
                           ' ran for %.2fm' % ((training_time) / 60.))
-    image = Image.fromarray(
-        tile_raster_images(X=da.W.get_value(borrow=True).T,
-                           img_shape=(28, 28), tile_shape=(10, 10),
-                           tile_spacing=(1, 1)))
-    image.save('filters_corruption_0.png')
 
     #####################################
     # BUILDING THE MODEL CORRUPTION 30% #
