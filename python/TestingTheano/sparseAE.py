@@ -20,6 +20,7 @@ try:
 except ImportError:
     import Image
 
+#theano.config.compute_test_value = 'warn'
 
 # start-snippet-1
 class dA(object):
@@ -144,49 +145,19 @@ class dA(object):
         self.params = [self.W, self.b, self.b_prime]
     # end-snippet-1
 
-    def get_corrupted_input(self, input, corruption_level):
-        """This function keeps ``1-corruption_level`` entries of the inputs the
-        same and zero-out randomly selected subset of size ``coruption_level``
-        Note : first argument of theano.rng.binomial is the shape(size) of
-               random numbers that it should produce
-               second argument is the number of trials
-               third argument is the probability of success of any trial
-
-                this will produce an array of 0s and 1s where 1 has a
-                probability of 1 - ``corruption_level`` and 0 with
-                ``corruption_level``
-
-                The binomial function return int64 data type by
-                default.  int64 multiplicated by the input
-                type(floatX) always return float64.  To keep all data
-                in floatX when floatX is float32, we set the dtype of
-                the binomial to floatX. As in our case the value of
-                the binomial is always 0 or 1, this don't change the
-                result. This is needed to allow the gpu to work
-                correctly as it only support float32 for now.
-
-        """
-        return self.theano_rng.binomial(size=input.shape, n=1,
-                                        p=1 - corruption_level,
-                                        dtype=theano.config.floatX) * input
-
     def get_hidden_values(self, input):
         """ Computes the values of the hidden layer """
         return T.nnet.sigmoid(T.dot(input, self.W) + self.b)
 
     def get_reconstructed_input(self, hidden):
-        """Computes the reconstructed input given the values of the
-        hidden layer
-
-        """
+        """Computes the reconstructed input given the values of the hidden layer """
         return T.nnet.sigmoid(T.dot(hidden, self.W_prime) + self.b_prime)
 
     def get_cost_updates(self, corruption_level, learning_rate):
         """ This function computes the cost and the updates for one trainng
         step of the dA """
 
-        tilde_x = self.get_corrupted_input(self.x, corruption_level)
-        y = self.get_hidden_values(tilde_x)
+        y = self.get_hidden_values(self.x)
         z = self.get_reconstructed_input(y)
         # note : we sum over the size of a datapoint; if we are using
         #        minibatches, L will be a vector, with one entry per
@@ -201,11 +172,20 @@ class dA(object):
 
         ########################################################
         #  dueo begin Penalty for sparse autoencoder
+        # dueo testing theano
+        # x  = T.matrix('x')
+        # # provide Theano with a default test-value
+        # x.tag.test_value = numpy.random.rand(5, 784)
+        #y = shared(numpy.random.randn(3,4))
+
+
         rho = 0.1
-        beta = 3
-        rho_hat = T.mean(y)
+        beta = 10
+        rho_hat = T.mean(y, axis=1)
         pen = rho * T.log(rho) - rho * T.log(rho_hat) + (1-rho) * T.log(1 - rho) - (1-rho) * T.log(1 - rho_hat)
-        cost = T.mean(L) + beta * pen
+        cost = T.mean(L) + beta * T.sum(pen)
+
+
         # end
         #######################################################################
         #cost = T.mean(L)
@@ -222,7 +202,7 @@ class dA(object):
         return (cost, updates)
 
 
-def test_dA(learning_rate=0.1, training_epochs=15,
+def test_dA(learning_rate=0.1, training_epochs=150,
             dataset='mnist.pkl.gz',
             batch_size=20, output_folder='sparseAE_plots'):
 
@@ -295,10 +275,11 @@ def test_dA(learning_rate=0.1, training_epochs=15,
         for batch_index in xrange(n_train_batches):
             c.append(train_da(batch_index))
         weights = da.W.get_value(borrow=True)
+        wT = weights.T
         #dueo
         d = numpy.zeros(14*14)
         for i in range(0,14*14):
-             d[i] = numpy.sqrt(sum(weights[i,]**2))
+             d[i] = numpy.sqrt(sum(wT[i,]**2))
         weights1 = numpy.divide(weights, d)
         #end
         image = Image.fromarray(
@@ -315,64 +296,6 @@ def test_dA(learning_rate=0.1, training_epochs=15,
     print >> sys.stderr, ('The no corruption code for file ' +
                           os.path.split(__file__)[1] +
                           ' ran for %.2fm' % ((training_time) / 60.))
-
-    #####################################
-    # BUILDING THE MODEL CORRUPTION 30% #
-    #####################################
-
-    rng = numpy.random.RandomState(123)
-    theano_rng = RandomStreams(rng.randint(2 ** 30))
-
-    da = dA(
-        numpy_rng=rng,
-        theano_rng=theano_rng,
-        input=x,
-        n_visible=28 * 28,
-        n_hidden=500
-    )
-
-    cost, updates = da.get_cost_updates(
-        corruption_level=0.3,
-        learning_rate=learning_rate
-    )
-
-    train_da = theano.function(
-        [index],
-        cost,
-        updates=updates,
-        givens={
-            x: train_set_x[index * batch_size: (index + 1) * batch_size]
-        }
-    )
-
-    start_time = time.clock()
-
-    ############
-    # TRAINING #
-    ############
-
-    # go through training epochs
-    for epoch in xrange(training_epochs):
-        # go through trainng set
-        c = []
-        for batch_index in xrange(n_train_batches):
-            c.append(train_da(batch_index))
-
-        print 'Training epoch %d, cost ' % epoch, numpy.mean(c)
-
-    end_time = time.clock()
-
-    training_time = (end_time - start_time)
-
-    print >> sys.stderr, ('The 30% corruption code for file ' +
-                          os.path.split(__file__)[1] +
-                          ' ran for %.2fm' % (training_time / 60.))
-
-    image = Image.fromarray(tile_raster_images(
-        X=da.W.get_value(borrow=True).T,
-        img_shape=(28, 28), tile_shape=(10, 10),
-        tile_spacing=(1, 1)))
-    image.save('filters_corruption_30.png')
 
     os.chdir('../')
 
