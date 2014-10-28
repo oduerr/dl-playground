@@ -32,7 +32,7 @@ class dA(object):
         theano_rng=None,
         input=None,
         n_visible=784,
-        n_hidden=500,
+        n_hidden=196,
         W=None,
         bhid=None,
         bvis=None
@@ -106,6 +106,7 @@ class dA(object):
                 dtype=theano.config.floatX
             )
             W = theano.shared(value=initial_W, name='W', borrow=True)
+            W_prime = theano.shared(value=initial_W.copy().T, name='W_prime', borrow=True)
 
         if not bvis:
             bvis = theano.shared(
@@ -132,7 +133,7 @@ class dA(object):
         # b_prime corresponds to the bias of the visible
         self.b_prime = bvis
         # tied weights, therefore W_prime is W transpose
-        self.W_prime = self.W.T
+        self.W_prime = W_prime
         self.theano_rng = theano_rng
         # if no input is given, generate a variable representing the input
         if input is None:
@@ -162,7 +163,12 @@ class dA(object):
         # note : we sum over the size of a datapoint; if we are using
         #        minibatches, L will be a vector, with one entry per
         #        example in minibatch
-        L = - T.sum(self.x * T.log(z) + (1 - self.x) * T.log(1 - z), axis=1)
+        #
+        # orginal
+        # LL = - T.sum(self.x * T.log(z) + (1 - self.x) * T.log(1 - z), axis=1)
+        # L = T.mean(LL)
+        L = T.mean(((self.x - z)**2).sum(axis=1))
+
         # note : L is now a vector, where each element is the
         #        cross-entropy cost of the reconstruction of the
         #        corresponding example of the minibatch. We need to
@@ -180,10 +186,10 @@ class dA(object):
 
 
         rho = 0.1
-        beta = 10
-        rho_hat = T.mean(y, axis=1)
+        beta = 3
+        rho_hat = T.mean(y, axis=1) #Sollte anzahl der zeilen geben
         pen = rho * T.log(rho) - rho * T.log(rho_hat) + (1-rho) * T.log(1 - rho) - (1-rho) * T.log(1 - rho_hat)
-        cost = T.mean(L) + beta * T.sum(pen)
+        cost = L + beta * T.mean(pen) + 0.001 * (self.W ** 2).sum() + 0.001 * (self.W_prime ** 2).sum()
 
 
         # end
@@ -202,9 +208,9 @@ class dA(object):
         return (cost, updates)
 
 
-def test_dA(learning_rate=0.1, training_epochs=150,
+def test_dA(learning_rate=0.05, training_epochs=150,
             dataset='mnist.pkl.gz',
-            batch_size=20, output_folder='sparseAE_plots'):
+            batch_size=100, output_folder='sparseAE_plots'):
 
     """
     This demo is tested on MNIST
