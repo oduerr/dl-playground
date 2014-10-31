@@ -23,7 +23,7 @@ the vector whose i'th element is P(Y=i|x).
 
 
 This tutorial presents a stochastic gradient descent optimization method
-suitable for large datasets, and a conjugate gradient optimization method
+suitable for large datasets, and a gradient optimization method
 that is suitable for smaller datasets.
 
 
