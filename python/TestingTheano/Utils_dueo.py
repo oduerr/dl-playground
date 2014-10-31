@@ -12,13 +12,14 @@ import cv2
 
 import ZCA
 
-show = True
+show = False
 
 def load_pictures():
     import sys
-    filenameTesting  = "../../data/testing_48x48_aligned_large.p_R.csv.gz"
-    filenameTraining = "../../data/training_48x48_aligned_large.p_R.csv.gz"
-    #filenameTraining = "../../data/training_48x48_aligned_large_expanded.p_R.csv.gz"
+    filenameTesting    = "../../data/testing_48x48_unaligned_large.p_R.csv.gz"
+    # We use the manipulated ones for training
+    filenameValidation   = "../../data/training_48x48_aligned_large.p_R.csv.gz"
+    filenameTraining = "../../data/training_48x48_aligned_large_expanded.p_R.csv.gz"
 
     def learnWhitening(filename):
         x_tmp = []
@@ -61,25 +62,28 @@ def load_pictures():
                     cv2.imshow('Rescaled', cv2.resize(img_small, (280, 280)))
                     cv2.waitKey(1)
                 vals = np.asarray(255 * np.reshape(img_small, 28 ** 2), np.int)
-                print(str(np.amin(vals)) + "  " + str(np.amax(vals)))
+                #print(str(np.amin(vals)) + "  " + str(np.amax(vals)))
                 x_tmp.append(vals)
         return (np.asarray(x_tmp, theano.config.floatX), np.asarray(y_tmp, theano.config.floatX))
 
-    zca = learnWhitening(filenameTraining)
-    #zca = None
-    test_set_all = loadFromCSV(filenameTesting, zca)
-    N = len(test_set_all[1])
-    valid = int(N * 0.2)
-    print theano.config
-    print(" Number of test examples [" + str(N) + "] loaded from " + filenameTesting + " using " + str(valid)  + " for validation. Type " + str(type(test_set_all)))
+    #zca = learnWhitening(filenameTraining)
+    zca = None
+    #test_set_all = loadFromCSV(filenameTesting, zca)
+    #N = len(test_set_all[1])
+    #valid = int(N * 0.2)
 
-    perm = np.random.permutation(N)
-    perm_valid = perm[0:valid]
-    perm_rest  = perm[(valid+1):]
+    print theano.config
+
     #TODO OLIVER check if permutation is bug free
-    valid_set = (np.take(test_set_all[0], perm_valid, 0), np.take(test_set_all[1], perm_valid, 0))
-    test_set = (np.take(test_set_all[0], perm_rest,0), np.take(test_set_all[1],perm_rest, 0))
+    test_set = loadFromCSV(filenameTesting, zca)
+    print(" Number of test examples [" + str(test_set[1].shape[0]) + "]")
+    valid_set = loadFromCSV(filenameValidation, zca)
+    print(" Number of validation examples [" + str(valid_set[1].shape[0]) + "]")
+    import os.path, time
+    print "Training set last modified: %s" % time.ctime(os.path.getmtime(filenameTraining))
     train_set = loadFromCSV(filenameTraining, zca)
+    print(" Number of training examples [" + str(train_set[1].shape[0]) + "]")
+
     if (show):
         cv2.destroyAllWindows()
 
@@ -90,7 +94,7 @@ def load_pictures():
     #the number of rows in the input. It should give the target
     #target to the example with the same index in the input.
 
-    def shared_dataset(data_xy, borrow=True):
+    def shared_dataset(data_xy, perm, borrow=True):
         """ Function that loads the dataset into shared variables
 
         The reason we store our dataset in shared variables is to allow
@@ -100,10 +104,10 @@ def load_pictures():
         variable) would lead to a large decrease in performance.
         """
         data_x, data_y = data_xy
-        shared_x = theano.shared(np.asarray(data_x,
+        shared_x = theano.shared(np.asarray(data_x[perm],
                                             dtype=theano.config.floatX),
                                  borrow=borrow)
-        shared_y = theano.shared(np.asarray(data_y,
+        shared_y = theano.shared(np.asarray(data_y[perm],
                                             dtype=theano.config.floatX),
                                  borrow=borrow)
         # When storing data on the GPU it has to be stored as floats
@@ -115,12 +119,13 @@ def load_pictures():
         # lets ous get around this issue
         return shared_x, T.cast(shared_y, 'int32')
 
-    test_set_x, test_set_y = shared_dataset(test_set)
-    valid_set_x, valid_set_y = shared_dataset(valid_set)
-    train_set_x, train_set_y = shared_dataset(train_set)
+    test_set_x, test_set_y = shared_dataset(test_set, np.random.permutation(test_set[1].shape[0]))
+    valid_set_x, valid_set_y = shared_dataset(valid_set, np.random.permutation(valid_set[1].shape[0]))
+    train_set_x, train_set_y = shared_dataset(train_set, np.random.permutation(train_set[1].shape[0]))
 
     rval = [(train_set_x, train_set_y), (valid_set_x, valid_set_y),
             (test_set_x, test_set_y)]
     return rval
 
-#load_pictures()
+if __name__ == "__main__":
+    load_pictures()

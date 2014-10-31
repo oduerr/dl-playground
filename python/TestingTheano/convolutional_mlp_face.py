@@ -108,7 +108,7 @@ class LeNetConvPoolLayer(object):
         self.params = [self.W, self.b]
 
 
-def evaluate_lenet5(learning_rate=0.005, n_epochs=4242,
+def evaluate_lenet5(learning_rate=0.005, n_epochs=500,
                     datasetName='mnist.pkl.gz',
                     nkerns=[20, 50], batch_size=4242, createData=False):
     """ Demonstrates lenet on MNIST dataset
@@ -358,11 +358,12 @@ def evaluate_lenet5(learning_rate=0.005, n_epochs=4242,
 
 
 if __name__ == '__main__':
-    filename = "Dataset_whitend.p"
-    evaluate_lenet5(learning_rate=0.01, datasetName=filename, n_epochs=100, createData=False )
+    filename = "Dataset_test_unaligned_extended.p"
+    evaluate_lenet5(learning_rate=0.01, datasetName=filename, n_epochs=10, createData=False )
     evaluate_lenet5(learning_rate=0.1, datasetName=filename, n_epochs=200)
     evaluate_lenet5(learning_rate=0.0001, datasetName=filename) #Best validation score of 23.333333 % obtained at iteration 19950,with test performance 28.666667 %
     evaluate_lenet5(learning_rate=0.001, datasetName=filename) #<---- Best validation score of 16.666667 % obtained at iteration 4347,with test performance 22.666667
+
     evaluate_lenet5(learning_rate=0.01, datasetName=filename) #Best validation score of 20.000000 % obtained at iteration 126,with test performance 35.333333 %
     evaluate_lenet5(learning_rate=0.1, datasetName=filename) #Best validation score of 73.333333 % obtained at iteration 35,with test performance 81.333333 %
     evaluate_lenet5(learning_rate=0.0001, datasetName=filename) #Best validation score of 66.666667 % obtained at iteration 6804,with test performance 67.333333 %

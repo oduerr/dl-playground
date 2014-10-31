@@ -391,8 +391,6 @@ def test_SdA(finetune_lr=0.1, pretraining_epochs=15,
         print pretraining_fns.maker[0].fgraph.toposort()
 
 
-
-
     print '... pre-training the model '
     start_time = time.clock()
     ## Pre-train layer-wise
