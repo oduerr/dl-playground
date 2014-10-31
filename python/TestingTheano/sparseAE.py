@@ -167,7 +167,6 @@ class dA(object):
         # orginal
         # LL = - T.sum(self.x * T.log(z) + (1 - self.x) * T.log(1 - z), axis=1)
         # L = T.mean(LL)
-        L = T.mean(((self.x - z)**2).sum(axis=1))
 
         # note : L is now a vector, where each element is the
         #        cross-entropy cost of the reconstruction of the
@@ -185,9 +184,10 @@ class dA(object):
         #y = shared(numpy.random.randn(3,4))
 
 
+        L = T.mean(((self.x - z)**2).sum(axis=1))
         rho = 0.1
         beta = 3
-        rho_hat = T.mean(y, axis=1) #Sollte anzahl der zeilen geben
+        rho_hat = T.mean(y, axis=1) #Sollte anzahl der zeilen geben, also binibatches
         pen = rho * T.log(rho) - rho * T.log(rho_hat) + (1-rho) * T.log(1 - rho) - (1-rho) * T.log(1 - rho_hat)
         cost = L + beta * T.mean(pen) + 0.001 * (self.W ** 2).sum() + 0.001 * (self.W_prime ** 2).sum()
 
@@ -210,7 +210,7 @@ class dA(object):
 
 def test_dA(learning_rate=0.05, training_epochs=150,
             dataset='mnist.pkl.gz',
-            batch_size=100, output_folder='sparseAE_plots'):
+            batch_size=1000, output_folder='sparseAE_plots'):
 
     """
     This demo is tested on MNIST
