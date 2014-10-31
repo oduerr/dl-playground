@@ -393,7 +393,7 @@ def test_SdA(finetune_lr=0.1, pretraining_epochs=15,
 
 
 
-    print '... pre-training the model'
+    print '... pre-training the model '
     start_time = time.clock()
     ## Pre-train layer-wise
     corruption_levels = [.1, .2, .3]
