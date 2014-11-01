@@ -110,7 +110,7 @@ class LeNetConvPoolLayer(object):
 
 def evaluate_lenet5(learning_rate=0.005, n_epochs=500,
                     datasetName='mnist.pkl.gz',
-                    nkerns=[20, 50], batch_size=4242, createData=False):
+                    nkerns=[20, 20], batch_size=4242, createData=False):
     """ Demonstrates lenet on MNIST dataset
 
     :type learning_rate: float
@@ -178,7 +178,9 @@ def evaluate_lenet5(learning_rate=0.005, n_epochs=500,
     ######################
     print '... building the model'
     print 'Number of Kernels' + str(nkerns)
-#   Orignial Run
+
+
+    #Orignial Run
     filter_1 = 5
     filter_2 = 5
     in_2 = 12
@@ -369,5 +371,6 @@ if __name__ == '__main__':
 
 
 
+evaluate_lenet5(state.learning_rate, dataset=state.dataset)
 def experiment(state, channel):
-    evaluate_lenet5(state.learning_rate, dataset=state.dataset)
+    pass
