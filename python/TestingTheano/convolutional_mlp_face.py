@@ -332,13 +332,13 @@ def evaluate_lenet5(learning_rate=0.005, n_epochs=500,
                 break
 
     end_time = time.clock()
-    print('Optimization complete.')
-    print('Best validation score of %f %% obtained at iteration %i,'\
+    print('----------  Optimization complete -------------------------')
+    print('Res: ', str(nkerns))
+    print('Res: ', learning_rate)
+    print('Res: Best validation score of %f %% obtained at iteration %i,'\
           'with test performance %f %%' %
           (best_validation_loss * 100., best_iter + 1, test_score * 100.))
-    print >> sys.stderr, ('The code for file ' +
-                          os.path.split(__file__)[1] +
-                          ' ran for %.2fm' % ((end_time - start_time) / 60.))
+    print('Res: The code for file ' + os.path.split(__file__)[1] + ' ran for %.2fm' % ((end_time - start_time) / 60.))
     # Oliver
     if not os.path.isdir("conv_images"):
         os.makedirs("conv_images")
@@ -359,17 +359,14 @@ def evaluate_lenet5(learning_rate=0.005, n_epochs=500,
 
 if __name__ == '__main__':
     filename = "Dataset_test_unaligned_extended.p"
-    evaluate_lenet5(learning_rate=0.01, datasetName=filename, n_epochs=10, createData=False )
-    evaluate_lenet5(learning_rate=0.1, datasetName=filename, n_epochs=200)
+    evaluate_lenet5(learning_rate=0.1, datasetName=filename, n_epochs=6, createData=False )
+    evaluate_lenet5(learning_rate=1.0, datasetName=filename)
+    evaluate_lenet5(learning_rate=0.1, datasetName=filename)
+    evaluate_lenet5(learning_rate=0.5, datasetName=filename)
+    evaluate_lenet5(learning_rate=0.01, datasetName=filename)
     evaluate_lenet5(learning_rate=0.0001, datasetName=filename) #Best validation score of 23.333333 % obtained at iteration 19950,with test performance 28.666667 %
     evaluate_lenet5(learning_rate=0.001, datasetName=filename) #<---- Best validation score of 16.666667 % obtained at iteration 4347,with test performance 22.666667
 
-    evaluate_lenet5(learning_rate=0.01, datasetName=filename) #Best validation score of 20.000000 % obtained at iteration 126,with test performance 35.333333 %
-    evaluate_lenet5(learning_rate=0.1, datasetName=filename) #Best validation score of 73.333333 % obtained at iteration 35,with test performance 81.333333 %
-    evaluate_lenet5(learning_rate=0.0001, datasetName=filename) #Best validation score of 66.666667 % obtained at iteration 6804,with test performance 67.333333 %
-    evaluate_lenet5(learning_rate=0.001, datasetName=filename) #<--- Best validation score of 50.000000 % obtained at iteration 3474,with test performance 66.000000 %
-    evaluate_lenet5(learning_rate=0.01, datasetName=filename) #Best validation score of 56.666667 % obtained at iteration 270,with test performance 72.000000 %
-    evaluate_lenet5(learning_rate=0.1, datasetName=filename) #Best validation score of 73.333333 % obtained at iteration 90,with test performance 82.000000 %
 
 
 def experiment(state, channel):
