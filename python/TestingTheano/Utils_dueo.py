@@ -32,6 +32,27 @@ def load_pictures():
         ret = ZCA.ZCA()
         return (ret.fit(x_tmp))
 
+    def preprocess(vals, zca, sizeOut = 28):
+        if (zca != None):
+            X_white = zca.transform(vals)
+        else:
+            X_white = vals
+        sizeIn = int(math.sqrt(len(vals)))
+        img = np.reshape(vals, (sizeIn, sizeIn)) / 255.0
+        mini = np.percentile(X_white, 0.01)
+        maxi = np.percentile(X_white, 99.99)
+        X_white_rx = (X_white - mini) / (maxi - mini)  # Rescaling to be in between 0 and 1
+        X_white_i = np.array(X_white_rx * 255, dtype=np.uint8)
+        X_white1 = np.reshape(X_white_i, (sizeIn, sizeIn))
+        img_small = cv2.resize(X_white1, (sizeOut, sizeOut))
+        img_small = cv2.equalizeHist(img_small)
+        # img_small = img #No resizing
+        if (show):
+            cv2.imshow('Original', img)
+            cv2.imshow('Rescaled', cv2.resize(img_small, (280, 280)))
+            cv2.waitKey(1)
+        return np.asarray(255 * np.reshape(img_small, sizeOut ** 2), np.int)
+
     def loadFromCSV(filename, zca=None):
         y_tmp = []
         x_tmp = []
@@ -43,27 +64,9 @@ def load_pictures():
             for row in reader:
                 y_tmp.append(int(row[0]))
                 vals = np.asarray(row[1:], np.int)
-                if (zca != None):
-                    X_white = zca.transform(vals)
-                else:
-                    X_white = vals
-                NDumm = int(math.sqrt(len(vals)))
-                img = np.reshape(vals, (NDumm, NDumm)) / 255.0
-                mini = np.percentile(X_white,  0.01)
-                maxi = np.percentile(X_white,  99.99)
-                X_white_rx = (X_white - mini) / (maxi - mini) #Rescaling to be in between 0 and 1
-                X_white_i = np.array(X_white_rx * 255, dtype = np.uint8)
-                X_white1 = np.reshape(X_white_i, (48,48))
-                img_small = cv2.resize(X_white1, (28, 28))
-                img_small = cv2.equalizeHist(img_small)
-                #img_small = img #No resizing
-                if (show):
-                    cv2.imshow('Original', img)
-                    cv2.imshow('Rescaled', cv2.resize(img_small, (280, 280)))
-                    cv2.waitKey(1)
-                vals = np.asarray(255 * np.reshape(img_small, 28 ** 2), np.int)
-                print(str(np.amin(vals)) + "  " + str(np.amax(vals)))
-                x_tmp.append(vals / 255.)
+                preprocessed = preprocess(vals, zca)
+                print(str(np.amin(preprocessed)) + "  " + str(np.amax(preprocessed)))
+                x_tmp.append(preprocessed / 255.)
         return (np.asarray(x_tmp, theano.config.floatX), np.asarray(y_tmp, theano.config.floatX))
 
     #zca = learnWhitening(filenameTraining)
