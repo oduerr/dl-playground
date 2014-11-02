@@ -14,6 +14,7 @@ import ZCA
 
 show = False
 
+# Loads the pictures and creates the data as needed for theano
 def load_pictures():
     import sys
     filenameTesting    = "../../data/testing_48x48_unaligned_large.p_R.csv.gz"
@@ -44,14 +45,31 @@ def load_pictures():
         X_white_rx = (X_white - mini) / (maxi - mini)  # Rescaling to be in between 0 and 1
         X_white_i = np.array(X_white_rx * 255, dtype=np.uint8)
         X_white1 = np.reshape(X_white_i, (sizeIn, sizeIn))
-        img_small = cv2.resize(X_white1, (sizeOut, sizeOut))
-        img_small = cv2.equalizeHist(img_small)
+        img_small = cv2.resize(X_white1, (sizeOut + 2, sizeOut + 2))
         # img_small = img #No resizing
+        img_small = cv2.equalizeHist(img_small)
+
+        # model = cv2.createLBPHFaceRecognizer()
+        # model.train([np.asarray(img_small)], np.asarray([42]))
+        # dumm = model.getMatVector('histograms')[0]
+        X = np.asarray(img_small)
+        X = (1 << 7) * (X[0:-2, 0:-2] >= X[1:-1, 1:-1]) \
+            + (1 << 6) * (X[0:-2, 1:-1] >= X[1:-1, 1:-1]) \
+            + (1 << 5) * (X[0:-2, 2:] >= X[1:-1, 1:-1]) \
+            + (1 << 4) * (X[1:-1, 2:] >= X[1:-1, 1:-1]) \
+            + (1 << 3) * (X[2:, 2:] >= X[1:-1, 1:-1]) \
+            + (1 << 2) * (X[2:, 1:-1] >= X[1:-1, 1:-1]) \
+            + (1 << 1) * (X[2:, :-2] >= X[1:-1, 1:-1]) \
+            + (1 << 0) * (X[1:-1, :-2] >= X[1:-1, 1:-1])
+
+
+        # img_small = 255 * cv2.resize(dumm, (sizeOut, sizeOut))
+
         if (show):
             cv2.imshow('Original', img)
-            cv2.imshow('Rescaled', cv2.resize(img_small, (280, 280)))
-            cv2.waitKey(1)
-        return np.asarray(255 * np.reshape(img_small, sizeOut ** 2), np.int)
+            cv2.imshow('Rescaled', cv2.resize(X / 255., (280, 280)))
+            cv2.waitKey(100)
+        return np.asarray(np.reshape(X, sizeOut ** 2), np.int)
 
     def loadFromCSV(filename, zca=None):
         y_tmp = []
@@ -77,7 +95,6 @@ def load_pictures():
 
     print theano.config
 
-    #TODO OLIVER check if permutation is bug free
     test_set = loadFromCSV(filenameTesting, zca)
     print(" Number of test examples [" + str(test_set[1].shape[0]) + "]")
     valid_set = loadFromCSV(filenameValidation, zca)
