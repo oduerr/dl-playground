@@ -110,7 +110,7 @@ class LeNetConvPoolLayer(object):
 
 def evaluate_lenet5(learning_rate=0.005, n_epochs=500,
                     datasetName='mnist.pkl.gz',
-                    nkerns=[20, 50], batch_size=4242, createData=False, label = None):
+                    nkerns=[20, 20], batch_size=4242, createData=False, label = None):
     """ Demonstrates lenet on MNIST dataset
 
     :type learning_rate: float
@@ -169,7 +169,6 @@ def evaluate_lenet5(learning_rate=0.005, n_epochs=500,
     y = T.ivector('y')  # the labels are presented as 1D vector of
                         # [int] labels
 
-    ishape = (28, 28)  # this is the size of MNIST images
 
 
 
@@ -180,6 +179,17 @@ def evaluate_lenet5(learning_rate=0.005, n_epochs=500,
     print 'Number of Kernels' + str(nkerns)
 
 
+    ishape = (48, 48)  # this is the size of MNIST images
+    filter_1 = 5
+    pool_1 = 2
+    in_2 = 22      #Input in second layer (layer1)
+    filter_2 = 5
+    pool_2 = 2
+    hidden_input = 9*9
+    numLogisticInput = 200
+
+
+    #ishape = (28, 28)
     #Orignial Run
     # filter_1 = 5
     # filter_2 = 5
@@ -189,13 +199,13 @@ def evaluate_lenet5(learning_rate=0.005, n_epochs=500,
     # hidden_input = 4*4
     # numLogisticInput = 200
     
-    filter_1 = 5
-    pool_1 = 3
-    in_2 = 8      #Input in second layer (layer1)
-    filter_2 = 3
-    pool_2 = 2
-    hidden_input = 3*3
-    numLogisticInput = 200
+    # filter_1 = 5
+    # pool_1 = 3
+    # in_2 = 8      #Input in second layer (layer1)
+    # filter_2 = 3
+    # pool_2 = 2
+    # hidden_input = 3*3
+    # numLogisticInput = 200
     
     # Reshape matrix of rasterized images of shape (batch_size,28*28)
     # to a 4D tensor, compatible with our LeNetConvPoolLayer
@@ -227,19 +237,15 @@ def evaluate_lenet5(learning_rate=0.005, n_epochs=500,
     layer2 = HiddenLayer(rng, input=layer2_input, n_in=nkerns[1] * hidden_input,
                          n_out=numLogisticInput, activation=T.tanh)
 
-    layer25 = HiddenLayer(rng, input=layer2.output, n_in=numLogisticInput,
-                         n_out=numLogisticInput, activation=T.tanh)
-
-
     # classify the values of the fully-connected sigmoidal layer
-    layer3 = LogisticRegression(input=layer25.output, n_in=numLogisticInput, n_out=n_out)
+    layer3 = LogisticRegression(input=layer2.output, n_in=numLogisticInput, n_out=n_out)
 
     #L1 = abs(layer2.W).sum() + abs(layer3.W).sum()
-    L2_sqr = (layer2.W ** 2).sum() + (layer3.W ** 2).sum() +  (layer25.W ** 2).sum()
+    L2_sqr = (layer2.W ** 2).sum() + (layer3.W ** 2).sum()
 
 
     # the cost we minimize during training is the NLL of the model
-    cost = layer3.negative_log_likelihood(y) + 0.1 * L2_sqr
+    cost = layer3.negative_log_likelihood(y) + 0.001 * L2_sqr
 
     # create a function to compute the mistakes that are made by the model
     test_model = theano.function([index], layer3.errors(y),
@@ -253,7 +259,7 @@ def evaluate_lenet5(learning_rate=0.005, n_epochs=500,
                 y: valid_set_y[index * batch_size: (index + 1) * batch_size]})
 
     # create a list of all model parameters to be fit by gradient descent
-    params = layer3.params + layer25.params + layer2.params + layer1.params + layer0.params
+    params = layer3.params + layer2.params + layer1.params + layer0.params
 
     # create a list of gradients for all model parameters
     grads = T.grad(cost, params)
@@ -311,7 +317,10 @@ def evaluate_lenet5(learning_rate=0.005, n_epochs=500,
                 validation_losses = [validate_model(i) for i in xrange(n_valid_batches)]
                 this_validation_loss = numpy.mean(validation_losses)
                 # test it on the test set
+                test_start = time.clock();
                 test_losses = [test_model(i) for i in xrange(n_test_batches)]
+                dt = time.clock() - test_start
+                print'Testing %i faces in %f msec image / sec  %f', batch_size * n_test_batches, dt, dt/(n_test_batches * batch_size)
                 test_score = numpy.mean(test_losses)
                 print('%i, %f, %f' % (epoch,  this_validation_loss * 100.,test_score * 100.))
 

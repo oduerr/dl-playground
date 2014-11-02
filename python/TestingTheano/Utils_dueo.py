@@ -33,7 +33,7 @@ def load_pictures():
         ret = ZCA.ZCA()
         return (ret.fit(x_tmp))
 
-    def preprocess(vals, zca, sizeOut = 28):
+    def preprocess(vals, zca, sizeOut = 48):
         if (zca != None):
             X_white = zca.transform(vals)
         else:
@@ -45,31 +45,31 @@ def load_pictures():
         X_white_rx = (X_white - mini) / (maxi - mini)  # Rescaling to be in between 0 and 1
         X_white_i = np.array(X_white_rx * 255, dtype=np.uint8)
         X_white1 = np.reshape(X_white_i, (sizeIn, sizeIn))
-        img_small = cv2.resize(X_white1, (sizeOut + 2, sizeOut + 2))
-        # img_small = img #No resizing
-        img_small = cv2.equalizeHist(img_small)
+        #img_small = cv2.resize(X_white1, (sizeOut + 2, sizeOut + 2))
+        img_small = img #No resizing
+        img_small = cv2.equalizeHist(X_white1)
 
         # model = cv2.createLBPHFaceRecognizer()
         # model.train([np.asarray(img_small)], np.asarray([42]))
         # dumm = model.getMatVector('histograms')[0]
-        X = np.asarray(img_small)
-        X = (1 << 7) * (X[0:-2, 0:-2] >= X[1:-1, 1:-1]) \
-            + (1 << 6) * (X[0:-2, 1:-1] >= X[1:-1, 1:-1]) \
-            + (1 << 5) * (X[0:-2, 2:] >= X[1:-1, 1:-1]) \
-            + (1 << 4) * (X[1:-1, 2:] >= X[1:-1, 1:-1]) \
-            + (1 << 3) * (X[2:, 2:] >= X[1:-1, 1:-1]) \
-            + (1 << 2) * (X[2:, 1:-1] >= X[1:-1, 1:-1]) \
-            + (1 << 1) * (X[2:, :-2] >= X[1:-1, 1:-1]) \
-            + (1 << 0) * (X[1:-1, :-2] >= X[1:-1, 1:-1])
+        # X = np.asarray(img_small)
+        # X = (1 << 7) * (X[0:-2, 0:-2] >= X[1:-1, 1:-1]) \
+        #     + (1 << 6) * (X[0:-2, 1:-1] >= X[1:-1, 1:-1]) \
+        #     + (1 << 5) * (X[0:-2, 2:] >= X[1:-1, 1:-1]) \
+        #     + (1 << 4) * (X[1:-1, 2:] >= X[1:-1, 1:-1]) \
+        #     + (1 << 3) * (X[2:, 2:] >= X[1:-1, 1:-1]) \
+        #     + (1 << 2) * (X[2:, 1:-1] >= X[1:-1, 1:-1]) \
+        #     + (1 << 1) * (X[2:, :-2] >= X[1:-1, 1:-1]) \
+        #     + (1 << 0) * (X[1:-1, :-2] >= X[1:-1, 1:-1])
 
 
         # img_small = 255 * cv2.resize(dumm, (sizeOut, sizeOut))
 
         if (show):
             cv2.imshow('Original', img)
-            cv2.imshow('Rescaled', cv2.resize(X / 255., (280, 280)))
+            cv2.imshow('Rescaled', cv2.resize(img_small / 255., (280, 280)))
             cv2.waitKey(100)
-        return np.asarray(np.reshape(X, sizeOut ** 2), np.int)
+        return np.asarray(np.reshape(img_small, sizeOut ** 2), np.int)
 
     def loadFromCSV(filename, zca=None):
         y_tmp = []
