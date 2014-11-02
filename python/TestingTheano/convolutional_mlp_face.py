@@ -235,7 +235,7 @@ def evaluate_lenet5(learning_rate=0.005, n_epochs=500,
 
 
     # the cost we minimize during training is the NLL of the model
-    cost = layer3.negative_log_likelihood(y) + 0.01 * L2_sqr
+    cost = layer3.negative_log_likelihood(y) + 0.001 * L2_sqr
 
     # create a function to compute the mistakes that are made by the model
     test_model = theano.function([index], layer3.errors(y),
