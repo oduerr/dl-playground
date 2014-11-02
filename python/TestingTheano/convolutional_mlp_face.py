@@ -227,11 +227,15 @@ def evaluate_lenet5(learning_rate=0.005, n_epochs=500,
     layer2 = HiddenLayer(rng, input=layer2_input, n_in=nkerns[1] * hidden_input,
                          n_out=numLogisticInput, activation=T.tanh)
 
+    layer25 = HiddenLayer(rng, input=layer2.output, n_in=numLogisticInput,
+                         n_out=numLogisticInput, activation=T.tanh)
+
+
     # classify the values of the fully-connected sigmoidal layer
-    layer3 = LogisticRegression(input=layer2.output, n_in=numLogisticInput, n_out=n_out)
+    layer3 = LogisticRegression(input=layer25.output, n_in=numLogisticInput, n_out=n_out)
 
     #L1 = abs(layer2.W).sum() + abs(layer3.W).sum()
-    L2_sqr = (layer2.W ** 2).sum() + (layer3.W ** 2).sum()
+    L2_sqr = (layer2.W ** 2).sum() + (layer3.W ** 2).sum() +  (layer25.W ** 2).sum()
 
 
     # the cost we minimize during training is the NLL of the model
@@ -249,7 +253,7 @@ def evaluate_lenet5(learning_rate=0.005, n_epochs=500,
                 y: valid_set_y[index * batch_size: (index + 1) * batch_size]})
 
     # create a list of all model parameters to be fit by gradient descent
-    params = layer3.params + layer2.params + layer1.params + layer0.params
+    params = layer3.params + layer25.params + layer2.params + layer1.params + layer0.params
 
     # create a list of gradients for all model parameters
     grads = T.grad(cost, params)
