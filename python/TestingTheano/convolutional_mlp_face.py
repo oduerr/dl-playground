@@ -359,7 +359,7 @@ if __name__ == '__main__':
     #import subprocess, time
     #label = subprocess.check_output(['git', 'rev-parse', 'HEAD'])[:-1]
     filename = "Dataset_test_aligned_extended_1.p"
-    evaluate_lenet5(learning_rate=0.1, datasetName=filename, n_epochs=20, createData=False, label = label)
+    evaluate_lenet5(learning_rate=0.1, datasetName=filename, n_epochs=20, createData=False)
     evaluate_lenet5(learning_rate=0.1, datasetName=filename)
     evaluate_lenet5(learning_rate=1.0, datasetName=filename)
     evaluate_lenet5(learning_rate=0.5, datasetName=filename)
