@@ -230,8 +230,12 @@ def evaluate_lenet5(learning_rate=0.005, n_epochs=500,
     # classify the values of the fully-connected sigmoidal layer
     layer3 = LogisticRegression(input=layer2.output, n_in=numLogisticInput, n_out=n_out)
 
+    #L1 = abs(layer2.W).sum() + abs(layer3.W).sum()
+    L2_sqr = (layer2.W ** 2).sum() + (layer3.W ** 2).sum()
+
+
     # the cost we minimize during training is the NLL of the model
-    cost = layer3.negative_log_likelihood(y)
+    cost = layer3.negative_log_likelihood(y) + 0.1 * L2_sqr
 
     # create a function to compute the mistakes that are made by the model
     test_model = theano.function([index], layer3.errors(y),
