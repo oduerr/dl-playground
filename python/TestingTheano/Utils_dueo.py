@@ -62,8 +62,8 @@ def load_pictures():
                     cv2.imshow('Rescaled', cv2.resize(img_small, (280, 280)))
                     cv2.waitKey(1)
                 vals = np.asarray(255 * np.reshape(img_small, 28 ** 2), np.int)
-                #print(str(np.amin(vals)) + "  " + str(np.amax(vals)))
-                x_tmp.append(vals)
+                print(str(np.amin(vals)) + "  " + str(np.amax(vals)))
+                x_tmp.append(vals / 255.)
         return (np.asarray(x_tmp, theano.config.floatX), np.asarray(y_tmp, theano.config.floatX))
 
     #zca = learnWhitening(filenameTraining)

@@ -110,7 +110,7 @@ class LeNetConvPoolLayer(object):
 
 def evaluate_lenet5(learning_rate=0.005, n_epochs=500,
                     datasetName='mnist.pkl.gz',
-                    nkerns=[20, 20], batch_size=4242, createData=False):
+                    nkerns=[20, 50], batch_size=4242, createData=False, label = None):
     """ Demonstrates lenet on MNIST dataset
 
     :type learning_rate: float
@@ -181,21 +181,21 @@ def evaluate_lenet5(learning_rate=0.005, n_epochs=500,
 
 
     #Orignial Run
-    filter_1 = 5
-    filter_2 = 5
-    in_2 = 12
-    pool_1 = 2
-    pool_2 = 2
-    hidden_input = 4*4
-    numLogisticInput = 200
-    
     # filter_1 = 5
-    # pool_1 = 3
-    # in_2 = 8      #Input in second layer (layer1)
-    # filter_2 = 3
+    # filter_2 = 5
+    # in_2 = 12
+    # pool_1 = 2
     # pool_2 = 2
-    # hidden_input = 3*3
+    # hidden_input = 4*4
     # numLogisticInput = 200
+    
+    filter_1 = 5
+    pool_1 = 3
+    in_2 = 8      #Input in second layer (layer1)
+    filter_2 = 3
+    pool_2 = 2
+    hidden_input = 3*3
+    numLogisticInput = 200
     
     # Reshape matrix of rasterized images of shape (batch_size,28*28)
     # to a 4D tensor, compatible with our LeNetConvPoolLayer
@@ -288,26 +288,24 @@ def evaluate_lenet5(learning_rate=0.005, n_epochs=500,
 
     epoch = 0
     done_looping = False
-
+    epoch_fraction = 0.0
     while (epoch < n_epochs) and (not done_looping):
         epoch = epoch + 1
-        for minibatch_index in xrange(n_train_batches):
-
+        for minibatch_index in xrange(n_train_batches): #Alle einmal anfassen
             iter = (epoch - 1) * n_train_batches + minibatch_index
-
+            epoch_fraction +=  1.0 / float(n_train_batches)
             if iter % 100 == 0:
-                print 'training @ iter = ', iter
+                print 'training @ iter = ', iter, ' epoch_fraction ', epoch_fraction
             cost_ij = train_model(minibatch_index)
 
             if (iter + 1) % validation_frequency == 0:
-
                 # compute zero-one loss on validation set
-                validation_losses = [validate_model(i) for i
-                                     in xrange(n_valid_batches)]
+                validation_losses = [validate_model(i) for i in xrange(n_valid_batches)]
                 this_validation_loss = numpy.mean(validation_losses)
-                print('epoch %i, minibatch %i/%i, validation error %f %%' % \
-                      (epoch, minibatch_index + 1, n_train_batches, \
-                       this_validation_loss * 100.))
+                # test it on the test set
+                test_losses = [test_model(i) for i in xrange(n_test_batches)]
+                test_score = numpy.mean(test_losses)
+                print('%i, %f, %f' % (epoch,  this_validation_loss * 100.,test_score * 100.))
 
                 # if we got the best validation score until now
                 if this_validation_loss < best_validation_loss:
@@ -321,13 +319,13 @@ def evaluate_lenet5(learning_rate=0.005, n_epochs=500,
                     best_validation_loss = this_validation_loss
                     best_iter = iter
 
-                    # test it on the test set
-                    test_losses = [test_model(i) for i in xrange(n_test_batches)]
-                    test_score = numpy.mean(test_losses)
-                    print(('     epoch %i, minibatch %i/%i, test error of best '
-                           'model %f %%') %
-                          (epoch, minibatch_index + 1, n_train_batches,
-                           test_score * 100.))
+                    # # test it on the test set
+                    # test_losses = [test_model(i) for i in xrange(n_test_batches)]
+                    # test_score = numpy.mean(test_losses)
+                    # print(('     epoch %i, minibatch %i/%i, test error of best '
+                    #        'model %f %%') %
+                    #       (epoch, minibatch_index + 1, n_train_batches,
+                    #        test_score * 100.))
 
             if patience <= iter:
                 done_looping = True
@@ -357,20 +355,17 @@ def evaluate_lenet5(learning_rate=0.005, n_epochs=500,
     #image.save('samples.png')
     #os.chdir('../')
 
-
-
 if __name__ == '__main__':
-    filename = "Dataset_test_unaligned_extended.p"
-    evaluate_lenet5(learning_rate=0.1, datasetName=filename, n_epochs=6, createData=False )
-    evaluate_lenet5(learning_rate=1.0, datasetName=filename)
+    #import subprocess, time
+    #label = subprocess.check_output(['git', 'rev-parse', 'HEAD'])[:-1]
+    filename = "Dataset_test_aligned_extended_1.p"
+    evaluate_lenet5(learning_rate=0.1, datasetName=filename, n_epochs=20, createData=False, label = label)
     evaluate_lenet5(learning_rate=0.1, datasetName=filename)
+    evaluate_lenet5(learning_rate=1.0, datasetName=filename)
     evaluate_lenet5(learning_rate=0.5, datasetName=filename)
     evaluate_lenet5(learning_rate=0.01, datasetName=filename)
     evaluate_lenet5(learning_rate=0.0001, datasetName=filename) #Best validation score of 23.333333 % obtained at iteration 19950,with test performance 28.666667 %
     evaluate_lenet5(learning_rate=0.001, datasetName=filename) #<---- Best validation score of 16.666667 % obtained at iteration 4347,with test performance 22.666667
 
-
-
-evaluate_lenet5(state.learning_rate, dataset=state.dataset)
 def experiment(state, channel):
     pass

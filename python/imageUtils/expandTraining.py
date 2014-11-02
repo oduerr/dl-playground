@@ -20,11 +20,12 @@ def expandTraining(filename, filenameExp):
             y_tmp.append(int(row[0]))
             x_tmp.append(np.asarray(row[1:], np.int))
     print("Read Images ")
-    cv2.namedWindow('Original Training Set', cv2.WINDOW_NORMAL)
-    cv2.namedWindow('Distorted Training Set', cv2.WINDOW_NORMAL)
+    if (show):
+        cv2.namedWindow('Original Training Set', cv2.WINDOW_NORMAL)
+        cv2.namedWindow('Distorted Training Set', cv2.WINDOW_NORMAL)
     c = 0
-    rot = (-10,-4,4,6,8,10)
-    dists = (-6,-4,-2,2,4,6)
+    rot = (-10,-8,-6,-4,-6,4,6,8,10)
+    dists = (-4,-2,2,4)
     w = csv.writer(open(filenameExp + '.csv', 'w'))
     for row in x_tmp:
         print("Manipulating original image %d", c)
@@ -37,7 +38,7 @@ def expandTraining(filename, filenameExp):
         img = np.reshape(vals, (NDumm, NDumm)) / 255.0
         if show: cv2.imshow('Original Training Set', img)
 
-        for i in xrange(50):
+        for i in xrange(10):
             r = rot[np.random.randint(0, len(rot))]
             mat = cv2.getRotationMatrix2D((NDumm/2, NDumm/2), r, 1)
             dist = 0
@@ -45,8 +46,11 @@ def expandTraining(filename, filenameExp):
                 dist = dists[np.random.randint(0, len(dists))]
                 mat[0,2] = mat[0,2] + dist
             if (np.random.uniform() < 0.5):
+                dist = dists[np.random.randint(0, len(dists))]
                 mat[1,2] = mat[1,2] + dist
-            #print(dist)
+            if (dist == 0):
+                dist = dists[np.random.randint(0, len(dists))]
+            #primat[1,2] = mat[1,2] + dist                    nt(dist)
             img_rotated = cv2.warpAffine(img, mat, (NDumm, NDumm))
             d = np.append(y,  np.asarray(img_rotated.reshape(-1) * 255, dtype=np.int))
             w.writerow(d)
@@ -56,5 +60,8 @@ def expandTraining(filename, filenameExp):
 
 if __name__ == '__main__':
     filenameTraining = "../../data/training_48x48_aligned_large.p_R.csv.gz"
-    filenameTraining_expanded = "../../data/training_48x48_aligned_large_expanded.p_R.csv.gz"
+    filenameTraining_expanded = "../../data/training_48x48_aligned_large_expanded.p_R"
     expandTraining(filenameTraining, filenameTraining_expanded)
+    print("Packing")
+    import subprocess
+    print(subprocess.check_output(['gzip', filenameTraining_expanded + ".csv"]))
