@@ -33,15 +33,16 @@ import theano
 import theano.tensor as T
 from theano.tensor.signal import downsample
 from theano.tensor.nnet import conv
+from theano.tensor.shared_randomstreams import RandomStreams
 
 from logistic_sgd import LogisticRegression, load_data
+
 from mlp import HiddenLayer
 
 try:
     import PIL.Image as Image
 except ImportError:
     import Image
-
 
 class LeNetConvPoolLayer(object):
     """Pool Layer of a convolutional network """
@@ -108,6 +109,8 @@ class LeNetConvPoolLayer(object):
         self.params = [self.W, self.b]
 
 
+
+
 def evaluate_lenet5(learning_rate=0.005, n_epochs=500,
                     datasetName='mnist.pkl.gz',
                     nkerns=[20, 20], batch_size=4242, createData=False, label = None):
@@ -128,6 +131,7 @@ def evaluate_lenet5(learning_rate=0.005, n_epochs=500,
     """
 
     rng = numpy.random.RandomState(23455)
+    theano_rng = RandomStreams(numpy.random.randint(2 ** 30))
 
     #Original
     #datasets = load_data(dataset)
@@ -179,13 +183,13 @@ def evaluate_lenet5(learning_rate=0.005, n_epochs=500,
     print 'Number of Kernels' + str(nkerns)
 
 
-    ishape = (48, 48)  # this is the size of MNIST images
+    ishape = (46, 46)  # this is the size of MNIST images
     filter_1 = 5
-    pool_1 = 2
-    in_2 = 22      #Input in second layer (layer1)
+    pool_1 = 3
+    in_2 = 14      #Input in second layer (layer1)
     filter_2 = 5
     pool_2 = 2
-    hidden_input = 9*9
+    hidden_input = 5*5
     numLogisticInput = 200
 
 
@@ -198,7 +202,8 @@ def evaluate_lenet5(learning_rate=0.005, n_epochs=500,
     # pool_2 = 2
     # hidden_input = 4*4
     # numLogisticInput = 200
-    
+
+    # ishape = (28, 28)
     # filter_1 = 5
     # pool_1 = 3
     # in_2 = 8      #Input in second layer (layer1)
@@ -230,8 +235,11 @@ def evaluate_lenet5(learning_rate=0.005, n_epochs=500,
     # the HiddenLayer being fully-connected, it operates on 2D matrices of
     # shape (batch_size,num_pixels) (i.e matrix of rasterized images).
     # This will generate a matrix of shape (20,32*4*4) = (20,512)
+
+
     layer2_input = layer1.output.flatten(2)
 
+    theano_rng.binomial(size=layer2_input.shape, n=1, p=1 - 0.2) * layer2_input
 
     # construct a fully-connected sigmoidal layer
     layer2 = HiddenLayer(rng, input=layer2_input, n_in=nkerns[1] * hidden_input,
