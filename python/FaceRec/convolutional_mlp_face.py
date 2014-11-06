@@ -35,9 +35,9 @@ from theano.tensor.signal import downsample
 from theano.tensor.nnet import conv
 from theano.tensor.shared_randomstreams import RandomStreams
 
-from logistic_sgd import LogisticRegression, load_data
+from LogisticRegression import LogisticRegression
 
-from mlp import HiddenLayer
+from HiddenLayer import HiddenLayer
 
 try:
     import PIL.Image as Image
@@ -239,7 +239,7 @@ def evaluate_lenet5(learning_rate=0.005, n_epochs=500,
 
     layer2_input = layer1.output.flatten(2)
 
-    theano_rng.binomial(size=layer2_input.shape, n=1, p=1 - 0.2) * layer2_input
+    layer2_input = theano_rng.binomial(size=layer2_input.shape, n=1, p=1 - 0.2) * layer2_input
 
     # construct a fully-connected sigmoidal layer
     layer2 = HiddenLayer(rng, input=layer2_input, n_in=nkerns[1] * hidden_input,
@@ -374,17 +374,40 @@ def evaluate_lenet5(learning_rate=0.005, n_epochs=500,
         dd = d[i][0]
         rescaled = (255.0 / dd.max() * (dd - dd.min())).astype(numpy.uint8)
         img = Image.fromarray(rescaled)
-        img.save('filter_' + str(i) + '.png')
+        img.save('filter_l0' + str(i) + '.png')
+
+    d = layer1.W.get_value() #e.g.  (20, 1, 5, 5) number of filter, num of incomming filters, dim filter
+    for i in range(0, numpy.shape(d)[0]):
+        dd = d[i][0]
+        rescaled = (255.0 / dd.max() * (dd - dd.min())).astype(numpy.uint8)
+        img = Image.fromarray(rescaled)
+        img.save('filter_l1' + str(i) + '.png')
+
+    import pickle
+    import Utils_dueo
+    pickle.dump(params, open('params.p', 'wb') ) #Attention y is wrong
+    print("Saved the pickeled data-set")
+
+
+    ##############################
+
 
     #image = Image.fromarray(lay)
     #image.save('samples.png')
     #os.chdir('../')
 
 if __name__ == '__main__':
+    import pickle
+    import Utils_dueo
+    params = pickle.load(open('params.p', "r"))
+
+
     #import subprocess, time
     #label = subprocess.check_output(['git', 'rev-parse', 'HEAD'])[:-1]
     filename = "Dataset_test_aligned_extended_LBH.p"
-    evaluate_lenet5(learning_rate=0.1, datasetName=filename, n_epochs=20, createData=False)
+    evaluate_lenet5(learning_rate=0.1, datasetName=filename, n_epochs=1, createData=True)
+    
+
     evaluate_lenet5(learning_rate=0.1, datasetName=filename)
     evaluate_lenet5(learning_rate=1.0, datasetName=filename)
     evaluate_lenet5(learning_rate=0.5, datasetName=filename)
