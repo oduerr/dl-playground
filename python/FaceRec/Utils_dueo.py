@@ -12,28 +12,9 @@ import cv2
 
 import ZCA
 
-show = False
+show = True
 
-# Loads the pictures and creates the data as needed for theano
-def load_pictures():
-    import sys
-    filenameTesting    = "../../data/testing_48x48_unaligned_large.p_R.csv.gz"
-    # We use the manipulated ones for training
-    filenameValidation   = "../../data/training_48x48_aligned_large.p_R.csv.gz"
-    filenameTraining = "../../data/training_48x48_aligned_large_expanded.p_R.csv.gz"
-
-    def learnWhitening(filename):
-        x_tmp = []
-        with gzip.open(filename) as f:
-            reader = csv.reader(f)
-            for row in reader:
-                vals = np.asarray(row[1:], np.int)
-                x_tmp.append(np.asarray(row[1:], np.int))
-        print("Read Image for Whitening transformation")
-        ret = ZCA.ZCA()
-        return (ret.fit(x_tmp))
-
-    def preprocess(vals, zca, sizeOut = 46):
+def preprocess(vals, zca, sizeOut = 46, show = True):
         if (zca != None):
             X_white = zca.transform(vals)
         else:
@@ -71,6 +52,27 @@ def load_pictures():
             cv2.imshow('Rescaled', cv2.resize(X / 255., (280, 280)))
             cv2.waitKey(100)
         return np.asarray(np.reshape(X, sizeOut ** 2), np.int)
+
+
+
+# Loads the pictures and creates the data as needed for theano
+def load_pictures():
+    import sys
+    filenameTesting    = "../../data/testing_48x48_unaligned_large.p_R.csv.gz"
+    # We use the manipulated ones for training
+    filenameValidation   = "../../data/training_48x48_aligned_large.p_R.csv.gz"
+    filenameTraining = "../../data/training_48x48_aligned_large_expanded.p_R.csv.gz"
+
+    def learnWhitening(filename):
+        x_tmp = []
+        with gzip.open(filename) as f:
+            reader = csv.reader(f)
+            for row in reader:
+                vals = np.asarray(row[1:], np.int)
+                x_tmp.append(np.asarray(row[1:], np.int))
+        print("Read Image for Whitening transformation")
+        ret = ZCA.ZCA()
+        return (ret.fit(x_tmp))
 
     def loadFromCSV(filename, zca=None):
         y_tmp = []

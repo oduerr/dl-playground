@@ -135,11 +135,8 @@ class LeNet5(object):
         print '... building the model'
         print 'Number of Kernels' + str(nkerns)
 
-
-
 def evaluate_lenet5(topo, learning_rate=0.005, n_epochs=500, datasetName='mnist.pkl.gz',
-                    nkerns=[20, 20], batch_size=4242, createData=False, label = None,
-                    stateIn = None, stateOut = None):
+                    nkerns=[20, 20], batch_size=4242, createData=False, stateIn = None, stateOut = None):
 
     global pickle
     rng = numpy.random.RandomState(23455)
@@ -393,7 +390,6 @@ def evaluate_lenet5(topo, learning_rate=0.005, n_epochs=500, datasetName='mnist.
 
     ##############################
 
-
     #image = Image.fromarray(lay)
     #image.save('samples.png')
     #os.chdir('../')
@@ -412,7 +408,8 @@ if __name__ == '__main__':
     else:
         stateIn = None
 
-    evaluate_lenet5(topo=topo, learning_rate=0.1, datasetName=filename, n_epochs=1, createData=False,
+    # Learning and Evaluating leNet
+    evaluate_lenet5(topo=topo, learning_rate=0.1, datasetName=filename, n_epochs=20, createData=False,
                     stateIn=stateIn, stateOut='state.p')
 
     evaluate_lenet5(learning_rate=0.1, datasetName=filename)

@@ -105,5 +105,8 @@ class LogisticRegression(object):
         else:
             raise NotImplementedError()
 
+    def getProbs(self):
+        return self.p_y_given_x
+
     def getParametersAsValues(self):
         return[self.W.get_value(), self.b.get_value()]
