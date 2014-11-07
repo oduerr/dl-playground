@@ -78,14 +78,18 @@ def load_pictures():
         if (show):
             cv2.namedWindow('Original', cv2.WINDOW_NORMAL)
             cv2.namedWindow('Rescaled', cv2.WINDOW_NORMAL)
+        minV = 1e100
+        maxV = -1e100
         with gzip.open(filename) as f:
             reader = csv.reader(f)
             for row in reader:
                 y_tmp.append(int(row[0]))
                 vals = np.asarray(row[1:], np.int)
                 preprocessed = preprocess(vals, zca)
-                print(str(np.amin(preprocessed)) + "  " + str(np.amax(preprocessed)))
+                minV = min(min, np.amin(preprocessed))
+                maxV = max(max, np.amax(preprocessed))
                 x_tmp.append(preprocessed / 255.)
+        print("  Data Range" + str(minV) + "  " + str(maxV))
         return (np.asarray(x_tmp, theano.config.floatX), np.asarray(y_tmp, theano.config.floatX))
 
     #zca = learnWhitening(filenameTraining)
