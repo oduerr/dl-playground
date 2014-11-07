@@ -48,9 +48,9 @@ def preprocess(vals, zca, sizeOut = 46, show = True):
         # img_small = 255 * cv2.resize(dumm, (sizeOut, sizeOut))
 
         if (show):
-            cv2.imshow('Original', img)
-            cv2.imshow('Rescaled', cv2.resize(X / 255., (280, 280)))
-            cv2.waitKey(100)
+            cv2.imshow('Original', cv2.resize(img, (280, 280)))
+            cv2.imshow('LocalBinaryHists', cv2.resize(X / 255., (280, 280)))
+            cv2.waitKey(1)
         return np.asarray(np.reshape(X, sizeOut ** 2), np.int)
 
 
@@ -79,7 +79,7 @@ def load_pictures():
         x_tmp = []
         if (show):
             cv2.namedWindow('Original', cv2.WINDOW_NORMAL)
-            cv2.namedWindow('Rescaled', cv2.WINDOW_NORMAL)
+            cv2.namedWindow('LocalBinaryHists', cv2.WINDOW_NORMAL)
         minV = 1e100
         maxV = -1e100
         with gzip.open(filename) as f:

@@ -105,8 +105,11 @@ if __name__ == "__main__":
     filenameTesting    = "../../data/testing_48x48_unaligned_large.p_R.csv.gz"
     totTime = 0
     count = 0
-    show = False
+    show = True
     ok = 0
+    import matplotlib.pyplot as plt
+    plt.ion()
+    pos = np.arange(6)+.5
     with gzip.open(filenameTesting) as f:
         reader = csv.reader(f)
         for row in reader:
@@ -117,10 +120,21 @@ if __name__ == "__main__":
             res = pred.getPrediction(preprocessed / 255.)
             totTime += time.time() - start
             predPerson = int(res.argmax())
+            plt.clf()
+            plt.yticks(pos, ('Dejan', 'Diego', 'Martin', 'Oliver', 'Rebekka', 'Ruedi'))
             if predPerson == truePerson:
                 ok += 1
+                col = 'g'
+            else:
+                col = 'r'
+            plt.barh(pos, np.asarray(res[0], dtype = float), align='center', color = col)
+            plt.draw()
+            time.sleep(0.5)
+            if predPerson != truePerson:
+                time.sleep(1)
             print(str(truePerson) + " " + str(predPerson) + str(res))
             count += 1
+    plt.show()
     print("Total Time " + str(totTime) + "sec for " + str(count) + " faces. Accuracy " + str((1. * ok) / count))
 
 
