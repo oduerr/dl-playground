@@ -16,7 +16,7 @@ class LogisticRegression(object):
     determine a class membership probability.
     """
 
-    def __init__(self, input, n_in, n_out):
+    def __init__(self, input, n_in, n_out, Wold=None, bOld=None):
         """ Initialize the parameters of the logistic regression
 
         :type input: theano.tensor.TensorType
@@ -34,19 +34,21 @@ class LogisticRegression(object):
         """
 
         # initialize with 0 the weights W as a matrix of shape (n_in, n_out)
-        self.W = theano.shared(value=numpy.zeros((n_in, n_out),
-                                                 dtype=theano.config.floatX),
-                                name='W', borrow=True)
-        # initialize the baises b as a vector of n_out 0s
-        self.b = theano.shared(value=numpy.zeros((n_out,),
-                                                 dtype=theano.config.floatX),
-                               name='b', borrow=True)
+        if Wold is None:
+            self.W = theano.shared(value=numpy.zeros((n_in, n_out), dtype=theano.config.floatX), name='W', borrow=True)
+        else:
+            self.W = theano.shared(numpy.asarray(Wold, dtype=theano.config.floatX), borrow = True);
+
+        if bOld is None:
+            # initialize the baises b as a vector of n_out 0s
+            self.b = theano.shared(value=numpy.zeros((n_out,), dtype=theano.config.floatX), name='b', borrow=True)
+        else:
+            self.b = theano.shared(numpy.asarray(bOld, dtype=theano.config.floatX), name='b', borrow=True)
 
         # compute vector of class-membership probabilities in symbolic form
         self.p_y_given_x = T.nnet.softmax(T.dot(input, self.W) + self.b)
 
-        # compute prediction as class whose probability is maximal in
-        # symbolic form
+        # compute prediction as class whose probability is maximal in symbolic form
         self.y_pred = T.argmax(self.p_y_given_x, axis=1)
 
         # parameters of the model
@@ -102,3 +104,6 @@ class LogisticRegression(object):
             return T.mean(T.neq(self.y_pred, y))
         else:
             raise NotImplementedError()
+
+    def getParametersAsValues(self):
+        return[self.W.get_value(), self.b.get_value()]

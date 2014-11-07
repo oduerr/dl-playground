@@ -14,7 +14,7 @@ except ImportError:
 class LeNetConvPoolLayer(object):
     """Pool Layer of a convolutional network """
 
-    def __init__(self, rng, input, filter_shape, image_shape, poolsize=(2, 2)):
+    def __init__(self, rng, input, filter_shape, image_shape, poolsize=(2, 2), wOld = None, bOld = None):
         """
         Allocate a LeNetConvPoolLayer with shared variable internal parameters.
 
@@ -47,15 +47,23 @@ class LeNetConvPoolLayer(object):
         #   pooling size
         fan_out = (filter_shape[0] * numpy.prod(filter_shape[2:]) /
                    numpy.prod(poolsize))
+
         # initialize weights with random weights
         W_bound = numpy.sqrt(6. / (fan_in + fan_out))
-        self.W = theano.shared(numpy.asarray(
-            rng.uniform(low=-W_bound, high=W_bound, size=filter_shape),
-            dtype=theano.config.floatX),
-                               borrow=True)
+
+        if wOld is None:
+            self.W = theano.shared(numpy.asarray(
+                rng.uniform(low=-W_bound, high=W_bound, size=filter_shape),
+                dtype=theano.config.floatX),
+                                   borrow=True)
+        else:
+            self.W = theano.shared(numpy.asarray(wOld, dtype=theano.config.floatX), borrow = True);
 
         # the bias is a 1D tensor -- one bias per output feature map
-        b_values = numpy.zeros((filter_shape[0],), dtype=theano.config.floatX)
+        if bOld is None:
+            b_values = numpy.zeros((filter_shape[0],), dtype=theano.config.floatX)
+        else:
+            b_values = numpy.asarray(bOld, dtype=theano.config.floatX)
         self.b = theano.shared(value=b_values, borrow=True)
 
         # convolve input feature maps with filters
@@ -74,3 +82,6 @@ class LeNetConvPoolLayer(object):
 
         # store parameters of this layer
         self.params = [self.W, self.b]
+
+    def getParametersAsValues(self):
+        return[self.W.get_value(), self.b.get_value()]

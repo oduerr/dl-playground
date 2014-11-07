@@ -7,9 +7,13 @@ import theano.tensor as T
 
 
 class HiddenLayer(object):
+
     def __init__(self, rng, input, n_in, n_out, W=None, b=None,
-                 activation=T.tanh):
+                 activation=T.tanh, Wold=None, bOld = None):
         """
+        dueo Note wOld, bOld is for predefined values, whereas W and b is for stacking
+
+
         Typical hidden layer of a MLP: units are fully-connected and have
         sigmoidal activation function. Weight matrix W is of shape (n_in,n_out)
         and the bias vector b is of shape (n_out,).
@@ -49,18 +53,19 @@ class HiddenLayer(object):
         #        We have no info for other function, so we use the same as
         #        tanh.
         if W is None:
-            W_values = numpy.asarray(rng.uniform(
-                    low=-numpy.sqrt(6. / (n_in + n_out)),
-                    high=numpy.sqrt(6. / (n_in + n_out)),
-                    size=(n_in, n_out)), dtype=theano.config.floatX)
-            if activation == theano.tensor.nnet.sigmoid:
-                W_values *= 4
-
-            W = theano.shared(value=W_values, name='W', borrow=True)
+            if Wold is None:
+                Wold = numpy.asarray(rng.uniform(
+                        low=-numpy.sqrt(6. / (n_in + n_out)),
+                        high=numpy.sqrt(6. / (n_in + n_out)),
+                        size=(n_in, n_out)), dtype=theano.config.floatX)
+                if activation == theano.tensor.nnet.sigmoid:
+                    Wold *= 4
+        W = theano.shared(value=Wold, name='W', borrow=True)
 
         if b is None:
-            b_values = numpy.zeros((n_out,), dtype=theano.config.floatX)
-            b = theano.shared(value=b_values, name='b', borrow=True)
+            if bOld is None:
+                bOld = numpy.zeros((n_out,), dtype=theano.config.floatX)
+            b = theano.shared(value=bOld, name='b', borrow=True)
 
         self.W = W
         self.b = b
@@ -71,3 +76,5 @@ class HiddenLayer(object):
         # parameters of the model
         self.params = [self.W, self.b]
 
+    def getParametersAsValues(self):
+        return[self.W.get_value(), self.b.get_value()]
