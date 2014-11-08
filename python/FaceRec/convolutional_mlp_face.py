@@ -56,7 +56,7 @@ class LeNet5Topology(object):
         self.in_2 = 14              #Input in second layer (layer1)
         self.filter_2 = 5
         self.pool_2 = 2
-        self.nkerns = [20,20]
+        self.nkerns = [20,10]
         self.hidden_input = 5*5
         self.numLogisticInput = 200
         self.numLogisticOutput = 6
@@ -136,7 +136,7 @@ class LeNet5(object):
         print 'Number of Kernels' + str(nkerns)
 
 def evaluate_lenet5(topo, learning_rate=0.005, n_epochs=500, datasetName='mnist.pkl.gz',
-                    nkerns=[20, 20], batch_size=4242, createData=False, stateIn = None, stateOut = None):
+                    batch_size=4242, createData=False, stateIn = None, stateOut = None):
 
     global pickle
     rng = numpy.random.RandomState(23455)
@@ -185,7 +185,7 @@ def evaluate_lenet5(topo, learning_rate=0.005, n_epochs=500, datasetName='mnist.
     # BUILD ACTUAL MODEL #
     ######################
     print '... building the model'
-    print 'Number of Kernels' + str(nkerns)
+    print 'Number of Kernels' + str(topo.nkerns)
 
 
     in_2 = 14      #Input in second layer (layer1)
@@ -219,7 +219,7 @@ def evaluate_lenet5(topo, learning_rate=0.005, n_epochs=500, datasetName='mnist.
     # 4D output tensor is thus of shape (batch_size,nkerns[0],12,12)
     layer0 = LeNetConvPoolLayer(rng, input=layer0_input,
                                 image_shape=(batch_size, 1, topo.ishape[0],  topo.ishape[0]),
-                                filter_shape=(nkerns[0], 1, topo.filter_1, topo.filter_1),
+                                filter_shape=(topo.nkerns[0], 1, topo.filter_1, topo.filter_1),
                                 poolsize=(topo.pool_1, topo.pool_1), wOld=w0, bOld=b0)
 
     # Construct the second convolutional pooling layer
@@ -227,8 +227,8 @@ def evaluate_lenet5(topo, learning_rate=0.005, n_epochs=500, datasetName='mnist.
     # maxpooling reduces this further to (8/2,8/2) = (4,4)
     # 4D output tensor is thus of shape (nkerns[0],nkerns[1],4,4)
     layer1 = LeNetConvPoolLayer(rng, input=layer0.output,
-                                image_shape=(batch_size, nkerns[0], topo.in_2, topo.in_2),
-                                filter_shape=(nkerns[1], nkerns[0], topo.filter_2, topo.filter_2),
+                                image_shape=(batch_size, topo.nkerns[0], topo.in_2, topo.in_2),
+                                filter_shape=(topo.nkerns[1], topo.nkerns[0], topo.filter_2, topo.filter_2),
                                 poolsize=(topo.pool_2, topo.pool_2), wOld=w1, bOld=b1)
 
     # the HiddenLayer being fully-connected, it operates on 2D matrices of
@@ -239,7 +239,7 @@ def evaluate_lenet5(topo, learning_rate=0.005, n_epochs=500, datasetName='mnist.
     # Evt. some drop out for the fully connected layer
     layer2_input = theano_rng.binomial(size=layer2_input.shape, n=1, p=1 - 0.2) * layer2_input
 
-    layer2 = HiddenLayer(rng, input=layer2_input, n_in=nkerns[1] * topo.hidden_input,
+    layer2 = HiddenLayer(rng, input=layer2_input, n_in=topo.nkerns[1] * topo.hidden_input,
                          n_out=topo.numLogisticInput, activation=T.tanh, Wold = wHidden, bOld = bHidden)
 
     # classify the values of the fully-connected sigmoidal layer
@@ -354,7 +354,7 @@ def evaluate_lenet5(topo, learning_rate=0.005, n_epochs=500, datasetName='mnist.
 
     end_time = time.clock()
     print('----------  Optimization complete -------------------------')
-    print('Res: ', str(nkerns))
+    print('Res: ', str(topo.nkerns))
     print('Res: ', learning_rate)
     print('Res: Best validation score of %f %% obtained at iteration %i,' \
           'with test performance %f %%' %
@@ -409,8 +409,8 @@ if __name__ == '__main__':
         stateIn = None
 
     # Learning and Evaluating leNet
-    evaluate_lenet5(topo=topo, learning_rate=0.1, datasetName=filename, n_epochs=20, createData=False,
-                    stateIn=stateIn, stateOut='state.p')
+    evaluate_lenet5(topo=topo, learning_rate=0.1, datasetName=filename, n_epochs=10, createData=False,
+                    stateIn=None, stateOut='state.p')
 
     evaluate_lenet5(learning_rate=0.1, datasetName=filename)
     evaluate_lenet5(learning_rate=1.0, datasetName=filename)

@@ -59,8 +59,8 @@ def expandTraining(filename, filenameExp):
                 cv2.waitKey(1)
 
 if __name__ == '__main__':
-    filenameTraining = "../../data/training_48x48_aligned_large.p_R.csv.gz"
-    filenameTraining_expanded = "../../data/training_48x48_aligned_large_expanded.p_R"
+    filenameTraining = "../../data/batch1_48_lph.csv.gz"
+    filenameTraining_expanded = "../../data/batch1_48_lph_extended.csv"
     expandTraining(filenameTraining, filenameTraining_expanded)
     print("Packing")
     import subprocess

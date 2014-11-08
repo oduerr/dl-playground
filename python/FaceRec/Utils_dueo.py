@@ -56,12 +56,15 @@ def preprocess(vals, zca, sizeOut = 46, show = True):
 
 
 # Loads the pictures and creates the data as needed for theano
-def load_pictures():
+def load_pictures(doPreprocess = False):
     import sys
-    filenameTesting    = "../../data/testing_48x48_unaligned_large.p_R.csv.gz"
-    # We use the manipulated ones for training
-    filenameValidation   = "../../data/training_48x48_aligned_large.p_R.csv.gz"
-    filenameTraining = "../../data/training_48x48_aligned_large_expanded.p_R.csv.gz"
+    # filenameTesting    = "../../data/"
+    # # We use the manipulated ones for trainingtesting_48x48_unaligned_large.p_R.csv.gz
+    # filenameValidation   = "../../data/training_48x48_aligned_large.p_R.csv.gz"
+    # filenameTraining = "../../data/training_48x48_aligned_large_expanded.p_R.csv.gz"
+    filenameTesting    = "../../data/batch2_48_lph.csv.gz"
+    filenameValidation = "../../data/batch1_48_lph.csv.gz"
+    filenameTraining   = "../../data/batch1_48_lph_extended.csv.csv.gz"
 
     def learnWhitening(filename):
         x_tmp = []
@@ -87,7 +90,10 @@ def load_pictures():
             for row in reader:
                 y_tmp.append(int(row[0]))
                 vals = np.asarray(row[1:], np.int)
-                preprocessed = preprocess(vals, zca)
+                if not doPreprocess:
+                    preprocessed = vals
+                else:
+                    preprocessed = preprocess(vals, zca)
                 minV = min(min, np.amin(preprocessed))
                 maxV = max(max, np.amax(preprocessed))
                 x_tmp.append(preprocessed / 255.)
@@ -153,6 +159,9 @@ def load_pictures():
     rval = [(train_set_x, train_set_y), (valid_set_x, valid_set_y),
             (test_set_x, test_set_y)]
     return rval
+
+
+
 
 if __name__ == "__main__":
     load_pictures()
