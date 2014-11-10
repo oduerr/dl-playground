@@ -30,7 +30,6 @@ class PreProcessor():
     def scale_image(self, image, scale_factor=1.0):
         if image is not None:
             new_size =  ( int(image.shape[1] * scale_factor), int(image.shape[0] * scale_factor) )
-            print 'new size: ', new_size
             return cv2.resize(image, new_size)
         else:
             return None

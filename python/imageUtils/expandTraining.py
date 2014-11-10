@@ -38,7 +38,7 @@ def expandTraining(filename, filenameExp):
         img = np.reshape(vals, (NDumm, NDumm)) / 255.0
         if show: cv2.imshow('Original Training Set', img)
 
-        for i in xrange(10):
+        for i in xrange(20):
             r = rot[np.random.randint(0, len(rot))]
             mat = cv2.getRotationMatrix2D((NDumm/2, NDumm/2), r, 1)
             dist = 0

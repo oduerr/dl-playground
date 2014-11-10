@@ -56,7 +56,7 @@ class LeNet5Topology(object):
         self.in_2 = 14              #Input in second layer (layer1)
         self.filter_2 = 5
         self.pool_2 = 2
-        self.nkerns = [20,10]
+        self.nkerns = [20,20]
         self.hidden_input = 5*5
         self.numLogisticInput = 200
         self.numLogisticOutput = 6
@@ -403,14 +403,23 @@ if __name__ == '__main__':
     #label = subprocess.check_output(['git', 'rev-parse', 'HEAD'])[:-1]
     filename = "Dataset_test_aligned_extended_LBH.p"
     import os
-    if os.path.isfile('state.p'):
-        stateIn = 'state.p'
+    state = 'state_lbh_elip'
+    if state is not None and os.path.isfile(state):
+        stateIn = state
     else:
         stateIn = None
 
+
     # Learning and Evaluating leNet
-    evaluate_lenet5(topo=topo, learning_rate=0.1, datasetName=filename, n_epochs=10, createData=False,
-                    stateIn=None, stateOut='state.p')
+    lr  = 0.1
+    stateIn = None
+    stateOut = state
+    for i in xrange(0,10):
+        lr /= 1.5
+        print(str(lr))
+        evaluate_lenet5(topo=topo, learning_rate=lr, datasetName=filename, n_epochs=5, createData=False,
+                    stateIn=stateIn, stateOut=stateOut)
+        stateIn = stateOut
 
     evaluate_lenet5(learning_rate=0.1, datasetName=filename)
     evaluate_lenet5(learning_rate=1.0, datasetName=filename)
