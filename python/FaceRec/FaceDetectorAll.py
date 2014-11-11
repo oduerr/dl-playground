@@ -138,6 +138,7 @@ class FaceDetectorAll:
             plt.barh(pos, np.asarray(res[0], dtype = float), align='center')
             plt.title("Logistic Regression " + predName + " " + str(round(predPValue,2)) + " acc. " + str(round(1.0 * self.ok / self.all, 2)))
             plt.axes([0, 1,0, 7])
+
             plt.subplot(421)
             plt.imshow(img_org)
             plt.subplot(423)
@@ -196,11 +197,11 @@ if __name__ == "__main__":
 
     if (True):
         img_path = os.path.abspath('/Users/oli/Proj_Large_Data/PiVision/pivision/images/session_30_july_2014')
-        [y, block, names, filenames] = Sources.read_images_2(img_path, useBatch=2, maxNum=2000)
+        [y, block, names, filenames] = Sources.read_images_2(img_path, useBatch=1, maxNum=2000)
 
         w = None
-        # import csv
-        # w = csv.writer(open("../../data/" + 'batch2_48_lph.csv', 'w'))
+        import csv
+        w = csv.writer(open("../../data/" + 'batch1_46_lph.csv', 'w'))
 
         for (idx, file_name) in enumerate(filenames):
             img = cv2.imread(file_name)

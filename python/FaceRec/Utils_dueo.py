@@ -53,6 +53,16 @@ def preprocess(vals, zca, sizeOut = 46, show = True):
             cv2.waitKey(1)
         return np.asarray(np.reshape(X, sizeOut ** 2), np.int)
 
+def Mask(vals):
+    Size_For_Eye_Detection = (46, 46)
+    faceCenter = (int(Size_For_Eye_Detection[0] * 0.5), int(Size_For_Eye_Detection[1] * 0.4))
+    sizeIn = int(math.sqrt(len(vals)))
+    img_face = np.reshape(vals, (sizeIn, sizeIn))
+    mask = np.zeros((Size_For_Eye_Detection[0], Size_For_Eye_Detection[1]), np.uint8)
+    cv2.ellipse(mask, faceCenter, (int(Size_For_Eye_Detection[0] * 0.30), int(Size_For_Eye_Detection[1] * 0.60)), 0, 0, 360, 255, -1)
+    img_face = cv2.bitwise_and(mask, img_face)
+    return np.reshape(img_face, len(vals))
+
 
 
 # Loads the pictures and creates the data as needed for theano
@@ -62,9 +72,9 @@ def load_pictures(doPreprocess = False):
     # # We use the manipulated ones for trainingtesting_48x48_unaligned_large.p_R.csv.gz
     # filenameValidation   = "../../data/training_48x48_aligned_large.p_R.csv.gz"
     # filenameTraining = "../../data/training_48x48_aligned_large_expanded.p_R.csv.gz"
-    filenameTesting    = "../../data/batch2_48_lph.csv.gz"
-    filenameValidation = "../../data/batch1_48_lph.csv.gz"
-    filenameTraining   = "../../data/batch1_48_lph_extended.csv.csv.gz"
+    filenameTesting    = "../../data/batch2_46_lph.csv.gz"
+    filenameValidation = "../../data/batch1_46_lph.csv.gz"
+    filenameTraining   = "../../data/batch1_46_lph_extended.csv.csv.gz"
 
     def learnWhitening(filename):
         x_tmp = []
@@ -82,21 +92,24 @@ def load_pictures(doPreprocess = False):
         x_tmp = []
         if (show):
             cv2.namedWindow('Original', cv2.WINDOW_NORMAL)
-            cv2.namedWindow('LocalBinaryHists', cv2.WINDOW_NORMAL)
         minV = 1e100
         maxV = -1e100
         with gzip.open(filename) as f:
             reader = csv.reader(f)
             for row in reader:
                 y_tmp.append(int(row[0]))
-                vals = np.asarray(row[1:], np.int)
+                vals = np.asarray(row[1:], np.uint8)
                 if not doPreprocess:
-                    preprocessed = vals
+                    preprocessed = Mask(vals)
                 else:
                     preprocessed = preprocess(vals, zca)
                 minV = min(min, np.amin(preprocessed))
                 maxV = max(max, np.amax(preprocessed))
                 x_tmp.append(preprocessed / 255.)
+                if (show):
+                    n = int(np.sqrt(preprocessed.shape[0]))
+                    cv2.imshow('Original', np.reshape(preprocessed/255., (n, n)))
+
         print("  Data Range" + str(minV) + "  " + str(maxV))
         return (np.asarray(x_tmp, theano.config.floatX), np.asarray(y_tmp, theano.config.floatX))
 

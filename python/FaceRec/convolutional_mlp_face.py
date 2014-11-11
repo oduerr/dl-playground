@@ -415,18 +415,18 @@ if __name__ == '__main__':
     stateIn = None
     stateOut = state
     for i in xrange(0,10):
-        lr /= 1.5
         print(str(lr))
         evaluate_lenet5(topo=topo, learning_rate=lr, datasetName=filename, n_epochs=5, createData=False,
                     stateIn=stateIn, stateOut=stateOut)
         stateIn = stateOut
+        lr /= 1.5
 
-    evaluate_lenet5(learning_rate=0.1, datasetName=filename)
-    evaluate_lenet5(learning_rate=1.0, datasetName=filename)
-    evaluate_lenet5(learning_rate=0.5, datasetName=filename)
-    evaluate_lenet5(learning_rate=0.01, datasetName=filename)
-    evaluate_lenet5(learning_rate=0.0001, datasetName=filename) #Best validation score of 23.333333 % obtained at iteration 19950,with test performance 28.666667 %
-    evaluate_lenet5(learning_rate=0.001, datasetName=filename) #<---- Best validation score of 16.666667 % obtained at iteration 4347,with test performance 22.666667
+    # evaluate_lenet5(learning_rate=0.1, datasetName=filename)
+    # evaluate_lenet5(learning_rate=1.0, datasetName=filename)
+    # evaluate_lenet5(learning_rate=0.5, datasetName=filename)
+    # evaluate_lenet5(learning_rate=0.01, datasetName=filename)
+    # evaluate_lenet5(learning_rate=0.0001, datasetName=filename) #Best validation score of 23.333333 % obtained at iteration 19950,with test performance 28.666667 %
+    # evaluate_lenet5(learning_rate=0.001, datasetName=filename) #<---- Best validation score of 16.666667 % obtained at iteration 4347,with test performance 22.666667
 
 def experiment(state, channel):
     pass
