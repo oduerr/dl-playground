@@ -56,7 +56,7 @@ class LeNet5Topology(object):
         self.in_2 = 14              #Input in second layer (layer1)
         self.filter_2 = 5
         self.pool_2 = 2
-        self.nkerns = [20,20]
+        self.nkerns = [20,100]
         self.hidden_input = 5*5
         self.numLogisticInput = 200
         self.numLogisticOutput = 6
@@ -158,7 +158,7 @@ def evaluate_lenet5(topo, learning_rate=0.005, n_epochs=500, datasetName='mnist.
     print("Loading the pickels data-set " + str(datasetName))
     datasets = pickle.load(open(datasetName, "r"))
     n_out = 6
-    batch_size = 30
+    batch_size = 3
     print("       Learning rate " + str(learning_rate))
 
 
@@ -403,7 +403,7 @@ if __name__ == '__main__':
     #label = subprocess.check_output(['git', 'rev-parse', 'HEAD'])[:-1]
     filename = "Dataset_test_aligned_extended_LBH.p"
     import os
-    state = 'state_lbh_elip'
+    state = 'state_lbh_elip_K100'
     if state is not None and os.path.isfile(state):
         stateIn = state
     else:
@@ -416,7 +416,7 @@ if __name__ == '__main__':
     stateOut = state
     for i in xrange(0,10):
         print(str(lr))
-        evaluate_lenet5(topo=topo, learning_rate=lr, datasetName=filename, n_epochs=5, createData=False,
+        evaluate_lenet5(topo=topo, learning_rate=lr, datasetName=filename, n_epochs=150, createData=True,
                     stateIn=stateIn, stateOut=stateOut)
         stateIn = stateOut
         lr /= 1.5

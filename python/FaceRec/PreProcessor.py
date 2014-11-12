@@ -1,7 +1,7 @@
 from PIL import Image as Image
 import numpy as np
 import cv2
-from scipy import ndimage
+#from scipy import ndimage
 
 import FaceDetectorAll
 
@@ -79,25 +79,25 @@ class PreProcessor():
 
     # ************************************ apply Difference of Gaussian (DoG) filtering ********************************
     @staticmethod
-    def DoG_filter(face, sigma_0 = 1.0, sigma_1 = 5.0):
-        if face==None:
-            return None
-        else:
-            # convert to gray scale if it is a color image
-            if len(face.shape)>2 :
-                face = cv2.cvtColor(face, cv2.COLOR_BGR2GRAY)
-
-            # Difference of Gaussian filtering
-            face = np.array(face, dtype=np.int)     # important: convert to int - otherwise funny differences!
-            face = np.asarray(ndimage.gaussian_filter(face, sigma_0)) - np.asarray(ndimage.gaussian_filter(face, sigma_1))
-
-            # shift and rescale so that min value is zero and max value is 255
-            face = face - np.amin(face)          # start with a minimum of zero
-            face = face * 255.0 / np.amax(face)  # rescale gray values
-
-            # convert back to unsigned int
-            face = np.array(face, dtype=np.uint8)
-            return face
+    # def DoG_filter(face, sigma_0 = 1.0, sigma_1 = 5.0):
+    #     if face==None:
+    #         return None
+    #     else:
+    #         # convert to gray scale if it is a color image
+    #         if len(face.shape)>2 :
+    #             face = cv2.cvtColor(face, cv2.COLOR_BGR2GRAY)
+    #
+    #         # Difference of Gaussian filtering
+    #         face = np.array(face, dtype=np.int)     # important: convert to int - otherwise funny differences!
+    #         face = np.asarray(ndimage.gaussian_filter(face, sigma_0)) - np.asarray(ndimage.gaussian_filter(face, sigma_1))
+    #
+    #         # shift and rescale so that min value is zero and max value is 255
+    #         face = face - np.amin(face)          # start with a minimum of zero
+    #         face = face * 255.0 / np.amax(face)  # rescale gray values
+    #
+    #         # convert back to unsigned int
+    #         face = np.array(face, dtype=np.uint8)
+    #         return face
 
     # *************************************** simplified algorithm to align the faces **************************
     def find_eyes(self, face, verbose = False):
@@ -252,51 +252,51 @@ class PreProcessor():
         else:
             return None
 
-
-def preProcessDetectedFaces(X):
-    X = cv2.resize(X, SIZE_FOR_PCA, interpolation=Image.ANTIALIAS)
-
-    #TODO: different implementations for preprocessing
-    if (3 > 2):
-        X1 = cv2.equalizeHist(X[0:, 0:SIZE_FOR_PCA[1] / 3])
-        X2 = cv2.equalizeHist(X[0:, SIZE_FOR_PCA[1] / 3:(SIZE_FOR_PCA[1] * 2 / 3)])
-        X3 = cv2.equalizeHist(X[0:, (SIZE_FOR_PCA[1] * 2 / 3):SIZE_FOR_PCA[1]])
-        X = np.append(np.append(X1, X2, 1), X3, 1)
-
-    if (1 > 2):
-        X = cv2.equalizeHist(X)
-
-    if (1 > 2):
-        X = np.asarray(X)
-        X = (1 << 7) * (X[0:-2, 0:-2] >= X[1:-1, 1:-1]) \
-            + (1 << 6) * (X[0:-2, 1:-1] >= X[1:-1, 1:-1]) \
-            + (1 << 5) * (X[0:-2, 2:] >= X[1:-1, 1:-1]) \
-            + (1 << 4) * (X[1:-1, 2:] >= X[1:-1, 1:-1]) \
-            + (1 << 3) * (X[2:, 2:] >= X[1:-1, 1:-1]) \
-            + (1 << 2) * (X[2:, 1:-1] >= X[1:-1, 1:-1]) \
-            + (1 << 1) * (X[2:, :-2] >= X[1:-1, 1:-1]) \
-            + (1 << 0) * (X[1:-1, :-2] >= X[1:-1, 1:-1])
-    if (1 > 2):
-        # Simple preprocessing
-
-        # From https://github.com/bytefish/facerec/blob/master/py/facerec/preprocessing.py
-        alpha = 0.1
-        tau = 10.0
-        gamma = 0.2
-        sigma0 = 1.0
-        sigma1 = 2.0
-
-        sigma0 = 2.0
-        sigma1 = 5.0
-
-        X = np.array(X, dtype=np.float32)
-        X = np.power(X, gamma)
-        X = np.asarray(ndimage.gaussian_filter(X, sigma1) - ndimage.gaussian_filter(X, sigma0))
-        X = X / np.power(np.mean(np.power(np.abs(X), alpha)), 1.0 / alpha)
-        X = X / np.power(np.mean(np.power(np.minimum(np.abs(X), tau), alpha)), 1.0 / alpha)
-        X = tau * np.tanh(X / tau)
-
-    return (X)
+#
+# def preProcessDetectedFaces(X):
+#     X = cv2.resize(X, SIZE_FOR_PCA, interpolation=Image.ANTIALIAS)
+#
+#     #TODO: different implementations for preprocessing
+#     if (3 > 2):
+#         X1 = cv2.equalizeHist(X[0:, 0:SIZE_FOR_PCA[1] / 3])
+#         X2 = cv2.equalizeHist(X[0:, SIZE_FOR_PCA[1] / 3:(SIZE_FOR_PCA[1] * 2 / 3)])
+#         X3 = cv2.equalizeHist(X[0:, (SIZE_FOR_PCA[1] * 2 / 3):SIZE_FOR_PCA[1]])
+#         X = np.append(np.append(X1, X2, 1), X3, 1)
+#
+#     if (1 > 2):
+#         X = cv2.equalizeHist(X)
+#
+#     if (1 > 2):
+#         X = np.asarray(X)
+#         X = (1 << 7) * (X[0:-2, 0:-2] >= X[1:-1, 1:-1]) \
+#             + (1 << 6) * (X[0:-2, 1:-1] >= X[1:-1, 1:-1]) \
+#             + (1 << 5) * (X[0:-2, 2:] >= X[1:-1, 1:-1]) \
+#             + (1 << 4) * (X[1:-1, 2:] >= X[1:-1, 1:-1]) \
+#             + (1 << 3) * (X[2:, 2:] >= X[1:-1, 1:-1]) \
+#             + (1 << 2) * (X[2:, 1:-1] >= X[1:-1, 1:-1]) \
+#             + (1 << 1) * (X[2:, :-2] >= X[1:-1, 1:-1]) \
+#             + (1 << 0) * (X[1:-1, :-2] >= X[1:-1, 1:-1])
+#     if (1 > 2):
+#         # Simple preprocessing
+#
+#         # From https://github.com/bytefish/facerec/blob/master/py/facerec/preprocessing.py
+#         alpha = 0.1
+#         tau = 10.0
+#         gamma = 0.2
+#         sigma0 = 1.0
+#         sigma1 = 2.0
+#
+#         sigma0 = 2.0
+#         sigma1 = 5.0
+#
+#         X = np.array(X, dtype=np.float32)
+#         X = np.power(X, gamma)
+#         X = np.asarray(ndimage.gaussian_filter(X, sigma1) - ndimage.gaussian_filter(X, sigma0))
+#         X = X / np.power(np.mean(np.power(np.abs(X), alpha)), 1.0 / alpha)
+#         X = X / np.power(np.mean(np.power(np.minimum(np.abs(X), tau), alpha)), 1.0 / alpha)
+#         X = tau * np.tanh(X / tau)
+#
+#     return (X)
 
 
 def DummDummalignFace(face, imgIn, face_detector, headless=False):

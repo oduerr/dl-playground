@@ -72,9 +72,12 @@ def load_pictures(doPreprocess = False):
     # # We use the manipulated ones for trainingtesting_48x48_unaligned_large.p_R.csv.gz
     # filenameValidation   = "../../data/training_48x48_aligned_large.p_R.csv.gz"
     # filenameTraining = "../../data/training_48x48_aligned_large_expanded.p_R.csv.gz"
-    filenameTesting    = "../../data/batch2_46_lph.csv.gz"
-    filenameValidation = "../../data/batch1_46_lph.csv.gz"
-    filenameTraining   = "../../data/batch1_46_lph_extended.csv.csv.gz"
+    # filenameTesting    = "../../data/batch2_46_lph.csv.gz"
+    # filenameValidation = "../../data/batch1_46_lph.csv.gz"
+    # filenameTraining   = "../../data/batch1_46_lph_extended.csv.csv.gz"
+    filenameTraining   = "../../data/batch1_46_gamma_dog_extended.csv.csv.gz"
+    filenameValidation = "../../data/batch1_46_gamma_dog.csv.gz"
+    filenameTesting    = "../../data/batch2_46_gamma_dog.csv.gz"
 
     def learnWhitening(filename):
         x_tmp = []
@@ -88,6 +91,7 @@ def load_pictures(doPreprocess = False):
         return (ret.fit(x_tmp))
 
     def loadFromCSV(filename, zca=None):
+        y_table = np.zeros(10)
         y_tmp = []
         x_tmp = []
         if (show):
@@ -97,7 +101,9 @@ def load_pictures(doPreprocess = False):
         with gzip.open(filename) as f:
             reader = csv.reader(f)
             for row in reader:
-                y_tmp.append(int(row[0]))
+                y = int(row[0])
+                y_tmp.append(y)
+                y_table[y] += 1
                 vals = np.asarray(row[1:], np.uint8)
                 if not doPreprocess:
                     preprocessed = Mask(vals)
@@ -111,6 +117,7 @@ def load_pictures(doPreprocess = False):
                     cv2.imshow('Original', np.reshape(preprocessed/255., (n, n)))
 
         print("  Data Range" + str(minV) + "  " + str(maxV))
+        print("  Balance " + str(y_table))
         return (np.asarray(x_tmp, theano.config.floatX), np.asarray(y_tmp, theano.config.floatX))
 
     #zca = learnWhitening(filenameTraining)
@@ -140,7 +147,7 @@ def load_pictures(doPreprocess = False):
     #the number of rows in the input. It should give the target
     #target to the example with the same index in the input.
 
-    def shared_dataset(data_xy, perm, borrow=True):
+    def shared_dataset(data_xy, perm, borrow=True, testnum=0):
         """ Function that loads the dataset into shared variables
 
         The reason we store our dataset in shared variables is to allow
@@ -156,6 +163,19 @@ def load_pictures(doPreprocess = False):
         shared_y = theano.shared(np.asarray(data_y[perm],
                                             dtype=theano.config.floatX),
                                  borrow=borrow)
+        #      Testing
+        if True:
+            import matplotlib.pyplot as plt
+            plt.figure(1, figsize=(18, 12))
+            plt.subplot(3,2,testnum * 2 + 1)
+            plt.hist(data_y)
+            plt.title("Ys")
+            plt.subplot(3,2,testnum * 2 + 2)
+            plt.hist(data_x.reshape(-1))
+            plt.title("Xs")
+            if (testnum == 2):
+                plt.show()
+
         # When storing data on the GPU it has to be stored as floats
         # therefore we will store the labels as ``floatX`` as well
         # (``shared_y`` does exactly that). But during our computations
@@ -165,9 +185,9 @@ def load_pictures(doPreprocess = False):
         # lets ous get around this issue
         return shared_x, T.cast(shared_y, 'int32')
 
-    test_set_x, test_set_y = shared_dataset(test_set, np.random.permutation(test_set[1].shape[0]))
-    valid_set_x, valid_set_y = shared_dataset(valid_set, np.random.permutation(valid_set[1].shape[0]))
-    train_set_x, train_set_y = shared_dataset(train_set, np.random.permutation(train_set[1].shape[0]))
+    test_set_x, test_set_y = shared_dataset(test_set, np.random.permutation(test_set[1].shape[0]), testnum=0)
+    valid_set_x, valid_set_y = shared_dataset(valid_set, np.random.permutation(valid_set[1].shape[0]), testnum=1)
+    train_set_x, train_set_y = shared_dataset(train_set, np.random.permutation(train_set[1].shape[0]), testnum=2)
 
     rval = [(train_set_x, train_set_y), (valid_set_x, valid_set_y),
             (test_set_x, test_set_y)]

@@ -7,17 +7,20 @@ import csv
 import gzip
 import cv2
 
-show = False
+show = True
 
 # Creates "new" training data, by rotating the old pixels
 def expandTraining(filename, filenameExp):
     x_tmp = []
     y_tmp = []
+    y_table = np.zeros(10)
     with gzip.open(filename) as f:
         reader = csv.reader(f)
         for row in reader:
             vals = np.asarray(row[1:], np.int)
-            y_tmp.append(int(row[0]))
+            y = int(row[0])
+            y_tmp.append(y)
+            y_table[y] += 1
             x_tmp.append(np.asarray(row[1:], np.int))
     print("Read Images ")
     if (show):
@@ -37,8 +40,8 @@ def expandTraining(filename, filenameExp):
         NDumm = int(math.sqrt(len(vals)))
         img = np.reshape(vals, (NDumm, NDumm)) / 255.0
         if show: cv2.imshow('Original Training Set', img)
-
-        for i in xrange(20):
+        reps = int(3 * y_table.sum() / y_table[y] )
+        for i in xrange(reps):
             r = rot[np.random.randint(0, len(rot))]
             mat = cv2.getRotationMatrix2D((NDumm/2, NDumm/2), r, 1)
             dist = 0
@@ -59,8 +62,8 @@ def expandTraining(filename, filenameExp):
                 cv2.waitKey(1)
 
 if __name__ == '__main__':
-    filenameTraining = "../../data/batch1_46_lph.csv.gz"
-    filenameTraining_expanded = "../../data/batch1_46_lph_extended.csv"
+    filenameTraining = "../../data/batch1_46_gamma_dog.csv.gz"
+    filenameTraining_expanded = "../../data/batch1_46_gamma_dog_extended"
     expandTraining(filenameTraining, filenameTraining_expanded)
     print("Packing")
     import subprocess
