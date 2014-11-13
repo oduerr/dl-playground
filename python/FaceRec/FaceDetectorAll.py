@@ -171,7 +171,8 @@ class FaceDetectorAll:
             else:
                 name = names[y]
 
-            print(str(name) + " Time for the whole Classification (incl. Prepossessing) " + str(time_cnn) + " overall acc. " + str(float(self.ok) / self.all) + " wrong " + str(self.wrong))
+            print(str(name) + ": Time for detection (Viola & Jones) : " +  "%06.2f msec "%(time_viola_jones * 1000)  +
+                  " Time for the classific. & prepros. (CNN) : " + "%06.2f msec "%(time_cnn * 1000) + " overall acc. " + str(float(self.ok) / self.all) + " wrong " + str(self.wrong))
 
             if self.show:
                 plt.clf()
@@ -236,10 +237,10 @@ class FaceDetectorAll:
 
 
 if __name__ == "__main__":
-    show = True
+    show = False
     print("Hallo Gallo")
     fd = FaceDetectorAll(show = show)
-    if (True): #Using the webcam
+    if (False): #Using the webcam
         from utils import ImageCapturer
         cap = ImageCapturer.ImageCapturer()
         if not cap:
