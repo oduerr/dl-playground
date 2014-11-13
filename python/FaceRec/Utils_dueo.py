@@ -10,7 +10,7 @@ import csv
 import gzip
 import cv2
 
-import ZCA
+#import ZCA
 
 show = True
 
