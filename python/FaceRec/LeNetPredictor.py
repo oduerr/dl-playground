@@ -42,6 +42,8 @@ class LeNetPredictor(object):
         print("  Some Values ...")
         print("     Number of Kernels : " + str(nkerns))
         print("     First Kernel w0[0][0] :\n" + str(w0[0][0]))
+        print("     bHidden :\n" + str(bHidden))
+        print("     bLogReg :\n" + str(bLogReg))
         print("  Building the theano model")
         batch_size = 1
 
