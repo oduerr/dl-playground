@@ -138,7 +138,8 @@ class FaceDetectorAll:
 
             X = X / 255.
 
-            res = self.pred.getPrediction(X)
+            #res = self.pred.getPrediction(X)
+            res = self.pred.getPrediction(np.array(X, dtype=np.float32))
             time_cnn = time.time() - t_start
 
             #cv2.imshow('Extracted', cv2.resize(img_face, (200,200)))

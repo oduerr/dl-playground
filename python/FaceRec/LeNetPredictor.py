@@ -40,12 +40,8 @@ class LeNetPredictor(object):
         nkerns = topo.nkerns
         n_out = topo.numLogisticOutput
         print("  Some Values ...")
-        print("     Number of Kernels" + str(nkerns))
-        print("     First Kernel w0[0][0]" + str(w0[0][0]))
-
-
-
-
+        print("     Number of Kernels : " + str(nkerns))
+        print("     First Kernel w0[0][0] :\n" + str(w0[0][0]))
         print("  Building the theano model")
         batch_size = 1
 
