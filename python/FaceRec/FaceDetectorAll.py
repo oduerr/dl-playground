@@ -172,7 +172,7 @@ class FaceDetectorAll:
             else:
                 name = names[y]
 
-            print(str(name) + ": Time for detection (Viola & Jones) : " +  "%06.2f msec "%(time_viola_jones * 1000)  +
+            print(str(predName) + " (predicted): Time for detection (Viola & Jones) : " +  "%06.2f msec "%(time_viola_jones * 1000)  +
                   " Time for the classific. & prepros. (CNN) : " + "%06.2f msec "%(time_cnn * 1000) + " overall acc. " + str(float(self.ok) / self.all) + " wrong " + str(self.wrong))
 
             if self.show:
@@ -263,7 +263,7 @@ if __name__ == "__main__":
 
         for (idx, file_name) in enumerate(filenames):
             img = cv2.imread(file_name)
-            print("Checking Filename " + str(file_name) + " y " + str(y[idx]) )
+            print("\n Checking Filename " + str(file_name) + " y " + str(y[idx]) )
             fd.processImage(img, y[idx], w)
 
 
