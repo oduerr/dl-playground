@@ -263,6 +263,7 @@ if __name__ == "__main__":
 
         for (idx, file_name) in enumerate(filenames):
             img = cv2.imread(file_name)
+            print("Checking Filename " + str(file_name) + " y " + str(y[idx]) )
             fd.processImage(img, y[idx], w)
 
 
