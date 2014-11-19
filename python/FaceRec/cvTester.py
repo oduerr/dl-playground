@@ -45,9 +45,8 @@ def getFaces(image, scale_factor = 0.3):
 
 
 
-img = cv2.imread("examples/Oliver-2-16.png")
+img = cv2.imread("examples/Oliver-2-16.png", 0)
 img = np.asarray(img)
-img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 t_start_viola = time.time()
 face_list = getFaces(img)
 time_viola_jones = time.time() - t_start_viola
