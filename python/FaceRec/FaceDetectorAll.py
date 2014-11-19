@@ -25,7 +25,8 @@ class FaceDetectorAll:
             print('Loaded the face detector')
         #self.pred = LeNetPredictor.LeNetPredictor(stateIn='models/state_lbh_elip_K100_batch3', deepOut=True)
         #self.pred = LeNetPredictor.LeNetPredictor(stateIn='models/state_lbh_elip_K100_batch3_long_training', deepOut=True)
-        self.pred = LeNetPredictor.LeNetPredictor(stateIn='models/good_ones/state_lbh_elip_K100_batch3___Hat__Nur__2__Error_wenn_Ueber_90Prozent', deepOut=True)
+        #self.pred = LeNetPredictor.LeNetPredictor(stateIn='models/good_ones/state_lbh_elip_K100_batch3___Hat__Nur__2__Error_wenn_Ueber_90Prozent', deepOut=True)
+        self.pred = LeNetPredictor.LeNetPredictor(stateIn='models/good_ones/k20.p', deepOut=True)
         self.ok = 0
         self.all = 1e-16
         self.wrong = 0
@@ -39,7 +40,7 @@ class FaceDetectorAll:
         else:
             return None
 
-    def getFaces(self, image, scale_factor = 0.3):
+    def getFaces(self, image, scale_factor = 1.0):
         if image is None:
             return None
 
@@ -238,7 +239,7 @@ class FaceDetectorAll:
 
 
 if __name__ == "__main__":
-    show = False
+    show = True
     print("Hallo Gallo")
     fd = FaceDetectorAll(show = show)
     if (False): #Using the webcam
