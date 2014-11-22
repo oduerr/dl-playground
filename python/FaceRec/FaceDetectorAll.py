@@ -215,7 +215,7 @@ class FaceDetectorAll:
 
 
 if __name__ == "__main__":
-    show = True
+    show = False
     print("Hallo Gallo")
     fd = FaceDetectorAll(show = show)
     if (False): #Using the webcam

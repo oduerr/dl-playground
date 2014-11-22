@@ -27,6 +27,9 @@ def distorb(img):
 
     # primat[1,2] = mat[1,2] + dist                    nt(dist)
     img_rotated = cv2.warpAffine(img, mat, (im_size, im_size))
+    # Add some noise
+    img_rotated = np.multiply(img_rotated, np.random.binomial(size = img_rotated.shape, n = 1, p = 1 - 0.2))
+
 
     return img_rotated
 
@@ -66,7 +69,7 @@ def expandTraining(filename, filenameExp):
             d = np.append(y,  np.asarray(img_rotated.reshape(-1) * 255, dtype=np.int))
             w.writerow(d)
             if show:
-                cv2.imshow('Distorted Training Set', img_rotated)
+                cv2.imshow('Distorted Training Set', cv2.resize(img_rotated,  (img_rotated.shape[0] *  2, img_rotated.shape[1] *  2)))
                 cv2.waitKey(1)
 
 if __name__ == '__main__':
