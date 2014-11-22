@@ -158,20 +158,19 @@ def evaluate_lenet5(topo, learning_rate=0.005, n_epochs=500, datasetName='mnist.
     print("Loading the pickels data-set " + str(datasetName))
     datasets = pickle.load(open(datasetName, "r"))
     n_out = 6
-    batch_size = 3
+    batch_size = 10
     print("       Learning rate " + str(learning_rate))
 
 
     # Images for face recognition
-    train_set_x, train_set_y = datasets[0]
-    valid_set_x, valid_set_y = datasets[1]
-    test_set_x, test_set_y = datasets[2]
+    #train_set_x, train_set_y = datasets[0]
+    valid_set_x, valid_set_y = datasets[0]
+    test_set_x, test_set_y = datasets[1]
 
     # compute number of minibatches for training, validation and testing
-    n_train_batches = train_set_x.get_value(borrow=True).shape[0]
     n_valid_batches = valid_set_x.get_value(borrow=True).shape[0]
     n_test_batches = test_set_x.get_value(borrow=True).shape[0]
-    n_train_batches /= batch_size
+
     n_valid_batches /= batch_size
     n_test_batches /= batch_size
 
@@ -237,7 +236,8 @@ def evaluate_lenet5(topo, learning_rate=0.005, n_epochs=500, datasetName='mnist.
     layer2_input = layer1.output.flatten(2)
 
     # Evt. some drop out for the fully connected layer
-    layer2_input = theano_rng.binomial(size=layer2_input.shape, n=1, p=1 - 0.2) * layer2_input
+    # Achtung p=1 entspricht keinem Dropout.
+    layer2_input = theano_rng.binomial(size=layer2_input.shape, n=1, p=1 - 0.02) * layer2_input
 
     layer2 = HiddenLayer(rng, input=layer2_input, n_in=topo.nkerns[1] * topo.hidden_input,
                          n_out=topo.numLogisticInput, activation=T.tanh, Wold = wHidden, bOld = bHidden)
@@ -277,22 +277,18 @@ def evaluate_lenet5(topo, learning_rate=0.005, n_epochs=500, datasetName='mnist.
     for param_i, grad_i in zip(params, grads):
         updates.append((param_i, param_i - learning_rate * grad_i))
 
-    train_model = theano.function([index], cost, updates=updates,
-                                  givens={
-                                      x: train_set_x[index * batch_size: (index + 1) * batch_size],
-                                      y: train_set_y[index * batch_size: (index + 1) * batch_size]})
+
 
     ###############
     # TRAIN MODEL #
     ###############
     print '... training'
     # early-stopping parameters
-    patience = 10000  # look as this many examples regardless
+    patience = 10000 # look as this many examples regardless
     patience_increase = 2  # wait this much longer when a new best is
     # found
     improvement_threshold = 0.995  # a relative improvement of this much is
     # considered significant
-    validation_frequency = min(n_train_batches, patience / 2)
     # go through this many
     # minibatche before checking the network
     # on the validation set; in this case we
@@ -308,6 +304,21 @@ def evaluate_lenet5(topo, learning_rate=0.005, n_epochs=500, datasetName='mnist.
     done_looping = False
     epoch_fraction = 0.0
     while (epoch < n_epochs) and (not done_looping):
+        # New epoch the training set is disturbed again
+        print("  Starting new training epoch")
+        print("  Manipulating the training set")
+        train_set_x, train_set_y = Utils_dueo.giveMeNewTraining()
+        n_train_batches = train_set_x.get_value(borrow=True).shape[0]
+        n_train_batches /= batch_size
+        validation_frequency = min(n_train_batches, patience / 2)
+        print("  Compiling new function")
+        learning_rate *= 0.993 #See Paper from Cican
+        train_model = theano.function([index], cost, updates=updates,
+                                      givens={
+                                          x: train_set_x[index * batch_size: (index + 1) * batch_size],
+                                          y: train_set_y[index * batch_size: (index + 1) * batch_size]})
+        print("  Finished compiling the training set")
+
         epoch = epoch + 1
         for minibatch_index in xrange(n_train_batches): #Alle einmal anfassen
             iter = (epoch - 1) * n_train_batches + minibatch_index
@@ -326,14 +337,13 @@ def evaluate_lenet5(topo, learning_rate=0.005, n_epochs=500, datasetName='mnist.
                 dt = time.clock() - test_start
                 print'Testing %i faces in %f msec image / sec  %f', batch_size * n_test_batches, dt, dt/(n_test_batches * batch_size)
                 test_score = numpy.mean(test_losses)
-                print('%i, %f, %f' % (epoch,  this_validation_loss * 100.,test_score * 100.))
+                print('%i, %f, %f, %f, 0.424242' % (epoch,  this_validation_loss * 100.,test_score * 100., learning_rate))
 
                 # if we got the best validation score until now
                 if this_validation_loss < best_validation_loss:
 
                     #improve patience if loss improvement is good enough
-                    if this_validation_loss < best_validation_loss * \
-                            improvement_threshold:
+                    if this_validation_loss < best_validation_loss * improvement_threshold:
                         patience = max(patience, iter * patience_increase)
 
                     # save best validation score and iteration number
@@ -348,7 +358,13 @@ def evaluate_lenet5(topo, learning_rate=0.005, n_epochs=500, datasetName='mnist.
                     #       (epoch, minibatch_index + 1, n_train_batches,
                     #        test_score * 100.))
 
+                # if (this_validation_loss < 0.02):
+                #     learning_rate /= 2
+                #     print("Decreased learning rate due to low xval error to " + str(learning_rate))
+
+
             if patience <= iter:
+                print("--------- Finished Looping ----- earlier ")
                 done_looping = True
                 break
 
@@ -383,10 +399,12 @@ def evaluate_lenet5(topo, learning_rate=0.005, n_epochs=500, datasetName='mnist.
                         convValues = [layer0.getParametersAsValues(), layer1.getParametersAsValues()],
                         hiddenValues = layer2.getParametersAsValues(),
                         logRegValues = layer3.getParametersAsValues())
+    print
     if stateOut is not None:
         pickle.dump(state, open(stateOut, 'wb') ) #Attention y is wrong
         print("Saved the pickeled data-set")
 
+    return learning_rate
 
     ##############################
 
@@ -403,6 +421,7 @@ if __name__ == '__main__':
     #label = subprocess.check_output(['git', 'rev-parse', 'HEAD'])[:-1]
     filename = "Dataset_test_aligned_extended_LBH.p"
     import os
+    stateIn = None
     state = 'state_lbh_elip_K100'
     if state is not None and os.path.isfile(state):
         stateIn = state
@@ -414,12 +433,10 @@ if __name__ == '__main__':
     lr  = 0.1
     stateIn = None
     stateOut = state
-    for i in xrange(0,10):
+    for i in xrange(0,100):
         print(str(lr))
-        evaluate_lenet5(topo=topo, learning_rate=lr, datasetName=filename, n_epochs=150, createData=True,
-                    stateIn=stateIn, stateOut=stateOut)
+        lr = evaluate_lenet5(topo=topo, learning_rate=lr, datasetName=filename, n_epochs=10, createData=True, stateIn=stateIn, stateOut=stateOut)
         stateIn = stateOut
-        lr /= 1.5
 
     # evaluate_lenet5(learning_rate=0.1, datasetName=filename)
     # evaluate_lenet5(learning_rate=1.0, datasetName=filename)
