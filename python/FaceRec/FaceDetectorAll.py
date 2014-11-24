@@ -13,6 +13,11 @@ import Sources
 from PIL import Image as Image
 import Utils_dueo
 
+# Parameters
+scale_fac = 0.3
+borderProb = 0.85
+show = True
+
 class FaceDetectorAll:
 
     def __init__(self, show = False):
@@ -30,20 +35,22 @@ class FaceDetectorAll:
         #self.pred = LeNetPredictor.LeNetPredictor(stateIn='models/good_ones/state_lbh_elip_K100_batch3___Hat__Nur__2__Error_wenn_Ueber_90Prozent', deepOut=True)
         #self.pred = LeNetPredictor.LeNetPredictor(stateIn='models/good_ones/k20.p', deepOut=True)
         self.pred = LeNetPredictor.LeNetPredictor(stateIn='models/dumm.p', deepOut=True)
+
+        #self.pred = LeNetPredictor.LeNetPredictor(stateIn='models/good_ones/k100_lr0.1_speckel.p', deepOut=True)
         self.ok = 0
         self.all = 1e-16
         self.wrong = 0
         print("Loaded the face predictor")
 
     # simply scale the image by a given factor
-    def scale_image(self, image, scale_factor=0.3):
+    def scale_image(self, image, scale_factor=scale_fac):
         if image is not None:
             new_size =  ( int(image.shape[1] * scale_factor), int(image.shape[0] * scale_factor) )
             return cv2.resize(image, new_size)
         else:
             return None
 
-    def getFaces(self, image, scale_factor = 0.3):
+    def getFaces(self, image, scale_factor = scale_fac):
         if image is None:
             return None
 
@@ -68,8 +75,10 @@ class FaceDetectorAll:
     def preprocess(self, img_face):
         Size_For_Eye_Detection = (48, 48)
         img_face = cv2.resize(img_face, Size_For_Eye_Detection, Image.ANTIALIAS)
-        img_face = Utils_dueo.mask_on_rect(img_face)
-        return Utils_dueo.LBH_Norm(img_face), img_face
+        img_norm = Utils_dueo.LBH_Norm(img_face)
+        img_norm = Utils_dueo.mask_on_rect(img_norm)
+        return img_norm, img_face
+
 
 
     # def preprocess2(self, img_face):
@@ -127,7 +136,6 @@ class FaceDetectorAll:
             frame_width = 1
             wrong = False
             frame_col = (128,128,128)
-            borderProb = 0.9
             if y is not None:
                 if y == int(res.argmax()):
                     if (predPValue > borderProb):
@@ -159,8 +167,8 @@ class FaceDetectorAll:
                 fig.text(0.02, 1.00, "Hello Convolutional Network" , fontsize=14, verticalalignment='top')
                 fig.text(0.02, 0.97, "Found : " +  str(int(self.all)) + " Right : " + str(self.ok) + " Wrong : " + str(self.wrong) + " Acc. : " + str(round(1.0 * self.ok / self.all, 2))
                          , fontsize=18, verticalalignment='top')
-                fig.text(0.02, 0.94, "Time for detection (Viola & Jones)    : " +  "%06.2f"%(time_viola_jones * 1000) + " msec" ,fontsize=10, verticalalignment='top')
-                fig.text(0.02, 0.93, "Time for classific. & prepros. (CNN)  : " +  "%06.2f"%(time_cnn * 1000) + " msec" ,fontsize=10, verticalalignment='top')
+                fig.text(0.02, 0.94, "Time for detection (Viola & Jones)    : " +  "%06.2f"%(time_viola_jones * 1000) + " msec" ,fontsize=12, verticalalignment='top')
+                fig.text(0.02, 0.925, "Time for classific. & prepros. (CNN)  : " +  "%06.2f"%(time_cnn * 1000) + " msec" ,fontsize=12, verticalalignment='top')
 
                 ############## Original Image with Box drawn
                 plt.subplot(421)
@@ -173,7 +181,7 @@ class FaceDetectorAll:
                 plt.subplot(422)
                 plt.yticks(pos, names)
                 plt.barh(pos, np.asarray(res[0], dtype = float), align='center')
-                plt.title("Last Layer (Mult. Regression) " + predName + " " + str(round(predPValue,2)))
+                plt.title("Finals Layer (Multinomial Regression) " + predName + " " + str(round(predPValue,2)))
 
                 plt.subplots_adjust(hspace = 0.3)
                 ############## Faces
@@ -215,7 +223,6 @@ class FaceDetectorAll:
 
 
 if __name__ == "__main__":
-    show = False
     print("Hallo Gallo")
     fd = FaceDetectorAll(show = show)
     if (False): #Using the webcam

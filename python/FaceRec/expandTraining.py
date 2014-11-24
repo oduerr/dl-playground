@@ -16,7 +16,8 @@ dists = (-4,-2,2,4)
 def distorb(img):
     im_size = img.shape[0]
     r = rot[np.random.randint(0, len(rot))]
-    mat = cv2.getRotationMatrix2D((im_size / 2, im_size / 2), r, 1)
+    scale = np.random.uniform(0.9,1.1)
+    mat = cv2.getRotationMatrix2D((im_size / 2, im_size / 2), r, scale=scale)
     dist = 0
     if (np.random.uniform() < 0.5):
         dist = dists[np.random.randint(0, len(dists))]

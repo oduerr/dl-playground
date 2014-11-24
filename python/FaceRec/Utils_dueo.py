@@ -62,10 +62,10 @@ def preprocess(vals, zca, sizeOut = 46, show = True):
 def mask_on_rect(img_face):
     Size_For_Eye_Detection = img_face.shape
     faceCenter = (int(Size_For_Eye_Detection[0] * 0.5), int(Size_For_Eye_Detection[1] * 0.4))
-    mask = np.zeros_like(img_face)
+    mask = np.zeros((Size_For_Eye_Detection[0], Size_For_Eye_Detection[1]), np.uint8)
     cv2.ellipse(mask, faceCenter, (int(Size_For_Eye_Detection[0] * 0.30), int(Size_For_Eye_Detection[1] * 0.60)), 0, 0,
                 360, 255, -1)
-    img_face = cv2.bitwise_and(mask, img_face)
+    img_face = np.multiply(mask/255, img_face)
     return img_face
 
 def mask_on_rect2(img_face):

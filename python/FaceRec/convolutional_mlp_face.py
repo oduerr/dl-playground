@@ -419,10 +419,10 @@ if __name__ == '__main__':
 
     #import subprocess, time
     #label = subprocess.check_output(['git', 'rev-parse', 'HEAD'])[:-1]
-    filename = "Dataset_test_aligned_extended_LBH.p"
+    filename = "Dataset_test_aligned_extended_LBHK100.p"
     import os
     stateIn = None
-    state = 'state_lbh_elip_K100'
+    state = 'state_lbh_elip_scale_K100'
     if state is not None and os.path.isfile(state):
         stateIn = state
     else:
