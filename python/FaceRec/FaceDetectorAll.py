@@ -15,7 +15,7 @@ import Utils_dueo
 
 # Parameters
 scale_fac = 0.3
-borderProb = 0.85
+borderProb = 0.35
 show = True
 
 class FaceDetectorAll:
@@ -225,7 +225,7 @@ class FaceDetectorAll:
 if __name__ == "__main__":
     print("Hallo Gallo")
     fd = FaceDetectorAll(show = show)
-    if (False): #Using the webcam
+    if (True): #Using the webcam
         from utils import ImageCapturer
         cap = ImageCapturer.ImageCapturer()
         if not cap:

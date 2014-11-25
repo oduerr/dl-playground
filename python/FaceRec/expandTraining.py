@@ -16,7 +16,7 @@ dists = (-4,-2,2,4)
 def distorb(img):
     im_size = img.shape[0]
     r = rot[np.random.randint(0, len(rot))]
-    scale = np.random.uniform(0.9,1.1)
+    scale = np.random.uniform(0.85,1.15)
     mat = cv2.getRotationMatrix2D((im_size / 2, im_size / 2), r, scale=scale)
     dist = 0
     if (np.random.uniform() < 0.5):
@@ -29,7 +29,10 @@ def distorb(img):
     # primat[1,2] = mat[1,2] + dist                    nt(dist)
     img_rotated = cv2.warpAffine(img, mat, (im_size, im_size))
     # Add some noise
-    img_rotated = np.multiply(img_rotated, np.random.binomial(size = img_rotated.shape, n = 1, p = 1 - 0.2))
+    img_rotated = np.multiply(img_rotated, np.random.binomial(size = img_rotated.shape, n = 1, p = 1 - 0.1))
+
+    # Auch noch drehungen aus der ebene
+    # http://docs.opencv.org/doc/tutorials/imgproc/imgtrans/warp_affine/warp_affine.html
 
 
     return img_rotated
