@@ -326,7 +326,6 @@ def evaluate_lenet5(topo, learning_rate=0.005, n_epochs=500, datasetName='mnist.
             if iter % 100 == 0:
                 print 'training @ iter = ', iter, ' epoch_fraction ', epoch_fraction
             cost_ij = train_model(minibatch_index)
-
             if (iter + 1) % validation_frequency == 0:
                 # compute zero-one loss on validation set
                 validation_losses = [validate_model(i) for i in xrange(n_valid_batches)]
@@ -334,10 +333,12 @@ def evaluate_lenet5(topo, learning_rate=0.005, n_epochs=500, datasetName='mnist.
                 # test it on the test set
                 test_start = time.clock();
                 test_losses = [test_model(i) for i in xrange(n_test_batches)]
+                train_costs = [train_model(i) for i in xrange(n_test_batches)]
                 dt = time.clock() - test_start
                 print'Testing %i faces in %f msec image / sec  %f', batch_size * n_test_batches, dt, dt/(n_test_batches * batch_size)
                 test_score = numpy.mean(test_losses)
-                print('%i, %f, %f, %f, 0.424242' % (epoch,  this_validation_loss * 100.,test_score * 100., learning_rate))
+                train_cost = numpy.mean(train_costs)
+                print('%i, %f, %f, %f, %f, 0.424242' % (epoch,  this_validation_loss * 100.,test_score * 100., learning_rate, train_cost))
 
                 # if we got the best validation score until now
                 if this_validation_loss < best_validation_loss:
