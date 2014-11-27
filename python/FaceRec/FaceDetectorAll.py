@@ -12,11 +12,16 @@ import os as os
 import Sources
 from PIL import Image as Image
 import Utils_dueo
+import csv
 
 # Parameters
 scale_fac = 0.3
-borderProb = 0.35
+borderProb = 0.85
 show = True
+webcam = False
+rocWriter = csv.writer(open('roc.csv', 'w'))
+
+
 
 class FaceDetectorAll:
 
@@ -34,7 +39,7 @@ class FaceDetectorAll:
         #self.pred = LeNetPredictor.LeNetPredictor(stateIn='models/state_lbh_elip_K100_batch3_long_training', deepOut=True)
         #self.pred = LeNetPredictor.LeNetPredictor(stateIn='models/good_ones/state_lbh_elip_K100_batch3___Hat__Nur__2__Error_wenn_Ueber_90Prozent', deepOut=True)
         #self.pred = LeNetPredictor.LeNetPredictor(stateIn='models/good_ones/k20.p', deepOut=True)
-        self.pred = LeNetPredictor.LeNetPredictor(stateIn='models/dumm.p', deepOut=True)
+        self.pred = LeNetPredictor.LeNetPredictor(stateIn='models/good_ones/state_lbh_elip_scale_K100', deepOut=True)
 
         #self.pred = LeNetPredictor.LeNetPredictor(stateIn='models/good_ones/k100_lr0.1_speckel.p', deepOut=True)
         self.ok = 0
@@ -93,7 +98,9 @@ class FaceDetectorAll:
     #     return img_face, img_face
 
 
+
     def processImage(self, img, y=None, writer = None):
+
         img_org = img.copy()
         img = np.asarray(img)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) #Grey Scaled
@@ -131,13 +138,14 @@ class FaceDetectorAll:
 
             pos = np.arange(6)+.5
             names = ('Dejan', 'Diego', 'Martin', 'Oliver', 'Rebekka', 'Ruedi')
-            predName   = str(names[int(res.argmax())])
-            predPValue = res[0][res.argmax()]
+            predY = int(res.argmax())
+            predName   = str(names[predY])
+            predPValue = res[0][predY]
             frame_width = 1
             wrong = False
             frame_col = (128,128,128)
             if y is not None:
-                if y == int(res.argmax()):
+                if y == predY:
                     if (predPValue > borderProb):
                         self.ok += 1
                     frame_col = (0,255,0)
@@ -148,6 +156,8 @@ class FaceDetectorAll:
                         self.wrong += 1
                         print("Wrong")
                         wrong = True
+            #rocWriter.writerow(str(y) + "\t" + str(predY) + "\t" + str(predPValue))
+            rocWriter.writerow((y, predY, predPValue))
             if (predPValue > borderProb):
                 self.all += 1
                 frame_width = 6
@@ -172,34 +182,35 @@ class FaceDetectorAll:
 
                 ############## Original Image with Box drawn
                 plt.subplot(421)
-                plt.title('Original Image')
-                #cv2.rectangle(img_org,(x_0,y_0),(x_0+h,y_0+h), frame_col,frame_width)
-                #cv2.putText(img_org,str(predName + " (" + str(round(predPValue,3)) + ")") ,(x_0,y_0+h), cv2.FONT_HERSHEY_SIMPLEX, 1, frame_col, 2)
+                plt.title('Original Image : ' + str(img_org.shape))
+                cv2.rectangle(img_org,(x_0,y_0),(x_0+h,y_0+h), frame_col,frame_width)
+                cv2.putText(img_org,str(predName + " (" + str(round(predPValue,3)) + ")") ,(x_0,y_0+h), cv2.FONT_HERSHEY_SIMPLEX, 1, frame_col, 2)
                 plt.imshow(img_org)
 
                 ############## Logistic Regression
                 plt.subplot(422)
                 plt.yticks(pos, names)
                 plt.barh(pos, np.asarray(res[0], dtype = float), align='center')
-                plt.title("Finals Layer (Multinomial Regression) " + predName + " " + str(round(predPValue,2)))
+                plt.title("Final Layer (Multinomial Regression) " + predName + " " + str(round(predPValue,2)))
 
                 plt.subplots_adjust(hspace = 0.3)
                 ############## Faces
                 plt.subplot(423)
                 face = plt.imshow(img_face)
-                plt.title("Detected Face ")
+                plt.title("Detected Face " + str(img_face.shape))
                 face.set_cmap('gray')
 
                 plt.subplot(424)
                 dd = plt.imshow(X)
-                plt.title("Preprocessed Face ")
+                plt.title("Preprocessed Face " + str(X.shape))
                 dd.set_cmap('gray')
 
                 # Kernels of Layer 0
                 #plt.subplot(425)
                 plt.subplot2grid((4,2),(2,0), colspan=2)
-                plt.title('Result after first max-pooling layer')
-                maxPool0 = self.pred.getPool0Out(X)[0]
+                d = self.pred.getPool0Out(X)
+                plt.title('Result after first max-pooling layer ' + str(d.shape))
+                maxPool0 = d[0]
                 nkerns0 = maxPool0.shape[0]
                 s0 = maxPool0.shape[1]
                 ddd = plt.imshow(np.reshape(maxPool0, (s0, s0 * nkerns0)))
@@ -207,17 +218,17 @@ class FaceDetectorAll:
 
                 # Kernels of Layer 1
                 plt.subplot2grid((4,2),(3,0), colspan=2)
-                maxPool1 = self.pred.getPool1Out(X)[0]
+                d = self.pred.getPool1Out(X)
+                maxPool1 = d[0]
                 nkerns1 = maxPool1.shape[0]
                 s1 = maxPool1.shape[1]
                 nkerns1 = min(nkerns1, 10)
-                plt.title('Result after second max-pooling layer. ' + str(nkerns1) + " of " + str(maxPool1.shape[0]) + " images")
+                plt.title('Result after second max-pooling layer. ' + str(d.shape))
                 dddd = plt.imshow(np.reshape(maxPool1[0:nkerns1], (s1, nkerns1 * s1)))
                 dddd.set_cmap('gray')
 
                 plt.draw()
         print("Cassified " + str(self.all) + " All " + " Acc " + str(round(1.0 * self.ok / self.all, 2)) + " Faces " + str(self.faces))
-
         #cv2.imshow('Original', img_org)
         #cv2.waitKey(1000000)
 
@@ -225,7 +236,7 @@ class FaceDetectorAll:
 if __name__ == "__main__":
     print("Hallo Gallo")
     fd = FaceDetectorAll(show = show)
-    if (True): #Using the webcam
+    if (webcam): #Using the webcam
         from utils import ImageCapturer
         cap = ImageCapturer.ImageCapturer()
         if not cap:
