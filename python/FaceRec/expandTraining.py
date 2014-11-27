@@ -1,5 +1,3 @@
-from logilab.common.registry import traced_selection
-
 __author__ = 'oli'
 
 import numpy as np
