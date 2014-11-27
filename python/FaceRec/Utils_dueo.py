@@ -12,7 +12,7 @@ import cv2
 
 #import ZCA
 
-show = True
+show = False
 
 # filenameTesting    = "../../data/"
 # # We use the manipulated ones for trainingtesting_48x48_unaligned_large.p_R.csv.gz
