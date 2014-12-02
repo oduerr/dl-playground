@@ -16,7 +16,7 @@ dists = (-4,-2,2,4)
 def distorb(img):
     im_size = img.shape[0]
     r = rot[np.random.randint(0, len(rot))]
-    scale = np.random.uniform(0.95,1.05)
+    scale = np.random.uniform(0.85,1.15)
     mat = cv2.getRotationMatrix2D((im_size / 2, im_size / 2), r, scale=scale)
     dist = 0
     if (np.random.uniform() < 0.5):
@@ -31,18 +31,20 @@ def distorb(img):
     # Add some noise
     img_rotated = np.multiply(img_rotated, np.random.binomial(size = img_rotated.shape, n = 1, p = 1 - 0.1))
 
-    # Some rolling of the angles to miminc the camera movement
-    rows,cols = img_rotated.shape[:2]
-    #  ---> erste Komponente
-    #  |
-    #  V Zweite
-    srcTri = np.array([(0,0),          (cols-1,0),  (0,rows-1)], np.float32)
-    # Corresponding Destination Points. Remember, both sets are of float32 type
-    rol = np.random.uniform(-0.1,0.1)#rol = nach hinten abkippen 0 kein Abkippen
-    left = np.random.uniform(-0.1,0.1) #um z-achse
-    dstTri = np.array([(0.0, rows*rol), (cols-1, rows*rol), (-left * (cols-1),rows-1)],np.float32)
-    warp_mat = cv2.getAffineTransform(srcTri,dstTri)   # Generating affine transform matrix of size 2x3
-    img_rotated = cv2.warpAffine(img_rotated,warp_mat,(cols,rows))
+    # Removed again since this has harmful effects on performance
+    if False:
+        # Some rolling of the angles to miminc the camera movement
+        rows,cols = img_rotated.shape[:2]
+        #  ---> erste Komponente
+        #  |
+        #  V Zweite
+        srcTri = np.array([(0,0),          (cols-1,0),  (0,rows-1)], np.float32)
+        # Corresponding Destination Points. Remember, both sets are of float32 type
+        rol = np.random.uniform(-0.1,0.1)#rol = nach hinten abkippen 0 kein Abkippen
+        left = np.random.uniform(-0.1,0.1) #um z-achse
+        dstTri = np.array([(0.0, rows*rol), (cols-1, rows*rol), (-left * (cols-1),rows-1)],np.float32)
+        warp_mat = cv2.getAffineTransform(srcTri,dstTri)   # Generating affine transform matrix of size 2x3
+        img_rotated = cv2.warpAffine(img_rotated,warp_mat,(cols,rows))
 
 
 

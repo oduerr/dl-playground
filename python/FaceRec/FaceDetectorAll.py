@@ -174,11 +174,11 @@ class FaceDetectorAll:
                 fig.canvas.set_window_title('Test')
 
                 ############## Stats
-                fig.text(0.02, 1.00, "Hello Convolutional Network" , fontsize=14, verticalalignment='top')
-                fig.text(0.02, 0.97, "Found : " +  str(int(self.all)) + " Right : " + str(self.ok) + " Wrong : " + str(self.wrong) + " Acc. : " + str(round(1.0 * self.ok / self.all, 2))
+                #fig.text(0.02, 1.00, "Hello Convolutional Network" , fontsize=14, verticalalignment='top')
+                fig.text(0.02, 1.00, "Total " + str(int(self.faces)) + " Called " +  str(int(self.all)) + " Right " + str(self.ok) + " Wrong " + str(self.wrong) + " Acc.  " + str(round(1.0 * self.ok / self.all, 4))
                          , fontsize=18, verticalalignment='top')
-                fig.text(0.02, 0.94, "Time for detection (Viola & Jones)    : " +  "%06.2f"%(time_viola_jones * 1000) + " msec" ,fontsize=12, verticalalignment='top')
-                fig.text(0.02, 0.925, "Time for classific. & prepros. (CNN)  : " +  "%06.2f"%(time_cnn * 1000) + " msec" ,fontsize=12, verticalalignment='top')
+                fig.text(0.02, 0.97, "Time for detection (Viola & Jones)    : " +  "%06.2f"%(time_viola_jones * 1000) + " msec" ,fontsize=12, verticalalignment='top')
+                fig.text(0.02, 0.95, "Time for classific. & prepros. (CNN)  : " +  "%06.2f"%(time_cnn * 1000) + " msec" ,fontsize=12, verticalalignment='top')
 
                 ############## Original Image with Box drawn
                 plt.subplot(421)
@@ -228,6 +228,11 @@ class FaceDetectorAll:
                 dddd.set_cmap('gray')
 
                 plt.draw()
+
+                # if predY == 3 :
+                #     cv2.imshow("Dumm", img_face)
+                #     cv2.waitKey(100000000)
+
         print("Cassified " + str(self.all) + " All " + " Acc " + str(round(1.0 * self.ok / self.all, 2)) + " Faces " + str(self.faces))
         #cv2.imshow('Original', img_org)
         #cv2.waitKey(1000000)
@@ -250,7 +255,7 @@ if __name__ == "__main__":
 
     if (True):
         img_path = os.path.abspath('/Users/oli/Proj_Large_Data/PiVision/pivision/images/session_30_july_2014')
-        [y, block, names, filenames] = Sources.read_images_2(img_path, useBatch=2, maxNum=5000)
+        [y, block, names, filenames] = Sources.read_images_2(img_path, useBatch=2, maxNum=1500)
 
         w = None
         #import csv

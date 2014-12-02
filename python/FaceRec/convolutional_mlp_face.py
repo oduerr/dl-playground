@@ -136,7 +136,7 @@ class LeNet5(object):
         print 'Number of Kernels' + str(nkerns)
 
 def evaluate_lenet5(topo, learning_rate=0.005, n_epochs=500, datasetName='mnist.pkl.gz',
-                    batch_size=4242, createData=False, stateIn = None, stateOut = None):
+                    batch_size=4242, stateIn = None, stateOut = None):
 
     global pickle
     rng = numpy.random.RandomState(23455)
@@ -146,17 +146,16 @@ def evaluate_lenet5(topo, learning_rate=0.005, n_epochs=500, datasetName='mnist.
     #datasets = load_data(dataset)
     #n_out = 10
 
-    # Images for face recognition
-    if (createData):
-        import pickle
-        import Utils_dueo
-        datasets = Utils_dueo.load_pictures()
-        pickle.dump(datasets, open( datasetName, "wb" ) ) #Attention y is wrong
-        print("Saveing the pickeled data-set")
+    import pickle
+    import Utils_dueo
+    datasets = Utils_dueo.load_pictures()
+    # pickle.dump(datasets, open( datasetName, "wb" ) ) #Attention y is wrong
+    # print("Saveing the pickeled data-set")
 
     #Loading the pickled images
-    print("Loading the pickels data-set " + str(datasetName))
-    datasets = pickle.load(open(datasetName, "r"))
+    #print("Loading the pickels data-set " + str(datasetName))
+    #datasets = pickle.load(open(datasetName, "r"))
+
     n_out = 6
     batch_size = 10
     print("       Learning rate " + str(learning_rate))
@@ -436,7 +435,7 @@ if __name__ == '__main__':
     stateOut = state
     for i in xrange(0,100):
         print(str(lr))
-        lr = evaluate_lenet5(topo=topo, learning_rate=lr, datasetName=filename, n_epochs=10, createData=True, stateIn=stateIn, stateOut=stateOut)
+        lr = evaluate_lenet5(topo=topo, learning_rate=lr, datasetName=filename, n_epochs=10, stateIn=stateIn, stateOut=stateOut)
         stateIn = stateOut
 
     # evaluate_lenet5(learning_rate=0.1, datasetName=filename)
