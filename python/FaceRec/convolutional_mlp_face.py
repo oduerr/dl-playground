@@ -429,7 +429,7 @@ if __name__ == '__main__':
     filename = "scheissegal_2.p"
     import os
     stateIn = None
-    state = 'paper16'
+    state = 'paper18'
     if state is not None and os.path.isfile(state):
         stateIn = state
     else:
@@ -439,7 +439,8 @@ if __name__ == '__main__':
     # Learning and Evaluating leNet
     # lr  = 0.1
     lr  = 0.05
-    # paper16 lr = 0.1 -> 0.05
+    # paper16 lr = 0.1  -> 0.05
+    # paper17 lr = 0.05 -> 0.1
     stateIn = None
     stateOut = state
     for i in xrange(0,100):

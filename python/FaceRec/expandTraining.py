@@ -22,7 +22,8 @@ def distorb(img):
     #paper 12 0.05 --> 0.1
     #paper 15 0.1 --> 0.05 ?? Not sure in paper 16 it's 0.1
     #paper 16 scale = np.random.uniform(0.9,1.1)
-    scale = np.random.uniform(0.9,1.1)
+    #paper 18 scale = np.random.uniform(0.95,1.05)
+    scale = np.random.uniform(0.95,1.05)
     mat = cv2.getRotationMatrix2D((im_size / 2, im_size / 2), r, scale=scale)
     dist = 0
     if (np.random.uniform() < 0.5):
