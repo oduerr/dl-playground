@@ -9,14 +9,20 @@ import cv2
 
 show = True
 
-rot = (-10,-8,-6,-4,-6,4,6,8,10)
-dists = (-4,-2,2,4)
+#rot = (-8,-6,-4,4,6,8)
+#rot = (-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6) #paper 5
+#rot = (-6,-5,-4,-3,3,4,5,6) #paper 8
+rot = (-6,-4,4,6) #paper 13
+dists = (-2,-1,1,2)
 
 # Creates "new" training data, by rotating the old pixels
 def distorb(img):
     im_size = img.shape[0]
     r = rot[np.random.randint(0, len(rot))]
-    scale = np.random.uniform(0.85,1.15)
+    #paper 12 0.05 --> 0.1
+    #paper 15 0.1 --> 0.05 ?? Not sure in paper 16 it's 0.1
+    #paper 16 scale = np.random.uniform(0.9,1.1)
+    scale = np.random.uniform(0.9,1.1)
     mat = cv2.getRotationMatrix2D((im_size / 2, im_size / 2), r, scale=scale)
     dist = 0
     if (np.random.uniform() < 0.5):
@@ -29,24 +35,24 @@ def distorb(img):
     # primat[1,2] = mat[1,2] + dist                    nt(dist)
     img_rotated = cv2.warpAffine(img, mat, (im_size, im_size))
     # Add some noise
-    img_rotated = np.multiply(img_rotated, np.random.binomial(size = img_rotated.shape, n = 1, p = 1 - 0.05))
+    img_rotated = np.multiply(img_rotated, np.random.binomial(size = img_rotated.shape, n = 1, p = 1 - 0.2))
+    # paper 11 noise from 0.1 to 0.15
+    # paper 12 back to 0.1
+    # paper 15 back to 0.2
 
-    # Removed again since this has harmful effects on performance
-    if False:
-        # Some rolling of the angles to miminc the camera movement
-        rows,cols = img_rotated.shape[:2]
-        #  ---> erste Komponente
-        #  |
-        #  V Zweite
-        srcTri = np.array([(0,0),          (cols-1,0),  (0,rows-1)], np.float32)
-        # Corresponding Destination Points. Remember, both sets are of float32 type
-        rol = np.random.uniform(-0.1,0.1)#rol = nach hinten abkippen 0 kein Abkippen
-        left = np.random.uniform(-0.1,0.1) #um z-achse
-        dstTri = np.array([(0.0, rows*rol), (cols-1, rows*rol), (-left * (cols-1),rows-1)],np.float32)
-        warp_mat = cv2.getAffineTransform(srcTri,dstTri)   # Generating affine transform matrix of size 2x3
-        img_rotated = cv2.warpAffine(img_rotated,warp_mat,(cols,rows))
-
-
+    # Some rolling of the angles to miminc the camera movement
+#     rows,cols = img_rotated.shape[:2]
+#     #  ---> erste Komponente
+#     #  |
+#     #  V Zweite
+#     srcTri = np.array([(0,0),          (cols-1,0),  (0,rows-1)], np.float32)
+#     # Corresponding Destination Points. Remember, both sets are of float32 type
+#     rol = np.random.uniform(-0.05,0.05)#rol = nach hinten abkippen 0 kein Abkippen
+#     left = np.random.uniform(-0.05,0.05) #um z-achse
+#     dstTri = np.array([(0.0, rows*rol), (cols-1, rows*rol), (-left * (cols-1),rows-1)],np.float32)
+#     warp_mat = cv2.getAffineTransform(srcTri,dstTri)   # Generating affine transform matrix of size 2x3
+    
+    #img_rotated = cv2.warpAffine(img_rotated,warp_mat,(cols,rows))
 
 
     return img_rotated

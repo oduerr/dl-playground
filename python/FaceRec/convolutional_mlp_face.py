@@ -236,7 +236,10 @@ def evaluate_lenet5(topo, learning_rate=0.005, n_epochs=500, datasetName='mnist.
 
     # Evt. some drop out for the fully connected layer
     # Achtung p=1 entspricht keinem Dropout.
-    layer2_input = theano_rng.binomial(size=layer2_input.shape, n=1, p=1 - 0.02) * layer2_input
+    # layer2_input = theano_rng.binomial(size=layer2_input.shape, n=1, p=1 - 0.02) * layer2_input
+    # paper_6 no dropout
+    # paper_14 again 0.02 dropout
+    # paper_15 again no dropout
 
     layer2 = HiddenLayer(rng, input=layer2_input, n_in=topo.nkerns[1] * topo.hidden_input,
                          n_out=topo.numLogisticInput, activation=T.tanh, Wold = wHidden, bOld = bHidden)
@@ -249,6 +252,10 @@ def evaluate_lenet5(topo, learning_rate=0.005, n_epochs=500, datasetName='mnist.
 
     # the cost we minimize during training is the NLL of the model
     cost = layer3.negative_log_likelihood(y) + 0.001 * L2_sqr
+    # paper7
+    # paper9 back to 0.001 again
+    # paper10 no reg. 
+    # paper12 back to 0.001 again
 
     # create a function to compute the mistakes that are made by the model
     test_model = theano.function([index], layer3.errors(y),
@@ -419,10 +426,10 @@ if __name__ == '__main__':
 
     #import subprocess, time
     #label = subprocess.check_output(['git', 'rev-parse', 'HEAD'])[:-1]
-    filename = "scheissegal.p"
+    filename = "scheissegal_2.p"
     import os
     stateIn = None
-    state = 'state_lbh_elip_scale_K100_roling'
+    state = 'paper16'
     if state is not None and os.path.isfile(state):
         stateIn = state
     else:
@@ -430,7 +437,9 @@ if __name__ == '__main__':
 
 
     # Learning and Evaluating leNet
-    lr  = 0.1
+    # lr  = 0.1
+    lr  = 0.05
+    # paper16 lr = 0.1 -> 0.05
     stateIn = None
     stateOut = state
     for i in xrange(0,100):
