@@ -429,7 +429,7 @@ if __name__ == '__main__':
     filename = "scheissegal_2.p"
     import os
     stateIn = None
-    state = 'paper18'
+    state = 'paper19'
     if state is not None and os.path.isfile(state):
         stateIn = state
     else:

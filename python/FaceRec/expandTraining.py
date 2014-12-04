@@ -12,7 +12,9 @@ show = True
 #rot = (-8,-6,-4,4,6,8)
 #rot = (-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6) #paper 5
 #rot = (-6,-5,-4,-3,3,4,5,6) #paper 8
-rot = (-6,-4,4,6) #paper 13
+#rot = (-6,-4,4,6) #paper 13
+rot = (-6,-5,-4,-3,3,4,5,6) #paper 19
+
 dists = (-2,-1,1,2)
 
 # Creates "new" training data, by rotating the old pixels
