@@ -37,7 +37,7 @@ from theano.tensor.shared_randomstreams import RandomStreams
 from LogisticRegression import LogisticRegression
 from LeNetConvPoolLayer import LeNetConvPoolLayer
 from HiddenLayer import HiddenLayer
-import Utils_dueo
+import Preprocessing
 
 try:
     import PIL.Image as Image
@@ -143,7 +143,7 @@ def evaluate_lenet5(topo, learning_rate=0.005, n_epochs=500, datasetName='mnist.
     #datasets = load_data(dataset)
     #n_out = 10
 
-    datasets = Utils_dueo.load_pictures()
+    datasets = Preprocessing.load_pictures()
     # pickle.dump(datasets, open( datasetName, "wb" ) ) #Attention y is wrong
     # print("Saveing the pickeled data-set")
 
@@ -308,7 +308,7 @@ def evaluate_lenet5(topo, learning_rate=0.005, n_epochs=500, datasetName='mnist.
         # New epoch the training set is disturbed again
         print("  Starting new training epoch")
         print("  Manipulating the training set")
-        train_set_x, train_set_y = Utils_dueo.giveMeNewTraining()
+        train_set_x, train_set_y = Preprocessing.giveMeNewTraining()
         n_train_batches = train_set_x.get_value(borrow=True).shape[0]
         n_train_batches /= batch_size
         validation_frequency = min(n_train_batches, patience / 2)

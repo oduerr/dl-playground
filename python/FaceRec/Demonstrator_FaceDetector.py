@@ -14,7 +14,7 @@ import time as time
 import os as os
 import Sources
 from PIL import Image as Image
-import Utils_dueo
+import Preprocessing
 import csv
 
 # Parameters
@@ -78,8 +78,8 @@ class FaceDetectorAll:
     def preprocess(self, img_face):
         Size_For_Eye_Detection = (48, 48)
         img_face = cv2.resize(img_face, Size_For_Eye_Detection, Image.ANTIALIAS)
-        img_norm = Utils_dueo.LBH_Norm(img_face)
-        img_norm = Utils_dueo.mask_on_rect(img_norm)
+        img_norm = Preprocessing.LBH_Norm(img_face)
+        img_norm = Preprocessing.mask_on_rect(img_norm)
         return img_norm, img_face
 
     def processImage(self, img, y=None, writer = None):

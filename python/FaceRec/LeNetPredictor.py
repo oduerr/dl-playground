@@ -106,7 +106,7 @@ class LeNetPredictor(object):
 
 if __name__ == "__main__":
     import os
-    import Utils_dueo
+    import Preprocessing
     import time
     if os.path.isfile('state.p'):
         stateIn = 'state.p'
@@ -129,7 +129,7 @@ if __name__ == "__main__":
             truePerson = int(row[0])
             vals = np.asarray(row[1:], np.float)
             start = time.time()
-            preprocessed = Utils_dueo.preprocess(vals, None, 46, show)
+            preprocessed = Preprocessing.preprocess(vals, None, 46, show)
             res = pred.getPrediction(preprocessed / 255.)
             totTime += time.time() - start
             predPerson = int(res.argmax())
