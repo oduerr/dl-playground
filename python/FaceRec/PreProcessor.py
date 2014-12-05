@@ -3,7 +3,7 @@ import numpy as np
 import cv2
 #from scipy import ndimage
 
-import FaceDetectorAll
+import Demonstrator_FaceDetector
 
 SIZE_FOR_PCA = (100, 100)  # TODO rename
 Size_For_Eye_Detection = (100, 100)
@@ -18,7 +18,7 @@ class PreProcessor():
         print 'preprocessor object created'
 
     def load_face_detector(self):
-        self.face_detector = FaceDetectorAll.FaceDetector()
+        self.face_detector = Demonstrator_FaceDetector.FaceDetector()
 
     # a simple conversion from color to grayscale
     def convert_to_grayscale(self, image):

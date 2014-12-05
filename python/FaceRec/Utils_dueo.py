@@ -21,7 +21,7 @@ show = False
 
 filenameTesting    = "../../data/batch2_46_lph.csv.gz"
 filenameValidation = "../../data/batch1_46_lph.csv.gz"
-filenameTraining   = "../../data/batch1_46_lph_extended.csv.csv.gz"
+
 #filenameTraining   = "../../data/batch1_46_lph_extendet_100.csv.gz"
 
 # filenameTraining   = "../../data/batch1_46_gamma_dog_extended.csv.csv.gz"

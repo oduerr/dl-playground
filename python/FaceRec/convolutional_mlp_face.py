@@ -32,14 +32,11 @@ import theano
 import theano.tensor as T
 from theano.tensor.signal import downsample
 from theano.tensor.nnet import conv
-from theano.tensor.shared_randomstreams import RandomStreams
 
+from theano.tensor.shared_randomstreams import RandomStreams
 from LogisticRegression import LogisticRegression
 from LeNetConvPoolLayer import LeNetConvPoolLayer
-
 from HiddenLayer import HiddenLayer
-
-import pickle
 import Utils_dueo
 
 try:
@@ -146,8 +143,6 @@ def evaluate_lenet5(topo, learning_rate=0.005, n_epochs=500, datasetName='mnist.
     #datasets = load_data(dataset)
     #n_out = 10
 
-    import pickle
-    import Utils_dueo
     datasets = Utils_dueo.load_pictures()
     # pickle.dump(datasets, open( datasetName, "wb" ) ) #Attention y is wrong
     # print("Saveing the pickeled data-set")

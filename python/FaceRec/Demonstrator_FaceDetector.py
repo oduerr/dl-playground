@@ -100,7 +100,6 @@ class FaceDetectorAll:
 
 
     def processImage(self, img, y=None, writer = None):
-
         img_org = img.copy()
         img = np.asarray(img)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) #Grey Scaled
@@ -171,11 +170,11 @@ class FaceDetectorAll:
 
             if self.show:
                 plt.clf()
-                fig.canvas.set_window_title('Test')
+                fig.canvas.set_window_title('Hello Convolutional Network')
 
                 ############## Stats
                 #fig.text(0.02, 1.00, "Hello Convolutional Network" , fontsize=14, verticalalignment='top')
-                fig.text(0.02, 1.00, "Total " + str(int(self.faces)) + " Called " +  str(int(self.all)) + " Right " + str(self.ok) + " Wrong " + str(self.wrong) + " Acc.  " + str(round(1.0 * self.ok / self.all, 4))
+                fig.text(0.02, 1.00, "Total " + str(int(self.faces)) + " Called " +  str(int(self.all)) + " Right " + str(self.ok) + " Wrong " + str(self.wrong) + " Acc. " + str(round(1.0 * self.ok / self.all, 4))
                          , fontsize=18, verticalalignment='top')
                 fig.text(0.02, 0.97, "Time for detection (Viola & Jones)    : " +  "%06.2f"%(time_viola_jones * 1000) + " msec" ,fontsize=12, verticalalignment='top')
                 fig.text(0.02, 0.95, "Time for classific. & prepros. (CNN)  : " +  "%06.2f"%(time_cnn * 1000) + " msec" ,fontsize=12, verticalalignment='top')
@@ -222,18 +221,18 @@ class FaceDetectorAll:
                 maxPool1 = d[0]
                 nkerns1 = maxPool1.shape[0]
                 s1 = maxPool1.shape[1]
-                nkerns1 = min(nkerns1, 10)
+                nkerns1 = min(nkerns1, 100)
                 plt.title('Result after second max-pooling layer. ' + str(d.shape))
                 dddd = plt.imshow(np.reshape(maxPool1[0:nkerns1], (s1, nkerns1 * s1)))
                 dddd.set_cmap('gray')
 
                 plt.draw()
 
-                # if predY == 3 :
-                #     cv2.imshow("Dumm", img_face)
-                #     cv2.waitKey(100000000)
+                if self.faces == 1:
+                   cv2.imshow("Dumm", img_face)
+                   cv2.waitKey(100000000)
 
-        print("Cassified " + str(self.all) + " All " + " Acc " + str(round(1.0 * self.ok / self.all, 2)) + " Faces " + str(self.faces))
+        print("Classified " + str(self.all) + " All " + " Acc " + str(round(1.0 * self.ok / self.all, 2)) + " Faces " + str(self.faces))
         #cv2.imshow('Original', img_org)
         #cv2.waitKey(1000000)
 
@@ -260,9 +259,21 @@ if __name__ == "__main__":
         w = None
         #import csv
         #w = csv.writer(open("../../data/" + 'batch2_46_gamma_dog.csv', 'w'))
+        d = "/Users/oli/Proj_Large_Data/PiVision/pivision/images/session_30_july_2014/Oliver_2/Oliver-2-5.png"
+        img = cv2.imread(d);
+        cv2.imshow("Gallo ", img);
+        import matplotlib.pyplot as plt
+        plt.ion()
+        fig = plt.figure("Hello Convolutional World", figsize=(18, 12))
+        plt.imshow(img)
+
+        cv2.waitKey(1000000)
+
 
         for (idx, file_name) in enumerate(filenames):
             img = cv2.imread(file_name)
+            cv2.imshow("Gallo ", img)
+            cv2.waitKey(100)
             print("\n Checking Filename " + str(file_name) + " y " + str(y[idx]) )
             fd.processImage(img, y[idx], w)
         print(len(filenames))

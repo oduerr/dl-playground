@@ -39,11 +39,11 @@ print w.get_value(), b.get_value()
 
 # Construct Theano expression graph
 p_1 = 1 / (1 + T.exp(-T.dot(x, w) - b))       # p_1 = p(y=1 | x)
-like = -y * T.log(p_1) - (1-y) * T.log(1-p_1) # Log likelihood
+like = y * T.log(p_1) + (1-y) * T.log(1-p_1) # Log likelihood
 
 #cost = xent.mean() + 0.02 * (w ** 2).sum()# Original:  The cost to minimize
 # Wir berechnen die Likelihood als Mittelwert (somit haengen die Parameter nicht so stark vom der Anzahl Trainingsbeispiele ab)
-cost = like.mean()
+cost = -like.mean()
 
 # Hier ist die eigentliche Staerke von Theano: Wir berechnen den Gradienten.
 gw, gb = T.grad(cost, [w, b])
