@@ -39,7 +39,7 @@ class FaceDetectorAll:
         #self.pred = LeNetPredictor.LeNetPredictor(stateIn='models/state_lbh_elip_K100_batch3_long_training', deepOut=True)
         #self.pred = LeNetPredictor.LeNetPredictor(stateIn='models/good_ones/state_lbh_elip_K100_batch3___Hat__Nur__2__Error_wenn_Ueber_90Prozent', deepOut=True)
         #self.pred = LeNetPredictor.LeNetPredictor(stateIn='models/good_ones/k20.p', deepOut=True)
-        self.pred = LeNetPredictor.LeNetPredictor(stateIn='models/good_ones/state_lbh_elip_scale_K100', deepOut=True)
+        self.pred = LeNetPredictor.LeNetPredictor(stateIn='models/good_ones/paper21.gz', deepOut=True)
 
         #self.pred = LeNetPredictor.LeNetPredictor(stateIn='models/good_ones/k100_lr0.1_speckel.p', deepOut=True)
         self.ok = 0

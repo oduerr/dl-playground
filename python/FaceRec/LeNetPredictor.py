@@ -24,7 +24,11 @@ class LeNetPredictor(object):
         global pickle
 
         print("  Loading previous state ...")
-        state = pickle.load(open(stateIn, "r"))
+        if stateIn.endswith('gz'):
+            f = gzip.open(stateIn,'rb')
+        else:
+            f = open(stateIn, 'r')
+        state = pickle.load(f)
         convValues = state.convValues
         w0 = convValues[0][0]
         b0 = convValues[0][1]
