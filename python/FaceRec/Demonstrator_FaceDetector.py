@@ -18,7 +18,7 @@ import Preprocessing
 import csv
 
 # Parameters
-scale_fac = 0.3
+scale_fac = 0.2
 borderProb = 0.85
 show = False
 webcam = False
@@ -143,6 +143,8 @@ class FaceDetectorAll:
                 name = "Unknown"
             else:
                 name = names[y]
+
+            print("0.4242,%06.2f"%(time_viola_jones * 1000)  + ",%06.2f"%(time_cnn * 1000) + "\n")
 
             print(str(predName) + " (predicted): Time for detection (Viola & Jones) : " +  "%06.2f msec "%(time_viola_jones * 1000)  +
                   " Time for the classific. & prepros. (CNN) : " + "%06.2f msec "%(time_cnn * 1000) + " overall acc. " + str(float(self.ok) / self.all) + " wrong " + str(self.wrong))
