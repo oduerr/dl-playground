@@ -87,17 +87,6 @@ class LeNetPredictor(object):
         if (deepOut):
             self.layer1_out = theano.function([x], layer1.output)
 
-
-        # for i in xrange(5):
-        #     res = test_model(i)
-        #     print("Hallo" + str(res / res.sum()) + str(predict_model))
-        #     # xIn = {layer0_input : test_set_x[i].reshape((batch_size, 1, topo.ishape[0], topo.ishape[1]))}
-        #     # xIn = {x : test_set_x[i]}
-        #     values=numpy.zeros((46, 46), dtype=theano.config.floatX)
-        #     res2 = predict_model(values)
-        #     print("Gallo" + str(res / res.sum()) + str(predict_model))
-
-
     def getPrediction(self, imgAsRow):
         """
             :param imgAsRow: integers in the range [0,255]

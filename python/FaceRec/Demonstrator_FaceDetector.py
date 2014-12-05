@@ -7,7 +7,6 @@ __author__ = 'oli'
 #
 
 import cv2
-import PreProcessor
 from convolutional_mlp_face import LeNet5State, LeNet5Topology
 import LeNetPredictor as LeNetPredictor
 import numpy as np
@@ -20,7 +19,7 @@ import csv
 
 # Parameters
 scale_fac = 0.3
-borderProb = 0.93
+borderProb = 0.85
 show = False
 webcam = False
 rocWriter = csv.writer(open('roc.csv', 'w'))
