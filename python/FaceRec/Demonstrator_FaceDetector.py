@@ -1,6 +1,10 @@
 __author__ = 'oli'
-# Taken from the piVision Projekt
 
+#   A Demonstrator for showing the convolutional neural network
+#   Further a web-cam can be used
+#
+# Taken from the piVision Projekt
+#
 
 import cv2
 import PreProcessor
@@ -16,11 +20,10 @@ import csv
 
 # Parameters
 scale_fac = 0.3
-borderProb = 0.85
-show = True
+borderProb = 0.93
+show = False
 webcam = False
 rocWriter = csv.writer(open('roc.csv', 'w'))
-
 
 
 class FaceDetectorAll:
@@ -63,18 +66,14 @@ class FaceDetectorAll:
         if len(image.shape)>2 :
             image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-        # scale image - this allows a faster face detection - detect faces on small images - result for large image
         scaled_image = self.scale_image(image, scale_factor)
         faces_scaled = self.face_cascade.detectMultiScale(scaled_image)
-
-        # faces = self.face_detector.detect(image)
         faces = None
         if faces_scaled is not None and len(faces_scaled)>0:
             faces = faces_scaled / scale_factor
             faces = faces.astype(int)
             pass
 
-        #print 'successfully detected the following faces: ', faces
         return faces
 
     def preprocess(self, img_face):
@@ -84,32 +83,17 @@ class FaceDetectorAll:
         img_norm = Utils_dueo.mask_on_rect(img_norm)
         return img_norm, img_face
 
-
-
-    # def preprocess2(self, img_face):
-    #     Size_For_Eye_Detection = (46,46)
-    #     img_face = cv2.resize(img_face, Size_For_Eye_Detection, Image.ANTIALIAS)
-    #     img_face = PreProcessor.PreProcessor.gamma_filter(img_face, gamma=0.5)
-    #     img_face = PreProcessor.PreProcessor.DoG_filter(img_face, sigma_0 = 0.4, sigma_1 = 3.0)
-    #     faceCenter = (int(Size_For_Eye_Detection[0] * 0.5), int(Size_For_Eye_Detection[1] * 0.4))
-    #     mask = np.zeros((Size_For_Eye_Detection[0], Size_For_Eye_Detection[1]), np.uint8)
-    #     cv2.ellipse(mask, faceCenter, (int(Size_For_Eye_Detection[0] * 0.30), int(Size_For_Eye_Detection[1] * 0.60)), 0, 0, 360, 255, -1)
-    #     img_face = cv2.bitwise_and(mask, img_face)
-    #     return img_face, img_face
-
-
-
     def processImage(self, img, y=None, writer = None):
         img_org = img.copy()
         img = np.asarray(img)
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) #Grey Scaled
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) #Gray Scaled
         t_start_viola = time.time()
         face_list = fd.getFaces(img)
         time_viola_jones = time.time() - t_start_viola
         if self.show:
             import matplotlib.pyplot as plt
             plt.ion()
-            fig = plt.figure("Hello Convolutional World", figsize=(18, 12))
+            fig = plt.figure("Hello Convolutional Networks", figsize=(18, 12))
         if face_list is not None and len(face_list)>0:
             self.faces += 1
             t_start = time.time()
@@ -132,9 +116,6 @@ class FaceDetectorAll:
             res = self.pred.getPrediction(np.array(X, dtype=np.float32))
             time_cnn = time.time() - t_start
 
-            #cv2.imshow('Extracted', cv2.resize(img_face, (200,200)))
-            #cv2.imshow('LocalBinaryHists', cv2.resize(X, (200,200)))
-
             pos = np.arange(6)+.5
             names = ('Dejan', 'Diego', 'Martin', 'Oliver', 'Rebekka', 'Ruedi')
             predY = int(res.argmax())
@@ -155,7 +136,6 @@ class FaceDetectorAll:
                         self.wrong += 1
                         print("Wrong")
                         wrong = True
-            #rocWriter.writerow(str(y) + "\t" + str(predY) + "\t" + str(predPValue))
             rocWriter.writerow((y, predY, predPValue))
             if (predPValue > borderProb):
                 self.all += 1
@@ -170,8 +150,6 @@ class FaceDetectorAll:
 
             if self.show:
                 plt.clf()
-                fig.canvas.set_window_title('Hello Convolutional Network')
-
                 ############## Stats
                 #fig.text(0.02, 1.00, "Hello Convolutional Network" , fontsize=14, verticalalignment='top')
                 fig.text(0.02, 1.00, "Total " + str(int(self.faces)) + " Called " +  str(int(self.all)) + " Right " + str(self.ok) + " Wrong " + str(self.wrong) + " Acc. " + str(round(1.0 * self.ok / self.all, 4))
@@ -228,9 +206,9 @@ class FaceDetectorAll:
 
                 plt.draw()
 
-                if self.faces == 1:
-                   cv2.imshow("Dumm", img_face)
-                   cv2.waitKey(100000000)
+                # if self.faces == 1:
+                #    cv2.imshow("Dumm", img_face)
+                #    cv2.waitKey(100000000)
 
         print("Classified " + str(self.all) + " All " + " Acc " + str(round(1.0 * self.ok / self.all, 2)) + " Faces " + str(self.faces))
         #cv2.imshow('Original', img_org)
@@ -261,19 +239,18 @@ if __name__ == "__main__":
         #w = csv.writer(open("../../data/" + 'batch2_46_gamma_dog.csv', 'w'))
         d = "/Users/oli/Proj_Large_Data/PiVision/pivision/images/session_30_july_2014/Oliver_2/Oliver-2-5.png"
         img = cv2.imread(d);
-        cv2.imshow("Gallo ", img);
-        import matplotlib.pyplot as plt
-        plt.ion()
-        fig = plt.figure("Hello Convolutional World", figsize=(18, 12))
-        plt.imshow(img)
-
-        cv2.waitKey(1000000)
+        # cv2.imshow("Gallo ", img);
+        # import matplotlib.pyplot as plt
+        # plt.ion()
+        # fig = plt.figure("Hello Convolutional World", figsize=(18, 12))
+        # plt.imshow(img)
+        # cv2.waitKey(1000000)
 
 
         for (idx, file_name) in enumerate(filenames):
             img = cv2.imread(file_name)
-            cv2.imshow("Gallo ", img)
-            cv2.waitKey(100)
+            # cv2.imshow("Gallo ", img)
+            # cv2.waitKey(1)
             print("\n Checking Filename " + str(file_name) + " y " + str(y[idx]) )
             fd.processImage(img, y[idx], w)
         print(len(filenames))
