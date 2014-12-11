@@ -20,7 +20,7 @@ import csv
 # Parameters
 scale_fac = 0.2
 borderProb = 0.85
-show = False
+show = True
 webcam = False
 rocWriter = csv.writer(open('roc.csv', 'w'))
 
@@ -187,12 +187,13 @@ class FaceDetectorAll:
                 #plt.subplot(425)
                 plt.subplot2grid((4,2),(2,0), colspan=2)
                 d = self.pred.getPool0Out(X)
+                #d = self.pred.getConv0Out(X)
                 plt.title('Result after first max-pooling layer ' + str(d.shape))
                 maxPool0 = d[0]
                 nkerns0 = maxPool0.shape[0]
                 s0 = maxPool0.shape[1]
-                ddd = plt.imshow(np.reshape(maxPool0, (s0, s0 * nkerns0)))
-                ddd.set_cmap('gray')
+                ddd = plt.imshow(np.reshape(maxPool0, (s0, s0 * nkerns0)),interpolation="nearest")
+                #ddd.set_cmap('gray')
 
                 # Kernels of Layer 1
                 plt.subplot2grid((4,2),(3,0), colspan=2)
@@ -202,14 +203,72 @@ class FaceDetectorAll:
                 s1 = maxPool1.shape[1]
                 nkerns1 = min(nkerns1, 100)
                 plt.title('Result after second max-pooling layer. ' + str(d.shape))
-                dddd = plt.imshow(np.reshape(maxPool1[0:nkerns1], (s1, nkerns1 * s1)))
+                dddd = plt.imshow(np.reshape(maxPool1[0:nkerns1], (s1, nkerns1 * s1)),interpolation="nearest")
                 dddd.set_cmap('gray')
-
                 plt.draw()
 
-                # if self.faces == 1:
-                #    cv2.imshow("Dumm", img_face)
-                #    cv2.waitKey(100000000)
+                # Creation of the Overviewfigure
+                if True:
+                    plt.waitforbuttonpress()
+                    fig.set_facecolor('white')
+                    plt.clf()
+                    plt.ioff()
+
+                    plt.subplot(341)
+                    d1 = plt.imshow(maxPool0[0],interpolation="nearest")
+                    d1.set_cmap('gray')
+
+                    plt.subplot(342)
+                    d2 = plt.imshow(maxPool1[0],interpolation="nearest")
+                    d2.set_cmap('gray')
+
+                    plt.subplot(343)
+                    d2 = plt.imshow(img_org,interpolation="nearest")
+
+                    plt.subplot(3,4,10)
+                    plt.yticks(pos, names)
+                    d3 = plt.barh(pos, np.asarray(res[0], dtype = float), align='center')
+
+                    plt.subplot(345)
+                    d4 = plt.imshow(X,interpolation="nearest")
+                    d4.set_cmap('gray')
+
+                    plt.subplot(346)
+                    d5 = plt.imshow(img_face,interpolation="nearest")
+                    d5.set_cmap('gray')
+
+                    plt.subplot(347)
+                    dd = self.pred.getConv0Out(X)
+                    d6 = plt.imshow(dd[0][0],interpolation="nearest")
+                    d6.set_cmap('gray')
+
+                    plt.subplot(348)
+                    dd = self.pred.getConv1Out(X)
+                    d7 = plt.imshow(dd[0][0],interpolation="nearest")
+                    d7.set_cmap('gray')
+
+                    plt.subplot(349)
+                    dd = self.pred.w1
+                    plt.title("w1")
+                    d8 = plt.imshow(dd[0][0],interpolation="nearest")
+                    d8.set_cmap('gray')
+
+
+                    plt.subplot(3,4,4)
+                    plt.title("w0")
+                    dd = self.pred.w0
+                    d9 = plt.imshow(dd[0][0],interpolation="nearest")
+                    d9.set_cmap('gray')
+
+                    plt.draw()
+                    plt.waitforbuttonpress()
+                    from matplotlib.backends.backend_pdf import PdfPages
+
+                    pp = PdfPages('/Users/oli/Proj_Large_Data/PiVision/pivision/trunk/EuroGraphics2015/Figures/stuffForFigure_dueo.pdf')
+                    pp.savefig(fig)
+
+                    pp.close()
+
 
         print("Classified " + str(self.all) + " All " + " Acc " + str(round(1.0 * self.ok / self.all, 2)) + " Faces " + str(self.faces))
         #cv2.imshow('Original', img_org)
@@ -238,8 +297,8 @@ if __name__ == "__main__":
         w = None
         #import csv
         #w = csv.writer(open("../../data/" + 'batch2_46_gamma_dog.csv', 'w'))
-        d = "/Users/oli/Proj_Large_Data/PiVision/pivision/images/session_30_july_2014/Oliver_2/Oliver-2-5.png"
-        img = cv2.imread(d);
+        d = "/Users/oli/Proj_Large_Data/PiVision/pivision/images/session_30_july_2014/Oliver_2/Oliver-2-41.png"
+        fd.processImage(cv2.imread(d), 3, w)
         # cv2.imshow("Gallo ", img);
         # import matplotlib.pyplot as plt
         # plt.ion()
@@ -248,12 +307,11 @@ if __name__ == "__main__":
         # cv2.waitKey(1000000)
 
 
-        for (idx, file_name) in enumerate(filenames):
-            img = cv2.imread(file_name)
-            # cv2.imshow("Gallo ", img)
-            # cv2.waitKey(1)
-            print("\n Checking Filename " + str(file_name) + " y " + str(y[idx]) )
-            fd.processImage(img, y[idx], w)
-        print(len(filenames))
+        # for (idx, file_name) in enumerate(filenames):
+        #     img = cv2.imread(file_name)
+        #     if y[idx] == 3:
+        #         print("\n Checking Filename " + str(file_name) + " y " + str(y[idx]) )
+        #         fd.processImage(img, y[idx], w)
+        # print(len(filenames))
 
 

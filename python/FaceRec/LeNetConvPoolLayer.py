@@ -14,7 +14,7 @@ except ImportError:
 class LeNetConvPoolLayer(object):
     """Pool Layer of a convolutional network """
 
-    def __init__(self, rng, input, filter_shape, image_shape, poolsize=(2, 2), wOld = None, bOld = None):
+    def __init__(self, rng, input, filter_shape, image_shape, poolsize=(2, 2), wOld = None, bOld = None, deepOut=False):
         """
         Allocate a LeNetConvPoolLayer with shared variable internal parameters.
 
@@ -69,6 +69,10 @@ class LeNetConvPoolLayer(object):
         # convolve input feature maps with filters
         conv_out = conv.conv2d(input=input, filters=self.W,
                 filter_shape=filter_shape, image_shape=image_shape)
+
+        if deepOut:
+            self.conv_out = conv_out
+
 
         # downsample each feature map individually, using maxpooling
         pooled_out = downsample.max_pool_2d(input=conv_out,

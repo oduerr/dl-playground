@@ -58,13 +58,13 @@ class LeNetPredictor(object):
         layer0 = LeNetConvPoolLayer(None, input=layer0_input,
                                 image_shape=(batch_size, 1, topo.ishape[0],  topo.ishape[0]),
                                 filter_shape=(nkerns[0], 1, topo.filter_1, topo.filter_1),
-                                poolsize=(topo.pool_1, topo.pool_1), wOld=w0, bOld=b0)
+                                poolsize=(topo.pool_1, topo.pool_1), wOld=w0, bOld=b0, deepOut=deepOut)
 
 
         layer1 = LeNetConvPoolLayer(None, input=layer0.output,
                                     image_shape=(batch_size, nkerns[0], topo.in_2, topo.in_2),
                                     filter_shape=(nkerns[1], nkerns[0], topo.filter_2, topo.filter_2),
-                                    poolsize=(topo.pool_2, topo.pool_2), wOld=w1, bOld=b1)
+                                    poolsize=(topo.pool_2, topo.pool_2), wOld=w1, bOld=b1, deepOut=deepOut)
 
         layer2_input = layer1.output.flatten(2)
 
@@ -83,9 +83,14 @@ class LeNetPredictor(object):
 
         if (deepOut):
             self.layer0_out = theano.function([x], layer0.output)
-
-        if (deepOut):
+            self.layer0_conv= theano.function([x], layer0.conv_out)
+            self.layer1_conv= theano.function([x], layer1.conv_out)
             self.layer1_out = theano.function([x], layer1.output)
+            self.b0 = b0
+            self.b1 = b1
+            self.w0 = w0
+            self.w1 = w1
+
 
     def getPrediction(self, imgAsRow):
         """
@@ -98,6 +103,14 @@ class LeNetPredictor(object):
     def getPool0Out(self, imgAsRow):
         values=np.reshape(imgAsRow, (46, 46))
         return (self.layer0_out(values))
+
+    def getConv0Out(self, imgAsRow):
+        values=np.reshape(imgAsRow, (46, 46))
+        return (self.layer0_conv(values))
+
+    def getConv1Out(self, imgAsRow):
+        values=np.reshape(imgAsRow, (46, 46))
+        return (self.layer1_conv(values))
 
     def getPool1Out(self, imgAsRow):
         values=np.reshape(imgAsRow, (46, 46))
