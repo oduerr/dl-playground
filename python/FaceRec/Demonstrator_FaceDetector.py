@@ -21,6 +21,7 @@ import csv
 scale_fac = 0.2
 borderProb = 0.85
 show = True
+createOverviewFigs = False
 webcam = False
 rocWriter = csv.writer(open('roc.csv', 'w'))
 
@@ -193,7 +194,7 @@ class FaceDetectorAll:
                 nkerns0 = maxPool0.shape[0]
                 s0 = maxPool0.shape[1]
                 ddd = plt.imshow(np.reshape(maxPool0, (s0, s0 * nkerns0)),interpolation="nearest")
-                #ddd.set_cmap('gray')
+                ddd.set_cmap('gray')
 
                 # Kernels of Layer 1
                 plt.subplot2grid((4,2),(3,0), colspan=2)
@@ -208,7 +209,7 @@ class FaceDetectorAll:
                 plt.draw()
 
                 # Creation of the Overviewfigure
-                if True:
+                if createOverviewFigs:
                     plt.waitforbuttonpress()
                     fig.set_facecolor('white')
                     plt.clf()
@@ -297,8 +298,8 @@ if __name__ == "__main__":
         w = None
         #import csv
         #w = csv.writer(open("../../data/" + 'batch2_46_gamma_dog.csv', 'w'))
-        d = "/Users/oli/Proj_Large_Data/PiVision/pivision/images/session_30_july_2014/Oliver_2/Oliver-2-41.png"
-        fd.processImage(cv2.imread(d), 3, w)
+        #d = "/Users/oli/Proj_Large_Data/PiVision/pivision/images/session_30_july_2014/Oliver_2/Oliver-2-41.png"
+        #fd.processImage(cv2.imread(d), 3, w)
         # cv2.imshow("Gallo ", img);
         # import matplotlib.pyplot as plt
         # plt.ion()
@@ -307,11 +308,11 @@ if __name__ == "__main__":
         # cv2.waitKey(1000000)
 
 
-        # for (idx, file_name) in enumerate(filenames):
-        #     img = cv2.imread(file_name)
-        #     if y[idx] == 3:
-        #         print("\n Checking Filename " + str(file_name) + " y " + str(y[idx]) )
-        #         fd.processImage(img, y[idx], w)
-        # print(len(filenames))
+        for (idx, file_name) in enumerate(filenames):
+            img = cv2.imread(file_name)
+            #if y[idx] == 3: #Only images from me
+            print("\n Checking Filename " + str(file_name) + " y " + str(y[idx]) )
+            fd.processImage(img, y[idx], w)
+            print(len(filenames))
 
 
