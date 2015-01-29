@@ -48,7 +48,7 @@ par(mfrow = c(nrows,nrows))
 par(mar = c(0,0.1,1,0))
 #par(mfrow = c(1,1));par(mar = c(2,2,2,2))
 for (i in idx) {
-  pixels =dcmImages$img[[i]]
+  pixels =dcmImages$img[[i]] 
   fact = mean(pixels) / 1000
   pixels = pixels / fact
   max(pixels)
