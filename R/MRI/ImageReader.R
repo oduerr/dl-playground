@@ -51,7 +51,7 @@ for (i in idx) {
   pixels =dcmImages$img[[i]] 
   fact = mean(pixels) / 1000
   pixels = pixels / fact
-  max(pixels)
+  mean(pixels)
   #hist(pixels)
   #image(t(pixels), col = grey(0:256/256), axes = FALSE,xlab = "", ylab = "", main=round(loc[i],2))
   image(t(pixels), col = terrain.colors(256, alpha = 1), axes = FALSE,xlab = "", ylab = "", main=round(loc[i],2))

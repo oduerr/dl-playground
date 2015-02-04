@@ -1,0 +1,67 @@
+---
+title: "GenerateOverview"
+output: html_document
+---
+```{r, echo=FALSE}
+createOverview <- function(filename) {
+  print(filename)
+  print(file.exists(filename))
+  dcmImages <- readDICOM(filename, verbose = FALSE,recursive = FALSE, exclude = "sql")
+  dcm.info <- dicomTable(dcmImages$hdr)
+  
+  loc = as.numeric(dcm.info$"0020-1041-SliceLocation")
+  idx = sort(loc, index.return=TRUE)$ix
+  
+  #paste("Z-Loc=",loc[1], ", dim",paste(dim(dcmImages$img[[1]])))
+  print(paste0("Filename [", filename, "]"))
+  print(paste0("Image information [", dcm.info$"0008-0008-ImageType"[[1]], "]"))
+  print(paste0("Dimension of the images : [", dim(dcmImages$img[[1]])[1], "x", dim(dcmImages$img[[1]])[1], "]"))
+  
+  numImages = dim(dcm.info)[1]
+  nrows = ceiling(sqrt(numImages))
+  par(mfrow = c(nrows,nrows))
+  par(mar = c(0,0.1,1,0))
+  #par(mfrow = c(1,1));par(mar = c(2,2,2,2))
+  for (i in idx) {
+    pixels =dcmImages$img[[i]] 
+    fact = mean(pixels) / 1000
+    pixels = pixels / fact
+    mean(pixels)
+    #hist(pixels)
+    image(t(pixels), col = grey(0:256/256), axes = FALSE,xlab = "", ylab = "", main=round(loc[i],2))
+    #image(t(pixels), col = terrain.colors(256, alpha = 1), axes = FALSE,xlab = "", ylab = "", main=round(loc[i],2))
+  }
+}
+```
+
+
+
+```{r}
+  library(oro.dicom)
+  setwd("/home/dueo/data/Inselspital_2015_01_21")
+  files = list.files(pattern=".+ep2d_diff.+ADC.+dcm", recursive = TRUE)
+  N = length(files)
+  dirs = rep("", N)
+  for (i in 1:N) {
+    f = files[i]
+    s = strsplit(f, "/")[[1]]
+    if (grepl(".+DTI.+",s[4]) == FALSE) {
+      p = paste0(s[1] , "/" , s[2] , "/" , s[3], "/",s[4])
+      dirs[i] = p
+    }
+  }
+  dirs.u = unique(dirs)
+```
+
+You can also embed plots, for example:
+
+```{r, echo=FALSE}
+  for (i in 1:length(dirs.u)) {
+    cat(dirs.u[i])
+    try(
+      createOverview(paste0("/home/dueo/data/Inselspital_2015_01_21/",dirs.u[i]))
+    )
+  }
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
