@@ -21,7 +21,7 @@ import csv
 scale_fac = 0.2
 borderProb = 0.85
 show = True
-createOverviewFigs = False
+createOverviewFigs = True
 webcam = False
 rocWriter = csv.writer(open('roc.csv', 'w'))
 
@@ -80,7 +80,7 @@ class FaceDetectorAll:
         Size_For_Eye_Detection = (48, 48)
         img_face = cv2.resize(img_face, Size_For_Eye_Detection, Image.ANTIALIAS)
         img_norm = Preprocessing.LBH_Norm(img_face)
-        img_norm = Preprocessing.mask_on_rect(img_norm)
+     #   img_norm = Preprocessing.mask_on_rect(img_norm)
         return img_norm, img_face
 
     def processImage(self, img, y=None, writer = None):
@@ -162,8 +162,10 @@ class FaceDetectorAll:
                 ############## Original Image with Box drawn
                 plt.subplot(421)
                 plt.title('Original Image : ' + str(img_org.shape))
+                frame_col = (0,255,0)
+                frame_width = 6
                 cv2.rectangle(img_org,(x_0,y_0),(x_0+h,y_0+h), frame_col,frame_width)
-                cv2.putText(img_org,str(predName + " (" + str(round(predPValue,3)) + ")") ,(x_0,y_0+h), cv2.FONT_HERSHEY_SIMPLEX, 1, frame_col, 2)
+                #cv2.putText(img_org,str(predName + " (" + str(round(predPValue,3)) + ")") ,(x_0,y_0+h), cv2.FONT_HERSHEY_SIMPLEX, 1, frame_col, 2)
                 plt.imshow(img_org)
 
                 ############## Logistic Regression
@@ -262,10 +264,10 @@ class FaceDetectorAll:
                     d9.set_cmap('gray')
 
                     plt.draw()
-                    plt.waitforbuttonpress()
+                    #plt.waitforbuttonpress()
                     from matplotlib.backends.backend_pdf import PdfPages
 
-                    pp = PdfPages('/Users/oli/Proj_Large_Data/PiVision/pivision/trunk/EuroGraphics2015/Figures/stuffForFigure_dueo.pdf')
+                    pp = PdfPages('/Users/oli/Proj_Large_Data/PiVision/pivision/trunk/EuroGraphics2015/Figures/stuffForFigure_rebekka.pdf')
                     pp.savefig(fig)
 
                     pp.close()
@@ -298,8 +300,13 @@ if __name__ == "__main__":
         w = None
         #import csv
         #w = csv.writer(open("../../data/" + 'batch2_46_gamma_dog.csv', 'w'))
-        #d = "/Users/oli/Proj_Large_Data/PiVision/pivision/images/session_30_july_2014/Oliver_2/Oliver-2-41.png"
-        #fd.processImage(cv2.imread(d), 3, w)
+        d = "/Users/oli/Proj_Large_Data/PiVision/pivision/images/session_30_july_2014/Oliver_2/Oliver-2-41.png"
+        d = "/Users/oli/Proj_Large_Data/PiVision/pivision/images/session_30_july_2014/Dejan_1/Dejan-1-1.png"
+        d = "/Users/oli/Proj_Large_Data/PiVision/pivision/images/session_30_july_2014/Rebekka_2/Rebekka-2-3.png"
+        d = "/Users/oli/Proj_Large_Data/PiVision/pivision/images/session_30_july_2014/Rebekka_2/Rebekka-2-31.png"
+        d = "/Users/oli/Proj_Large_Data/PiVision/pivision/images/session_30_july_2014/Rebekka_2/Rebekka-2-5.png"
+
+        fd.processImage(cv2.imread(d), 0, w)
         # cv2.imshow("Gallo ", img);
         # import matplotlib.pyplot as plt
         # plt.ion()
@@ -308,11 +315,11 @@ if __name__ == "__main__":
         # cv2.waitKey(1000000)
 
 
-        for (idx, file_name) in enumerate(filenames):
-            img = cv2.imread(file_name)
-            #if y[idx] == 3: #Only images from me
-            print("\n Checking Filename " + str(file_name) + " y " + str(y[idx]) )
-            fd.processImage(img, y[idx], w)
-            print(len(filenames))
+        # for (idx, file_name) in enumerate(filenames):
+        #     img = cv2.imread(file_name)
+        #     #if y[idx] == 3: #Only images from me
+        #     print("\n Checking Filename " + str(file_name) + " y " + str(y[idx]) )
+        #     fd.processImage(img, y[idx], w)
+        #     print(len(filenames))
 
 
