@@ -35,7 +35,7 @@ def resize_training():
             fout = path_new + cc + '/' + img
             print (fin + " --> " + fout)
             pics = cv2.imread(fin)
-            pics_48 = cv2.resize(pics, (48, 48))
+            pics_48 = cv2.resize(pics, (46, 46))
             if IMSHOW:
                 cv2.imshow('Org', pics)
                 cv2.imshow('Resized', pics_48)
@@ -46,7 +46,7 @@ def resize_training():
 
 
 if __name__ == '__main__':
-    #resize_training()
+    resize_training()
     path = "/Users/oli/Proj_Large_Data/kaggle_plankton/test/"
     path_new = "/Users/oli/Proj_Large_Data/kaggle_plankton/test_resized/"
     files = os.listdir(path)
@@ -55,7 +55,7 @@ if __name__ == '__main__':
         fout = path_new + '/' + fin
         print (fin + " --> " + fout)
         pics = cv2.imread(path + fin)
-        pics_48 = cv2.resize(pics, (48, 48))
+        pics_48 = cv2.resize(pics, (46, 46))
         if IMSHOW:
             cv2.imshow('Org', pics)
             cv2.imshow('Resized', pics_48)

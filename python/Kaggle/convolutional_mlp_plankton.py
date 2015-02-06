@@ -16,7 +16,7 @@ from theano.tensor.shared_randomstreams import RandomStreams
 from LogisticRegression import LogisticRegression
 from LeNetConvPoolLayer import LeNetConvPoolLayer
 from HiddenLayer import HiddenLayer
-import Preprocessing
+from LoadPics import LoadPics
 
 
 try:
@@ -112,7 +112,7 @@ class LeNet5(object):
         print '... building the model'
         print 'Number of Kernels' + str(nkerns)
 
-def evaluate_lenet5(topo, learning_rate=0.005, n_epochs=500, datasetName='mnist.pkl.gz',
+def evaluate_lenet5(topo, loadPics, learning_rate=0.005, n_epochs=500, datasetName='mnist.pkl.gz',
                     batch_size=4242, stateIn = None, stateOut = None):
 
     global pickle
@@ -123,14 +123,16 @@ def evaluate_lenet5(topo, learning_rate=0.005, n_epochs=500, datasetName='mnist.
     #datasets = load_data(dataset)
     #n_out = 10
 
-    datasets = Preprocessing.load_pictures()
+
+
+    print "Loading the datasets for testing and validation..."
     # Images for face recognition
-    valid_set_x, valid_set_y = datasets[0] #
-    test_set_x, test_set_y = datasets[1]
+    valid_set_x, valid_set_y = loadPics.getValidationData();
+    test_set_x, test_set_y = loadPics.getTestData();
+    print "... Loading the datasets"
 
-
-    n_out = 6
-    batch_size = 10
+    n_out = loadPics.numberOfClassed;
+    batch_size = 10 #TODO Check
     print("       Learning rate " + str(learning_rate))
 
 
@@ -281,7 +283,7 @@ def evaluate_lenet5(topo, learning_rate=0.005, n_epochs=500, datasetName='mnist.
         # New epoch the training set is disturbed again
         print("  Starting new training epoch")
         print("  Manipulating the training set")
-        train_set_x, train_set_y = Preprocessing.giveMeNewTraining()
+        train_set_x, train_set_y = loadPics.giveMeNewTraining()
         n_train_batches = train_set_x.get_value(borrow=True).shape[0]
         n_train_batches /= batch_size
         validation_frequency = min(n_train_batches, patience / 2)
@@ -392,6 +394,9 @@ if __name__ == '__main__':
     topo = LeNet5Topology()
     print(str(topo))
 
+    path = "/Users/oli/Proj_Large_Data/kaggle_plankton/train_resized/"
+    loadPics = LoadPics(path)
+
     #import subprocess, time
     #label = subprocess.check_output(['git', 'rev-parse', 'HEAD'])[:-1]
     filename = "scheissegal_2.p"
@@ -413,7 +418,7 @@ if __name__ == '__main__':
     stateOut = state
     for i in xrange(0,100):
         print(str(lr))
-        lr = evaluate_lenet5(topo=topo, learning_rate=lr, datasetName=filename, n_epochs=10, stateIn=stateIn, stateOut=stateOut)
+        lr = evaluate_lenet5(topo=topo, loadPics=loadPics, learning_rate=lr, datasetName=filename, n_epochs=10, stateIn=stateIn, stateOut=stateOut)
         stateIn = stateOut
 
 
