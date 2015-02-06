@@ -79,7 +79,7 @@ class LoadPics(object):
     def giveMeNewTraining(self):
         x_tmp = []
         y_tmp = []
-        print("Starting to create validation sets ")
+        print("Starting to create new training data ")
         for c,files in self.trainingsets.iteritems():
             y = self.testsets.keys().index(c) #We use the testset as a reference
             for file in files:
@@ -90,7 +90,7 @@ class LoadPics(object):
                 # cv2.waitKey(2000)
                 x_tmp.append(np.reshape(image2, len(image2)**2)) #To floats from 0 to 1
                 y_tmp.append(y)
-        print("Finished, loading")
+        print("Finished, creating new training data")
         return theano.shared(np.asarray(x_tmp, theano.config.floatX),borrow=True), T.cast(theano.shared(np.asarray(y_tmp, theano.config.floatX),borrow=True), 'int32')
 
 
