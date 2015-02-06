@@ -51,7 +51,7 @@ class LoadPics(object):
                     y_tmp.append(y)
             print("Finished, loading")
             self.x_test = theano.shared(np.asarray(x_tmp, theano.config.floatX),borrow=True)
-            self.y_test = theano.shared(np.asarray(y_tmp, theano.config.floatX),borrow=True)
+            self.y_test = T.cast(theano.shared(np.asarray(y_tmp, theano.config.floatX),borrow=True), 'int32')
         return self.x_test, self.y_test
 
     # Loading the validation data. This is are the (unperturbed) training data.
@@ -68,7 +68,7 @@ class LoadPics(object):
                     y_tmp.append(y)
             print("Finished, loading")
             self.x_valid = theano.shared(np.asarray(x_tmp, theano.config.floatX),borrow=True)
-            self.y_valid = theano.shared(np.asarray(y_tmp, theano.config.floatX),borrow=True)
+            self.y_valid = T.cast(theano.shared(np.asarray(y_tmp, theano.config.floatX),borrow=True), 'int32')
         return self.x_valid, self.y_valid
 
 
@@ -91,7 +91,7 @@ class LoadPics(object):
                 x_tmp.append(np.reshape(image2, len(image2)**2)) #To floats from 0 to 1
                 y_tmp.append(y)
         print("Finished, loading")
-        return theano.shared(np.asarray(x_tmp, theano.config.floatX),borrow=True), theano.shared(np.asarray(y_tmp, theano.config.floatX),borrow=True)
+        return theano.shared(np.asarray(x_tmp, theano.config.floatX),borrow=True), T.cast(theano.shared(np.asarray(y_tmp, theano.config.floatX),borrow=True), 'int32')
 
 
 if __name__ == '__main__':

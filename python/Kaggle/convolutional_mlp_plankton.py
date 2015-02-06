@@ -112,18 +112,11 @@ class LeNet5(object):
         print '... building the model'
         print 'Number of Kernels' + str(nkerns)
 
-def evaluate_lenet5(topo, loadPics, learning_rate=0.005, n_epochs=500, datasetName='mnist.pkl.gz',
-                    batch_size=4242, stateIn = None, stateOut = None):
+def evaluate_lenet5(topo, loadPics, learning_rate=0.005, n_epochs=500, stateIn = None, stateOut = None):
 
     global pickle
     rng = numpy.random.RandomState(23455)
     theano_rng = RandomStreams(numpy.random.randint(2 ** 30))
-
-    #Original
-    #datasets = load_data(dataset)
-    #n_out = 10
-
-
 
     print "Loading the datasets for testing and validation..."
     # Images for face recognition
@@ -418,7 +411,7 @@ if __name__ == '__main__':
     stateOut = state
     for i in xrange(0,100):
         print(str(lr))
-        lr = evaluate_lenet5(topo=topo, loadPics=loadPics, learning_rate=lr, datasetName=filename, n_epochs=10, stateIn=stateIn, stateOut=stateOut)
+        lr = evaluate_lenet5(topo=topo, loadPics=loadPics, learning_rate=lr, n_epochs=10, stateIn=stateIn, stateOut=stateOut)
         stateIn = stateOut
 
 
