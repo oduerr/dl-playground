@@ -2,7 +2,6 @@ import os
 import sys
 import subprocess
 from __builtin__ import len
-import matplotlib.pyplot as plt
 import random
 import cv2
 import numpy as np
