@@ -125,7 +125,7 @@ def evaluate_lenet5(topo, loadPics, learning_rate=0.005, n_epochs=500, stateIn =
     print "... Loading the datasets"
 
     n_out = loadPics.numberOfClassed;
-    batch_size = 10 #TODO Check
+    batch_size = 200 #TODO Check
     print("       Learning rate " + str(learning_rate))
 
 
@@ -226,6 +226,22 @@ def evaluate_lenet5(topo, loadPics, learning_rate=0.005, n_epochs=500, stateIn =
                                      x: test_set_x[index * batch_size: (index + 1) * batch_size],
                                      y: test_set_y[index * batch_size: (index + 1) * batch_size]})
 
+    # Functions for statistics
+    test_logloss = theano.function([index], cost,
+                                      givens={
+                                          x: test_set_x[index * batch_size: (index + 1) * batch_size],
+                                          y: test_set_y[index * batch_size: (index + 1) * batch_size]})
+
+    validate_logloss = theano.function([index], cost,
+                                     givens={
+                                         x: valid_set_x[index * batch_size: (index + 1) * batch_size],
+                                         y: valid_set_y[index * batch_size: (index + 1) * batch_size]})
+
+
+    test_probs_fct = theano.function([index], layer3.getProbs(),
+                                 givens={
+                                     x: test_set_x[index * batch_size: (index + 1) * batch_size]})
+
     validate_model = theano.function([index], layer3.errors(y),
                                      givens={
                                          x: valid_set_x[index * batch_size: (index + 1) * batch_size],
@@ -282,32 +298,45 @@ def evaluate_lenet5(topo, loadPics, learning_rate=0.005, n_epochs=500, stateIn =
         validation_frequency = min(n_train_batches, patience / 2)
         print("  Compiling new function")
         learning_rate *= 0.993 #See Paper from Cican
-        train_model = theano.function([index], cost, updates=updates,
+
+        train_logloss = theano.function([index], cost, updates=updates,
                                       givens={
                                           x: train_set_x[index * batch_size: (index + 1) * batch_size],
-                                          y: train_set_y[index * batch_size: (index + 1) * batch_size]})
+                                          y: train_set_y[index * batch_size: (index + 1) * batch_size]}
+        )
+
         print("  Finished compiling the training set")
 
         epoch = epoch + 1
         for minibatch_index in xrange(n_train_batches): #Alle einmal anfassen
             iter = (epoch - 1) * n_train_batches + minibatch_index
             epoch_fraction +=  1.0 / float(n_train_batches)
+            cost_ij = train_logloss(minibatch_index)
             if iter % 100 == 0:
-                print 'training @ iter = ', iter, ' epoch_fraction ', epoch_fraction
-            cost_ij = train_model(minibatch_index)
+                print 'training @ iter = ', iter, ' epoch_fraction ', epoch_fraction, ' costs ' + str(cost_ij)
             if (iter + 1) % validation_frequency == 0:
+
                 # compute zero-one loss on validation set
                 validation_losses = [validate_model(i) for i in xrange(n_valid_batches)]
                 this_validation_loss = numpy.mean(validation_losses)
+
+                # compute zero-one loss on validation set
+                validation_log_loss = numpy.mean([validate_logloss(i) for i in xrange(n_valid_batches)])
+                test_log_loss = numpy.mean([test_logloss(i) for i in xrange(n_test_batches)])
+
+
                 # test it on the test set
                 test_start = time.clock();
                 test_losses = [test_model(i) for i in xrange(n_test_batches)]
-                train_costs = [train_model(i) for i in xrange(n_test_batches)]
+                train_costs = [train_logloss(i) for i in xrange(n_test_batches)]
                 dt = time.clock() - test_start
                 print'Testing %i faces in %f msec image / sec  %f', batch_size * n_test_batches, dt, dt/(n_test_batches * batch_size)
                 test_score = numpy.mean(test_losses)
-                train_cost = numpy.mean(train_costs)
-                print('%i, %f, %f, %f, %f, 0.424242' % (epoch,  this_validation_loss * 100.,test_score * 100., learning_rate, train_cost))
+                train_log_loss = numpy.mean(train_costs)
+
+                test_probs1 = [test_probs_fct(i) for i in xrange(n_test_batches)]
+
+                print('%i, %f, %f, %f, %f, %f, %f, 0.424242' % (epoch,  this_validation_loss * 100., test_score * 100., learning_rate, train_log_loss, validation_log_loss, test_log_loss))
 
                 # if we got the best validation score until now
                 if this_validation_loss < best_validation_loss:
@@ -328,9 +357,9 @@ def evaluate_lenet5(topo, loadPics, learning_rate=0.005, n_epochs=500, stateIn =
                     #       (epoch, minibatch_index + 1, n_train_batches,
                     #        test_score * 100.))
 
-                # if (this_validation_loss < 0.02):
-                #     learning_rate /= 2
-                #     print("Decreased learning rate due to low xval error to " + str(learning_rate))
+                    # if (this_validation_loss < 0.02):
+                    #     learning_rate /= 2
+                    #     print("Decreased learning rate due to low xval error to " + str(learning_rate))
 
 
             if patience <= iter:
@@ -387,7 +416,12 @@ if __name__ == '__main__':
     topo = LeNet5Topology()
     print(str(topo))
 
-    path = "/Users/oli/Proj_Large_Data/kaggle_plankton/train_resized/"
+    if (sys.platform == 'darwin'):
+        path = "/Users/oli/Proj_Large_Data/kaggle_plankton/train_resized/"
+    else:
+        path = "/home/dueo/data_kaggel_bowl/train_resized/"
+    print " Using the following path " + str(path)
+
     loadPics = LoadPics(path)
 
     #import subprocess, time

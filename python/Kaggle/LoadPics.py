@@ -31,9 +31,15 @@ class LoadPics(object):
             random.shuffle(imgs) #Shuffels in place
             d[cc] = len(imgs)
             l += len(imgs)
-            sp = int(len(imgs) * 0.75)
-            self.trainingsets[cc] = imgs[:sp]
-            self.testsets[cc] =  imgs[sp:]
+
+            testStart = int(len(imgs) * 0.75)
+            testEnd = (len(imgs)) - 1
+            # A small set for debuggnig
+            testStart = int(len(imgs) * 0.05)
+            testEnd = testStart + 5
+
+            self.trainingsets[cc] = imgs[:testStart]
+            self.testsets[cc] =  imgs[testStart:testEnd]
         print("Number of classes " + str(len(self.trainingsets)) + " number of images " + str(l))
 
     # Loading the test-data (does caching)
