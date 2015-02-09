@@ -33,9 +33,10 @@ class LeNet5Topology(object):
         self.in_2 = 14              #Input in second layer (layer1)
         self.filter_2 = 5
         self.pool_2 = 2
-        self.nkerns = [20,100]
+        #self.nkerns = [20,100]
+        self.nkerns = [100,100]
         self.hidden_input = 5*5
-        self.numLogisticInput = 200
+        self.numLogisticInput = 1000
         self.numLogisticOutput = 6
 
     def __str__(self):

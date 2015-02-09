@@ -35,8 +35,8 @@ class LoadPics(object):
             testStart = int(len(imgs) * 0.75)
             testEnd = (len(imgs)) - 1
             # A small set for debuggnig
-            testStart = int(len(imgs) * 0.05)
-            testEnd = testStart + 5
+            # testStart = int(len(imgs) * 0.05)
+            # testEnd = testStart + 5
 
             self.trainingsets[cc] = imgs[:testStart]
             self.testsets[cc] =  imgs[testStart:testEnd]
