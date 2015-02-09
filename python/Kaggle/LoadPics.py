@@ -47,7 +47,7 @@ class LoadPics(object):
         if self.x_test is None:
             x_tmp = []
             y_tmp = []
-            print("Starting to create training sets ")
+            print("Starting to load training sets ")
             for c,files in self.testsets.iteritems():
                 y = self.testsets.keys().index(c)
                 for file in files:
@@ -55,8 +55,9 @@ class LoadPics(object):
                     x_tmp.append(np.reshape(pics / 255., len(pics)**2)) #To floats from 0 to 1
                     y_tmp.append(y)
             print("Finished, loading")
-            self.x_test = theano.shared(np.asarray(x_tmp, theano.config.floatX),borrow=True)
-            self.y_test = T.cast(theano.shared(np.asarray(y_tmp, theano.config.floatX),borrow=True), 'int32')
+            perm = np.random.permutation(len(y_tmp))
+            self.x_test = theano.shared(np.asarray(x_tmp[perm], theano.config.floatX),borrow=True)
+            self.y_test = T.cast(theano.shared(np.asarray(y_tmp[perm], theano.config.floatX),borrow=True), 'int32')
         return self.x_test, self.y_test
 
     # Loading the validation data. This is are the (unperturbed) training data.
@@ -64,16 +65,17 @@ class LoadPics(object):
         if self.x_valid is None:
             x_tmp = []
             y_tmp = []
-            print("Starting to create validation sets ")
+            print("Starting to load validation sets ")
             for c,files in self.trainingsets.iteritems():
                 y = self.testsets.keys().index(c) #We use the testset as a reference
                 for file in files:
                     pics = cv2.imread(self.path + c + '/' + file, cv2.CV_LOAD_IMAGE_GRAYSCALE) #unit8 from e.g. 34 to 255
                     x_tmp.append(np.reshape(pics / 255., len(pics)**2)) #To floats from 0 to 1
                     y_tmp.append(y)
-            print("Finished, loading")
-            self.x_valid = theano.shared(np.asarray(x_tmp, theano.config.floatX),borrow=True)
-            self.y_valid = T.cast(theano.shared(np.asarray(y_tmp, theano.config.floatX),borrow=True), 'int32')
+            print("Finished, loading validation sets")
+            perm = np.random.permutation(len(y_tmp))
+            self.x_valid = theano.shared(np.asarray(x_tmp[perm], theano.config.floatX),borrow=True)
+            self.y_valid = T.cast(theano.shared(np.asarray(y_tmp[perm], theano.config.floatX),borrow=True), 'int32')
         return self.x_valid, self.y_valid
 
 
@@ -96,7 +98,8 @@ class LoadPics(object):
                 x_tmp.append(np.reshape(image2, len(image2)**2)) #To floats from 0 to 1
                 y_tmp.append(y)
         print("Finished, creating new training data")
-        return theano.shared(np.asarray(x_tmp, theano.config.floatX),borrow=True), T.cast(theano.shared(np.asarray(y_tmp, theano.config.floatX),borrow=True), 'int32')
+        perm = np.random.permutation(len(y_tmp))
+        return theano.shared(np.asarray(x_tmp[perm], theano.config.floatX),borrow=True), T.cast(theano.shared(np.asarray(y_tmp[perm], theano.config.floatX),borrow=True), 'int32')
 
 
 if __name__ == '__main__':
