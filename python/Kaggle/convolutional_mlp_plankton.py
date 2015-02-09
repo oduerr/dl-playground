@@ -17,7 +17,7 @@ from LogisticRegression import LogisticRegression
 from LeNetConvPoolLayer import LeNetConvPoolLayer
 from HiddenLayer import HiddenLayer
 from LoadPics import LoadPics
-
+import pickle
 
 try:
     import PIL.Image as Image
@@ -114,7 +114,6 @@ class LeNet5(object):
 
 def evaluate_lenet5(topo, loadPics, learning_rate=0.005, n_epochs=500, stateIn = None, stateOut = None):
 
-    global pickle
     rng = numpy.random.RandomState(23455)
     theano_rng = RandomStreams(numpy.random.randint(2 ** 30))
 
