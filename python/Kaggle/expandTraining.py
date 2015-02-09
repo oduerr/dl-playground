@@ -38,7 +38,7 @@ def distorb(img):
     # primat[1,2] = mat[1,2] + dist                    nt(dist)
     img_rotated = cv2.warpAffine(img, mat, (im_size, im_size))
     # Add some noise
-    img_rotated = np.multiply(img_rotated, np.random.binomial(size = img_rotated.shape, n = 1, p = 1 - 0.2))
+    img_rotated = np.multiply(img_rotated, np.random.binomial(size = img_rotated.shape, n = 1, p = 1 - 0.02))
     # paper 11 noise from 0.1 to 0.15
     # paper 12 back to 0.1
     # paper 15 back to 0.2
