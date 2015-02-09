@@ -37,6 +37,7 @@ from theano.tensor.shared_randomstreams import RandomStreams
 from LogisticRegression import LogisticRegression
 from LeNetConvPoolLayer import LeNetConvPoolLayer
 from HiddenLayer import HiddenLayer
+import pickle
 import Preprocessing
 
 try:
@@ -135,7 +136,6 @@ class LeNet5(object):
 def evaluate_lenet5(topo, learning_rate=0.005, n_epochs=500, datasetName='mnist.pkl.gz',
                     batch_size=4242, stateIn = None, stateOut = None):
 
-    global pickle
     rng = numpy.random.RandomState(23455)
     theano_rng = RandomStreams(numpy.random.randint(2 ** 30))
 
