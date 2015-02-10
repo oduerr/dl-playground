@@ -61,8 +61,8 @@ class LoadPics(object):
                     y_tmp.append(y)
             print("Finished, loading")
             perm = np.random.permutation(len(y_tmp))
-            self.x_test = theano.shared(np.asarray(x_tmp, theano.config.floatX)[perm],borrow=True)
-            self.y_test = T.cast(theano.shared(np.asarray(y_tmp, theano.config.floatX)[perm],borrow=True), 'int32')
+            self.x_test = theano.shared(np.asarray(x_tmp[perm], theano.config.floatX),borrow=True)
+            self.y_test = T.cast(theano.shared(np.asarray(y_tmp[perm], theano.config.floatX),borrow=True), 'int32')
         return self.x_test, self.y_test
 
     # Loading the validation data. This is are the (unperturbed) training data.
@@ -79,8 +79,8 @@ class LoadPics(object):
                     y_tmp.append(y)
             print("Finished, loading validation sets")
             perm = np.random.permutation(len(y_tmp))
-            self.x_valid = theano.shared(np.asarray(x_tmp, theano.config.floatX)[perm],borrow=True)
-            self.y_valid = T.cast(theano.shared(np.asarray(y_tmp, theano.config.floatX)[perm],borrow=True), 'int32')
+            self.x_valid = theano.shared(np.asarray(x_tmp[perm], theano.config.floatX),borrow=True)
+            self.y_valid = T.cast(theano.shared(np.asarray(y_tmp[perm], theano.config.floatX),borrow=True), 'int32')
         return self.x_valid, self.y_valid
 
     def getClasses(self):
@@ -105,7 +105,7 @@ class LoadPics(object):
                 y_tmp.append(y)
         print("Finished, creating new training data")
         perm = np.random.permutation(len(y_tmp))
-        return theano.shared(np.asarray(x_tmp, theano.config.floatX)[perm],borrow=True), T.cast(theano.shared(np.asarray(y_tmp, theano.config.floatX)[perm],borrow=True), 'int32')
+        return theano.shared(np.asarray(x_tmp[perm], theano.config.floatX),borrow=True), T.cast(theano.shared(np.asarray(y_tmp[perm], theano.config.floatX),borrow=True), 'int32')
 
 
 if __name__ == '__main__':
