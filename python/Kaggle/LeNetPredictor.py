@@ -153,7 +153,6 @@ if __name__ == "__main__":
     w = csv.writer(fout);
 
     classes = d.getClasses()
-    classes.insert(0, 'image')
     head = fc.next()
 
     c = -1
