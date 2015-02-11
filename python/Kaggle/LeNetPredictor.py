@@ -120,9 +120,7 @@ class LeNetPredictor(object):
 
 
 if __name__ == "__main__":
-    import os
-    import Preprocessing
-    import time
+    import os, sys
     if os.path.isfile('plankton.p'):
         stateIn = 'plankton.p'
     else:
@@ -131,27 +129,51 @@ if __name__ == "__main__":
     print("Loaded Predictor ")
 
 
-    path_training = "/Users/oli/Proj_Large_Data/kaggle_plankton/train_resized/"
+    if (sys.platform == 'darwin'):
+        path = "/Users/oli/Proj_Large_Data/kaggle_plankton/test_resized/"
+        path_training = "/Users/oli/Proj_Large_Data/kaggle_plankton/train_resized/"
+        fout = open("/Users/oli/Proj_Large_Data/kaggle_plankton/submission.csv", 'w');
+        fc = csv.reader(file('/Users/oli/Proj_Large_Data/kaggle_plankton/sampleSubmission.csv'))
+    else:
+        path_training = "/home/dueo/data_kaggel_bowl/train_resized/"
+        path = "/home/dueo/data_kaggel_bowl/test_resized/"
+        fout = open("/home/dueo/data_kaggel_bowl/submission.csv", 'w');
+        fc = csv.reader(file('/home/dueo/data_kaggel_bowl/sampleSubmission.csv'))
+    print " Using the following path " + str(path)
+
+
+
     d = LoadPics.LoadPics(path_training)
     print(d.getNumberOfClassed())
 
 
-    path = "/Users/oli/Proj_Large_Data/kaggle_plankton/test_resized/"
     files = os.listdir(path)
     c = 0
-    fout = open("/Users/oli/Proj_Large_Data/kaggle_plankton/submission.csv", 'w');
     import csv
     w = csv.writer(fout);
+
     classes = d.getClasses()
     classes.insert(0, 'image')
-    w.writerow(classes)
+    head = fc.next()
+
+    c = -1
+    idx = [-1] * len(classes)
+    for sc in classes:
+        c += 1
+        print(c)
+        for i, s in enumerate(head[1:]):
+            if sc in s:
+                idx[c] = i
+
+
+    w.writerow(head)
     for fin in files:
         print (fin)
         pics = cv2.imread(path + fin , cv2.CV_LOAD_IMAGE_GRAYSCALE)
         X = np.reshape(pics / 255., len(pics)**2)
         res = pred.getPrediction(X)[0]
         fout.write(fin + ',')
-        w.writerow(res)
+        w.writerow(res[idx])
 
 
 
