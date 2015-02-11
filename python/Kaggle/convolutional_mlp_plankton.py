@@ -423,6 +423,7 @@ if __name__ == '__main__':
     print " Using the following path " + str(path)
 
     loadPics = LoadPics(path)
+    print("Classes " + str(loadPics.getClasses()));
 
     #import subprocess, time
     #label = subprocess.check_output(['git', 'rev-parse', 'HEAD'])[:-1]

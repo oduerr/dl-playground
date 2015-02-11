@@ -121,8 +121,8 @@ class LeNetPredictor(object):
 
 if __name__ == "__main__":
     import os, sys
-    if os.path.isfile('plankton.p'):
-        stateIn = 'plankton.p'
+    if os.path.isfile('paper21'):
+        stateIn = 'paper21'
     else:
         stateIn = None
     pred = LeNetPredictor(stateIn=stateIn)
@@ -130,7 +130,8 @@ if __name__ == "__main__":
 
 
     if (sys.platform == 'darwin'):
-        path = "/Users/oli/Proj_Large_Data/kaggle_plankton/test_resized/"
+        #path = "/Users/oli/Proj_Large_Data/kaggle_plankton/test_resized/"
+        path = "/Users/oli/Proj_Large_Data/kaggle_plankton/tmp/"
         path_training = "/Users/oli/Proj_Large_Data/kaggle_plankton/train_resized/"
         fout = open("/Users/oli/Proj_Large_Data/kaggle_plankton/submission.csv", 'w');
         fc = csv.reader(file('/Users/oli/Proj_Large_Data/kaggle_plankton/sampleSubmission.csv'))
@@ -148,6 +149,11 @@ if __name__ == "__main__":
 
 
     files = os.listdir(path)
+    try:
+        files.remove('.DS_Store')
+    except:
+        pass
+
     c = 0
     import csv
     w = csv.writer(fout);
@@ -171,6 +177,16 @@ if __name__ == "__main__":
         pics = cv2.imread(path + fin , cv2.CV_LOAD_IMAGE_GRAYSCALE)
         X = np.reshape(pics / 255., len(pics)**2)
         res = pred.getPrediction(X)[0]
+        idmax = np.argmax(res)
+        name = classes[idmax]
+        p = res[idmax]
+        print("Name " + str(name) + " p " + str(p) + " pmax=" + str(res[59]))
+        if (p > 0.05):
+            print("Name " + str(name) + " p " + str(p))
+            cv2.imshow('query', pics)
+            cv2.waitKey(1000000)
+
+
         fout.write(fin + ',')
         w.writerow(res[idx])
 
