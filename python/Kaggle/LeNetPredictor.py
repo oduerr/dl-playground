@@ -120,6 +120,7 @@ class LeNetPredictor(object):
 
 
 if __name__ == "__main__":
+    classesasreadonserver = ['pteropod_butterfly', 'copepod_calanoid_octomoms', 'echinoderm_larva_seastar_brachiolaria', 'detritus_blob', 'fish_larvae_deep_body', 'hydromedusae_bell_and_tentacles', 'copepod_other', 'chaetognath_other', 'hydromedusae_shapeA', 'tornaria_acorn_worm_larvae', 'copepod_cyclopoid_copilia', 'fish_larvae_very_thin_body', 'invertebrate_larvae_other_A', 'trichodesmium_multiple', 'hydromedusae_sideview_big', 'hydromedusae_typeE', 'hydromedusae_liriope', 'copepod_calanoid_small_longantennae', 'euphausiids', 'siphonophore_calycophoran_rocketship_adult', 'appendicularian_straight', 'tunicate_partial', 'pteropod_triangle', 'fecal_pellet', 'protist_noctiluca', 'hydromedusae_typeF', 'detritus_filamentous', 'ephyra', 'fish_larvae_leptocephali', 'copepod_calanoid_eggs', 'hydromedusae_solmundella', 'unknown_unclassified', 'tunicate_doliolid_nurse', 'hydromedusae_haliscera_small_sideview', 'chaetognath_sagitta', 'protist_other', 'echinopluteus', 'acantharia_protist_halo', 'jellies_tentacles', 'trichodesmium_tuft', 'echinoderm_larva_pluteus_brittlestar', 'fish_larvae_myctophids', 'appendicularian_fritillaridae', 'ctenophore_lobate', 'shrimp_zoea', 'echinoderm_larva_seastar_bipinnaria', 'hydromedusae_shapeA_sideview_small', 'unknown_blobs_and_smudges', 'copepod_calanoid_eucalanus', 'protist_fuzzy_olive', 'tunicate_salp_chains', 'trichodesmium_bowtie', 'siphonophore_calycophoran_sphaeronectes_young', 'appendicularian_s_shape', 'polychaete', 'protist_star', 'hydromedusae_other', 'acantharia_protist', 'echinoderm_larva_pluteus_typeC', 'protist_dark_center', 'ctenophore_cydippid_no_tentacles', 'artifacts', 'siphonophore_physonect_young', 'artifacts_edge', 'diatom_chain_tube', 'trichodesmium_puff', 'trochophore_larvae', 'hydromedusae_partial_dark', 'pteropod_theco_dev_seq', 'siphonophore_calycophoran_abylidae', 'copepod_calanoid_large', 'ctenophore_cestid', 'echinoderm_seacucumber_auricularia_larva', 'unknown_sticks', 'hydromedusae_typeD', 'chaetognath_non_sagitta', 'radiolarian_colony', 'siphonophore_partial', 'hydromedusae_typeD_bell_and_tentacles', 'euphausiids_young', 'copepod_cyclopoid_oithona_eggs', 'invertebrate_larvae_other_B', 'siphonophore_other_parts', 'shrimp-like_other', 'stomatopod', 'copepod_calanoid', 'copepod_calanoid_flatheads', 'fish_larvae_medium_body', 'siphonophore_physonect', 'copepod_calanoid_frillyAntennae', 'amphipods', 'hydromedusae_haliscera', 'acantharia_protist_big_center', 'tunicate_salp', 'appendicularian_slight_curve', 'siphonophore_calycophoran_sphaeronectes_stem', 'hydromedusae_aglaura', 'fish_larvae_thin_body', 'hydromedusae_narco_young', 'radiolarian_chain', 'hydromedusae_narco_dark', 'shrimp_caridean', 'heteropod', 'copepod_cyclopoid_oithona', 'decapods', 'siphonophore_calycophoran_rocketship_young', 'ctenophore_cydippid_tentacles', 'copepod_calanoid_large_side_antennatucked', 'hydromedusae_solmaris', 'hydromedusae_h15', 'chordate_type1', 'shrimp_sergestidae', 'crustacean_other', 'diatom_chain_string', 'siphonophore_calycophoran_sphaeronectes', 'hydromedusae_narcomedusae', 'tunicate_doliolid', 'hydromedusae_shapeB', 'echinoderm_larva_pluteus_early', 'echinoderm_larva_pluteus_urchin', 'detritus_other']
     import os, sys
     if os.path.isfile('paper21'):
         stateIn = 'paper21'
@@ -144,8 +145,8 @@ if __name__ == "__main__":
 
 
 
-    d = LoadPics.LoadPics(path_training)
-    print(d.getNumberOfClassed())
+    #d = LoadPics.LoadPics(path_training)
+    #print(d.getNumberOfClassed())
 
 
     files = os.listdir(path)
@@ -158,12 +159,12 @@ if __name__ == "__main__":
     import csv
     w = csv.writer(fout);
 
-    classes = d.getClasses()
+    #classes = d.getClasses()
     head = fc.next()
 
     c = -1
-    idx = [-1] * len(classes)
-    for sc in classes:
+    idx = [-1] * len(classesasreadonserver)
+    for sc in classesasreadonserver:
         c += 1
         print(c)
         for i, s in enumerate(head[1:]):
@@ -178,7 +179,7 @@ if __name__ == "__main__":
         X = np.reshape(pics / 255., len(pics)**2)
         res = pred.getPrediction(X)[0]
         idmax = np.argmax(res)
-        name = classes[idmax]
+        name = classesasreadonserver[idmax]
         p = res[idmax]
         print("Name " + str(name) + " p " + str(p) + " pmax=" + str(res[59]))
         if (p > 0.05):

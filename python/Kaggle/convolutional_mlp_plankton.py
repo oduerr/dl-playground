@@ -27,17 +27,16 @@ except ImportError:
 class LeNet5Topology(object):
 
     def __init__(self):
-        self.ishape = (46, 46)      # this is the size of the input image
+        self.ishape = (46, 46)      # Size of the input image
         self.filter_1 = 5           # Size of first filter
         self.pool_1 = 3             # Size of pooling layer
-        self.in_2 = 14              #Input in second layer (layer1)
+        self.in_2 = 14              # Input in second layer (layer1)
         self.filter_2 = 5
         self.pool_2 = 2
-        #self.nkerns = [20,100]
-        self.nkerns = [100,200]
+        self.nkerns = [20,100]
+        #self.nkerns = [100,200]
         self.hidden_input = 5*5
-        self.numLogisticInput = 500
-        self.numLogisticOutput = 6
+        self.numLogisticInput = 200
 
     def __str__(self):
         return ("Image Shape            " + str(self.ishape[0]) + "x" + str(self.ishape[1]))+ "\n" \
@@ -48,8 +47,7 @@ class LeNet5Topology(object):
         +("Second Pooling:        " + str(self.pool_2)) + "\n" \
         +("Number of Kernels      " + str(self.nkerns)) + "\n" \
         +("Hidden Input:          " + str(self.hidden_input)) + "\n" \
-        +("Logistic Input:        " + str(self.numLogisticInput)) + "\n" \
-        +("Logistic Output:       " + str(self.numLogisticOutput))
+        +("Logistic Input:        " + str(self.numLogisticInput))
 
         #ishape = (28, 28)
         #Orignial Run
@@ -160,7 +158,8 @@ def evaluate_lenet5(topo, loadPics, learning_rate=0.005, n_epochs=500, stateIn =
     w0 = w1 = b0 = b1 = wHidden = bHidden = wLogReg = bLogReg = None
     if stateIn is not None:
         print("  Loading previous state ...")
-        state = pickle.load(open(stateIn, "r"))
+        state_names = pickle.load(open(stateIn, "r"))
+        state = state_names[0]
         convValues = state.convValues
         w0 = convValues[0][0]
         b0 = convValues[0][1]
@@ -400,7 +399,7 @@ def evaluate_lenet5(topo, loadPics, learning_rate=0.005, n_epochs=500, stateIn =
                         logRegValues = layer3.getParametersAsValues())
     print
     if stateOut is not None:
-        pickle.dump(state, open(stateOut, 'wb') ) #Attention y is wrong
+        pickle.dump([state, loadPics.getClasses()], open(stateOut, 'wb') )
         print("Saved the pickeled data-set")
 
     return learning_rate
@@ -427,10 +426,9 @@ if __name__ == '__main__':
 
     #import subprocess, time
     #label = subprocess.check_output(['git', 'rev-parse', 'HEAD'])[:-1]
-    filename = "scheissegal_2.p"
     import os
     stateIn = None
-    state = 'new_big'
+    state = 'new_small'
     if state is not None and os.path.isfile(state):
         stateIn = state
     else:
@@ -446,7 +444,7 @@ if __name__ == '__main__':
     stateOut = state
     for i in xrange(0,100):
         print(str(lr))
-        lr = evaluate_lenet5(topo=topo, loadPics=loadPics, learning_rate=lr, n_epochs=10, stateIn=stateIn, stateOut=stateOut)
+        lr = evaluate_lenet5(topo=topo, loadPics=loadPics, learning_rate=lr, n_epochs=1, stateIn=stateIn, stateOut=stateOut)
         stateIn = stateOut
 
 
