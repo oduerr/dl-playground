@@ -33,7 +33,7 @@ class LoadPics(object):
         self.classes = classes
         for cc in classes:
             imgs = os.listdir(path + cc)
-            random.shuffle(imgs) #Shuffels in place
+            random.shuffle(imgs) #Shuffels in place in one class
             d[cc] = len(imgs)
             l += len(imgs)
 
@@ -84,7 +84,7 @@ class LoadPics(object):
         return self.x_valid, self.y_valid
 
     def getClasses(self):
-        return self.classes
+        return self.testsets.keys()
 
     def getNumberOfClassed(self):
         return self.numberOfClassed

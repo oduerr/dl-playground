@@ -30,7 +30,9 @@ class LeNetPredictor(object):
             f = gzip.open(stateIn,'rb')
         else:
             f = open(stateIn, 'r')
-        state = pickle.load(f)
+        state_name = pickle.load(f)
+        state = state_name[0]
+        self.names = state_name[1]
         convValues = state.convValues
         w0 = convValues[0][0]
         b0 = convValues[0][1]
@@ -44,7 +46,9 @@ class LeNetPredictor(object):
         bLogReg = logRegValues[1]
         topo = state.topoplogy
         nkerns = topo.nkerns
-        n_out = topo.numLogisticOutput
+        n_out = len(self.names)
+        assert(n_out == np.shape(wLogReg)[1])
+
         print("  Some Values ...")
         print("     Number of Kernels : " + str(nkerns))
         print("     First Kernel w0[0][0] :\n" + str(w0[0][0]))
@@ -120,33 +124,27 @@ class LeNetPredictor(object):
 
 
 if __name__ == "__main__":
-    classesasreadonserver = ['pteropod_butterfly', 'copepod_calanoid_octomoms', 'echinoderm_larva_seastar_brachiolaria', 'detritus_blob', 'fish_larvae_deep_body', 'hydromedusae_bell_and_tentacles', 'copepod_other', 'chaetognath_other', 'hydromedusae_shapeA', 'tornaria_acorn_worm_larvae', 'copepod_cyclopoid_copilia', 'fish_larvae_very_thin_body', 'invertebrate_larvae_other_A', 'trichodesmium_multiple', 'hydromedusae_sideview_big', 'hydromedusae_typeE', 'hydromedusae_liriope', 'copepod_calanoid_small_longantennae', 'euphausiids', 'siphonophore_calycophoran_rocketship_adult', 'appendicularian_straight', 'tunicate_partial', 'pteropod_triangle', 'fecal_pellet', 'protist_noctiluca', 'hydromedusae_typeF', 'detritus_filamentous', 'ephyra', 'fish_larvae_leptocephali', 'copepod_calanoid_eggs', 'hydromedusae_solmundella', 'unknown_unclassified', 'tunicate_doliolid_nurse', 'hydromedusae_haliscera_small_sideview', 'chaetognath_sagitta', 'protist_other', 'echinopluteus', 'acantharia_protist_halo', 'jellies_tentacles', 'trichodesmium_tuft', 'echinoderm_larva_pluteus_brittlestar', 'fish_larvae_myctophids', 'appendicularian_fritillaridae', 'ctenophore_lobate', 'shrimp_zoea', 'echinoderm_larva_seastar_bipinnaria', 'hydromedusae_shapeA_sideview_small', 'unknown_blobs_and_smudges', 'copepod_calanoid_eucalanus', 'protist_fuzzy_olive', 'tunicate_salp_chains', 'trichodesmium_bowtie', 'siphonophore_calycophoran_sphaeronectes_young', 'appendicularian_s_shape', 'polychaete', 'protist_star', 'hydromedusae_other', 'acantharia_protist', 'echinoderm_larva_pluteus_typeC', 'protist_dark_center', 'ctenophore_cydippid_no_tentacles', 'artifacts', 'siphonophore_physonect_young', 'artifacts_edge', 'diatom_chain_tube', 'trichodesmium_puff', 'trochophore_larvae', 'hydromedusae_partial_dark', 'pteropod_theco_dev_seq', 'siphonophore_calycophoran_abylidae', 'copepod_calanoid_large', 'ctenophore_cestid', 'echinoderm_seacucumber_auricularia_larva', 'unknown_sticks', 'hydromedusae_typeD', 'chaetognath_non_sagitta', 'radiolarian_colony', 'siphonophore_partial', 'hydromedusae_typeD_bell_and_tentacles', 'euphausiids_young', 'copepod_cyclopoid_oithona_eggs', 'invertebrate_larvae_other_B', 'siphonophore_other_parts', 'shrimp-like_other', 'stomatopod', 'copepod_calanoid', 'copepod_calanoid_flatheads', 'fish_larvae_medium_body', 'siphonophore_physonect', 'copepod_calanoid_frillyAntennae', 'amphipods', 'hydromedusae_haliscera', 'acantharia_protist_big_center', 'tunicate_salp', 'appendicularian_slight_curve', 'siphonophore_calycophoran_sphaeronectes_stem', 'hydromedusae_aglaura', 'fish_larvae_thin_body', 'hydromedusae_narco_young', 'radiolarian_chain', 'hydromedusae_narco_dark', 'shrimp_caridean', 'heteropod', 'copepod_cyclopoid_oithona', 'decapods', 'siphonophore_calycophoran_rocketship_young', 'ctenophore_cydippid_tentacles', 'copepod_calanoid_large_side_antennatucked', 'hydromedusae_solmaris', 'hydromedusae_h15', 'chordate_type1', 'shrimp_sergestidae', 'crustacean_other', 'diatom_chain_string', 'siphonophore_calycophoran_sphaeronectes', 'hydromedusae_narcomedusae', 'tunicate_doliolid', 'hydromedusae_shapeB', 'echinoderm_larva_pluteus_early', 'echinoderm_larva_pluteus_urchin', 'detritus_other']
+    #classesasreadonserver = ['pteropod_butterfly', 'copepod_calanoid_octomoms', 'echinoderm_larva_seastar_brachiolaria', 'detritus_blob', 'fish_larvae_deep_body', 'hydromedusae_bell_and_tentacles', 'copepod_other', 'chaetognath_other', 'hydromedusae_shapeA', 'tornaria_acorn_worm_larvae', 'copepod_cyclopoid_copilia', 'fish_larvae_very_thin_body', 'invertebrate_larvae_other_A', 'trichodesmium_multiple', 'hydromedusae_sideview_big', 'hydromedusae_typeE', 'hydromedusae_liriope', 'copepod_calanoid_small_longantennae', 'euphausiids', 'siphonophore_calycophoran_rocketship_adult', 'appendicularian_straight', 'tunicate_partial', 'pteropod_triangle', 'fecal_pellet', 'protist_noctiluca', 'hydromedusae_typeF', 'detritus_filamentous', 'ephyra', 'fish_larvae_leptocephali', 'copepod_calanoid_eggs', 'hydromedusae_solmundella', 'unknown_unclassified', 'tunicate_doliolid_nurse', 'hydromedusae_haliscera_small_sideview', 'chaetognath_sagitta', 'protist_other', 'echinopluteus', 'acantharia_protist_halo', 'jellies_tentacles', 'trichodesmium_tuft', 'echinoderm_larva_pluteus_brittlestar', 'fish_larvae_myctophids', 'appendicularian_fritillaridae', 'ctenophore_lobate', 'shrimp_zoea', 'echinoderm_larva_seastar_bipinnaria', 'hydromedusae_shapeA_sideview_small', 'unknown_blobs_and_smudges', 'copepod_calanoid_eucalanus', 'protist_fuzzy_olive', 'tunicate_salp_chains', 'trichodesmium_bowtie', 'siphonophore_calycophoran_sphaeronectes_young', 'appendicularian_s_shape', 'polychaete', 'protist_star', 'hydromedusae_other', 'acantharia_protist', 'echinoderm_larva_pluteus_typeC', 'protist_dark_center', 'ctenophore_cydippid_no_tentacles', 'artifacts', 'siphonophore_physonect_young', 'artifacts_edge', 'diatom_chain_tube', 'trichodesmium_puff', 'trochophore_larvae', 'hydromedusae_partial_dark', 'pteropod_theco_dev_seq', 'siphonophore_calycophoran_abylidae', 'copepod_calanoid_large', 'ctenophore_cestid', 'echinoderm_seacucumber_auricularia_larva', 'unknown_sticks', 'hydromedusae_typeD', 'chaetognath_non_sagitta', 'radiolarian_colony', 'siphonophore_partial', 'hydromedusae_typeD_bell_and_tentacles', 'euphausiids_young', 'copepod_cyclopoid_oithona_eggs', 'invertebrate_larvae_other_B', 'siphonophore_other_parts', 'shrimp-like_other', 'stomatopod', 'copepod_calanoid', 'copepod_calanoid_flatheads', 'fish_larvae_medium_body', 'siphonophore_physonect', 'copepod_calanoid_frillyAntennae', 'amphipods', 'hydromedusae_haliscera', 'acantharia_protist_big_center', 'tunicate_salp', 'appendicularian_slight_curve', 'siphonophore_calycophoran_sphaeronectes_stem', 'hydromedusae_aglaura', 'fish_larvae_thin_body', 'hydromedusae_narco_young', 'radiolarian_chain', 'hydromedusae_narco_dark', 'shrimp_caridean', 'heteropod', 'copepod_cyclopoid_oithona', 'decapods', 'siphonophore_calycophoran_rocketship_young', 'ctenophore_cydippid_tentacles', 'copepod_calanoid_large_side_antennatucked', 'hydromedusae_solmaris', 'hydromedusae_h15', 'chordate_type1', 'shrimp_sergestidae', 'crustacean_other', 'diatom_chain_string', 'siphonophore_calycophoran_sphaeronectes', 'hydromedusae_narcomedusae', 'tunicate_doliolid', 'hydromedusae_shapeB', 'echinoderm_larva_pluteus_early', 'echinoderm_larva_pluteus_urchin', 'detritus_other']
     import os, sys
-    if os.path.isfile('paper21'):
-        stateIn = 'paper21'
-    else:
-        stateIn = None
+    stateIn = 'test_run.p.gz'
     pred = LeNetPredictor(stateIn=stateIn)
-    print("Loaded Predictor ")
+    print("Loaded Predictor [" + str(stateIn) + "]")
 
 
     if (sys.platform == 'darwin'):
+        path = "/Users/oli/Proj_Large_Data/kaggle_plankton/testing/train/copepod_calanoid/" #For debugging
         #path = "/Users/oli/Proj_Large_Data/kaggle_plankton/test_resized/"
-        path = "/Users/oli/Proj_Large_Data/kaggle_plankton/tmp/"
-        path_training = "/Users/oli/Proj_Large_Data/kaggle_plankton/train_resized/"
-        fout = open("/Users/oli/Proj_Large_Data/kaggle_plankton/submission.csv", 'w');
+        #path = "/Users/oli/Proj_Large_Data/kaggle_plankton/tmp/"
+        #path_training = "/Users/oli/Proj_Large_Data/kaggle_plankton/train_resized/"
+        fout = open("/Users/oli/Proj_Large_Data/kaggle_plankton/submission_test.csv", 'w');
         fc = csv.reader(file('/Users/oli/Proj_Large_Data/kaggle_plankton/sampleSubmission.csv'))
     else:
-        path_training = "/home/dueo/data_kaggel_bowl/train_resized/"
+        #path_training = "/home/dueo/data_kaggel_bowl/train_resized/"
         path = "/home/dueo/data_kaggel_bowl/test_resized/"
         fout = open("/home/dueo/data_kaggel_bowl/submission.csv", 'w');
         fc = csv.reader(file('/home/dueo/data_kaggel_bowl/sampleSubmission.csv'))
     print " Using the following path " + str(path)
 
-
-
-    #d = LoadPics.LoadPics(path_training)
-    #print(d.getNumberOfClassed())
 
 
     files = os.listdir(path)
@@ -159,11 +157,13 @@ if __name__ == "__main__":
     import csv
     w = csv.writer(fout);
 
-    #classes = d.getClasses()
     head = fc.next()
+    classesasreadonserver = pred.names
 
+
+    # Sorting accoring to Kaggle
     c = -1
-    idx = [-1] * len(classesasreadonserver)
+    idx = [-1] * (len(head) - 1)
     for sc in classesasreadonserver:
         c += 1
         print(c)
@@ -172,24 +172,42 @@ if __name__ == "__main__":
                 idx[c] = i
 
 
+    #fout.write('image' + ',')
+    #w.writerow(pred.names)
     w.writerow(head)
+
+    c = -1
     for fin in files:
-        print (fin)
+        c += 1
+        if (c % 100 == 0):
+            print (str(c) + " " + str(fin))
         pics = cv2.imread(path + fin , cv2.CV_LOAD_IMAGE_GRAYSCALE)
         X = np.reshape(pics / 255., len(pics)**2)
         res = pred.getPrediction(X)[0]
+        res_sorted = [-1.0] * (len(head) - 1)
+        for i,index in enumerate(idx):
+            if (index >= 0):
+                res_sorted[index] = res[i]
+
+
+
         idmax = np.argmax(res)
         name = classesasreadonserver[idmax]
         p = res[idmax]
-        print("Name " + str(name) + " p " + str(p) + " pmax=" + str(res[59]))
-        if (p > 0.05):
-            print("Name " + str(name) + " p " + str(p))
-            cv2.imshow('query', pics)
-            cv2.waitKey(1000000)
+        print("Name " + str(name) + " p " + str(p))
 
+        idmax1 = np.argmax(res_sorted)
+        name = head[1:][idmax1]
+        p = res_sorted[idmax1]
+        print("Name (alt) " + str(name) + " p (alt)" + str(p))
+
+        # if (p > 0.05):
+        #    print("Name " + str(name) + " p " + str(p))
+        #    cv2.imshow('query', pics)
+        #    cv2.waitKey(10000)
 
         fout.write(fin + ',')
-        w.writerow(res[idx])
+        w.writerow(res_sorted)
 
 
 

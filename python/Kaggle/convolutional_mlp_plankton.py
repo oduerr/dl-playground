@@ -1,5 +1,4 @@
 import sys
-sys.path.insert(0, '/Users/oli/Documents/workspace/dl-playground/python/FaceRec')
 
 import gzip
 import os
@@ -214,10 +213,6 @@ def evaluate_lenet5(topo, loadPics, learning_rate=0.005, n_epochs=500, stateIn =
 
     # the cost we minimize during training is the NLL of the model
     cost = layer3.negative_log_likelihood(y) + 0.001 * L2_sqr
-    # paper7
-    # paper9 back to 0.001 again
-    # paper10 no reg. 
-    # paper12 back to 0.001 again
 
     # create a function to compute the mistakes that are made by the model
     test_model = theano.function([index], layer3.errors(y),
@@ -412,15 +407,18 @@ def evaluate_lenet5(topo, loadPics, learning_rate=0.005, n_epochs=500, stateIn =
 
 if __name__ == '__main__':
 
-    topo = LeNet5Topology()
-    print(str(topo))
-
+    ######## Configuration ########
+    state = 'test_run'
     if (sys.platform == 'darwin'):
-        path = "/Users/oli/Proj_Large_Data/kaggle_plankton/train_resized/"
+        #path = "/Users/oli/Proj_Large_Data/kaggle_plankton/train_resized/"
+        path = "/Users/oli/Proj_Large_Data/kaggle_plankton/testing/train/"
     else:
         path = "/home/dueo/data_kaggel_bowl/train_resized/"
     print " Using the following path " + str(path)
+    ######## Configuration ########
 
+    topo = LeNet5Topology()
+    print(str(topo))
     loadPics = LoadPics(path)
     print("Classes " + str(loadPics.getClasses()));
 
@@ -428,7 +426,6 @@ if __name__ == '__main__':
     #label = subprocess.check_output(['git', 'rev-parse', 'HEAD'])[:-1]
     import os
     stateIn = None
-    state = 'new_small'
     if state is not None and os.path.isfile(state):
         stateIn = state
     else:
