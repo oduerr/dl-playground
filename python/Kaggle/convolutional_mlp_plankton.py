@@ -32,10 +32,10 @@ class LeNet5Topology(object):
         self.in_2 = 14              # Input in second layer (layer1)
         self.filter_2 = 5
         self.pool_2 = 2
-        self.nkerns = [20,100]
-        #self.nkerns = [100,200]
+        #self.nkerns = [20,100]
+        self.nkerns = [50,100]
         self.hidden_input = 5*5
-        self.numLogisticInput = 200
+        self.numLogisticInput = 500
 
     def __str__(self):
         return ("Image Shape            " + str(self.ishape[0]) + "x" + str(self.ishape[1]))+ "\n" \
@@ -408,7 +408,7 @@ def evaluate_lenet5(topo, loadPics, learning_rate=0.005, n_epochs=500, stateIn =
 if __name__ == '__main__':
 
     ######## Configuration ########
-    state = 'test_run'
+    state = 'mid_size.p'
     if (sys.platform == 'darwin'):
         #path = "/Users/oli/Proj_Large_Data/kaggle_plankton/train_resized/"
         path = "/Users/oli/Proj_Large_Data/kaggle_plankton/testing/train/"
