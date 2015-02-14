@@ -7,7 +7,6 @@ layers {
   image_data_param {
     source: "train_files.txt"
     batch_size: 64
-    is_color: false
   }
   transform_param {
     scale: 0.00390625
@@ -22,7 +21,6 @@ layers {
   image_data_param {
     source: "train_files.txt"
     batch_size: 64
-    is_color: false
   }
   transform_param {
     scale: 0.00390625
@@ -120,7 +118,7 @@ layers {
   blobs_lr: 1
   blobs_lr: 2
   inner_product_param {
-    num_output: 10
+    num_output: 2
     weight_filler {
       type: "xavier"
     }

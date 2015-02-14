@@ -1,3 +1,4 @@
+# Taken somewhere from the internet
 name: "LeNet"
 layers {
   name: "mnist"
