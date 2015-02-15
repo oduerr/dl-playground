@@ -1,4 +1,4 @@
-Disclaimer this is just to see how caffee works. The training and testset are much to small. Further we set the training set equal the testset which is dump.
+Disclaimer this is just to see how caffee works. The training and testset are much to small. Further we set the training set equal the testset which is dumb.
 
 ### Training the model
 
