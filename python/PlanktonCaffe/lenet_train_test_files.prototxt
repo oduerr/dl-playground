@@ -6,7 +6,6 @@ layers {
   top: "label"
   image_data_param {
     source: "training.txt"
-    mirror: true
     batch_size: 256
   }
   transform_param {

@@ -61,7 +61,7 @@ class LoadPics(object):
                 files = self.testsets[name];
             for f in files:
                 s = str(self.path) + name + "/" + str(f) + " " + str(i)
-                print(s)
+                #print(s)
                 fout.write(s + '\n')
                 c += 1
         fout.close();
@@ -71,7 +71,8 @@ class LoadPics(object):
 
 
 if __name__ == '__main__':
-    path = "/Users/oli/Proj_Large_Data/kaggle_plankton/train_resized/"
+    #path = "/Users/oli/Proj_Large_Data/kaggle_plankton/train_resized/"
+    path = "/home/dueo/data_kaggel_bowl/train_resized/"
     d = LoadPics(path)
     d.writeTraining(training=True, outfile='training.txt')
     d.writeTraining(training=False, outfile='test.txt')
