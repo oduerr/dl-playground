@@ -10,7 +10,7 @@ import caffe
 print("Finshed imports")
 
 if __name__ == "__main__":
-  caffe.set_mode_gpu()
+  caffe.set_mode_cpu()
   fc = csv.reader(file('sampleSubmission.csv.head.csv'))
   fst =  fc.next()
   fout = open('submission.txt', 'w');
@@ -24,12 +24,12 @@ if __name__ == "__main__":
   except:
       pass
   print("Read " + str(len(files)) + " files to be classified")
-  net = caffe.Classifier('lenet_deploy.prototxt', 'model/lenet_iter_1000.caffemodel', image_dims=(46, 46))
+  net = caffe.Classifier('lenet/lenet_deploy.prototxt', 'lenet/model/lenet_iter_48000.caffemodel', image_dims=(46, 46))
   c = 0
   fs = []
   imgs = []
   blocksize = 5
-  for f in files[1:50]:
+  for f in files:
     c += 1
     start = time.time()
     input_image = caffe.io.load_image(path + f)
