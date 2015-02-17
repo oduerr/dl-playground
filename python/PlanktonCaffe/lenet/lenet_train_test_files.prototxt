@@ -5,11 +5,14 @@ layers {
   top: "data"
   top: "label"
   image_data_param {
-    source: "training.txt"
+    source: "../training_60x60.txt"
     batch_size: 256
+    shuffle: true
   }
   transform_param {
     scale: 0.00390625
+    mirror: 1
+    crop_size: 46
   }
   include: { phase: TRAIN }
 }
@@ -19,11 +22,14 @@ layers {
   top: "data"
   top: "label"
   image_data_param {
-    source: "test.txt"
+    source: "../test.txt60x60"
     batch_size: 256
+    shuffle: true
   }
   transform_param {
     scale: 0.00390625
+    mirror: 1
+    crop_size: 46
   }
   include: { phase: TEST }
 }

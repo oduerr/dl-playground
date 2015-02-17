@@ -20,6 +20,6 @@ display: 100
 max_iter: 100000
 # snapshot intermediate results
 snapshot: 1000
-snapshot_prefix: "model/lenet"
+snapshot_prefix: "model/lenet60"
 # solver mode: CPU or GPU
 solver_mode: GPU

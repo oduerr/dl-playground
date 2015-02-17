@@ -10,5 +10,5 @@ max_iter: 450000
 momentum: 0.9
 weight_decay: 0.0005
 snapshot: 1000
-snapshot_prefix: "model/caffenet_train"
-solver_mode: GPU
+snapshot_prefix: "model/caffenet_train60_shuffle_baselr0.1"
+solver_mode: CPU
