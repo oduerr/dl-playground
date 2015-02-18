@@ -13,7 +13,7 @@ if __name__ == "__main__":
   caffe.set_mode_cpu()
   fc = csv.reader(file('sampleSubmission.csv.head.csv'))
   fst =  fc.next()
-  fout = open('submission.txt', 'w');
+  fout = open('submission_caffeLeNet.txt', 'w');
   w = csv.writer(fout);
   w.writerow(fst)
   head = fc.next()[1:]
@@ -24,7 +24,7 @@ if __name__ == "__main__":
   except:
       pass
   print("Read " + str(len(files)) + " files to be classified")
-  net = caffe.Classifier('lenet/lenet_deploy.prototxt', 'lenet/model/lenet_iter_48000.caffemodel', image_dims=(46, 46))
+  net = caffe.Classifier('lenet/lenet_deploy.prototxt', 'lenet/model/lenet60_iter_100000.caffemodel', image_dims=(46, 46))
   c = 0
   fs = []
   imgs = []
