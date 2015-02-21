@@ -5,13 +5,13 @@ layers {
   top: "data"
   top: "label"
   data_param {
-    source: "examples/imagenet/ilsvrc12_train_lmdb"
+    source: "/home/dueo/data_kaggel_bowl/imagenet/train_lmdb"
     backend: LMDB
     batch_size: 256
   }
   transform_param {
     crop_size: 227
-    mean_file: "data/ilsvrc12/imagenet_mean.binaryproto"
+    mean_file: "/home/dueo/data_kaggel_bowl/imagenet/imagenet_mean.binaryproto"
     mirror: true
   }
   include: { phase: TRAIN }
@@ -22,13 +22,13 @@ layers {
   top: "data"
   top: "label"
   data_param {
-    source: "examples/imagenet/ilsvrc12_val_lmdb"
+    source: "/home/dueo/data_kaggel_bowl/imagenet/val_lmdb"
     backend: LMDB
     batch_size: 50
   }
   transform_param {
     crop_size: 227
-    mean_file: "data/ilsvrc12/imagenet_mean.binaryproto"
+    mean_file: "/home/dueo/data_kaggel_bowl/imagenet/imagenet_mean.binaryproto"
     mirror: false
   }
   include: { phase: TEST }
@@ -318,7 +318,7 @@ layers {
   weight_decay: 1
   weight_decay: 0
   inner_product_param {
-    num_output: 1000
+    num_output: 121
     weight_filler {
       type: "gaussian"
       std: 0.01
