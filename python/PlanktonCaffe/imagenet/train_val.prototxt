@@ -5,13 +5,13 @@ layers {
   top: "data"
   top: "label"
   data_param {
-    source: "/home/dueo/data_kaggel_bowl/imagenet/train_lmdb"
+    source: "/home/dueo/data_kaggel_bowl/train_lmdb_64"
     backend: LMDB
     batch_size: 128
   }
   transform_param {
-    crop_size: 227
-    mean_file: "/home/dueo/data_kaggel_bowl/imagenet/imagenet_mean.binaryproto"
+    crop_size: 56
+    mean_file: "/home/dueo/data_kaggel_bowl/train_mean_64.binaryproto"
     mirror: true
   }
   include: { phase: TRAIN }
@@ -22,72 +22,22 @@ layers {
   top: "data"
   top: "label"
   data_param {
-    source: "/home/dueo/data_kaggel_bowl/imagenet/val_lmdb"
+    source: "/home/dueo/data_kaggel_bowl/val_lmdb_64"
     backend: LMDB
     batch_size: 50
   }
   transform_param {
-    crop_size: 227
-    mean_file: "/home/dueo/data_kaggel_bowl/imagenet/imagenet_mean.binaryproto"
+    crop_size: 56
+    mean_file: "/home/dueo/data_kaggel_bowl/train_mean_64.binaryproto"
     mirror: false
   }
   include: { phase: TEST }
 }
-layers {
-  name: "conv1"
-  type: CONVOLUTION
-  bottom: "data"
-  top: "conv1"
-  blobs_lr: 1
-  blobs_lr: 2
-  weight_decay: 1
-  weight_decay: 0
-  convolution_param {
-    num_output: 96
-    kernel_size: 11
-    stride: 4
-    weight_filler {
-      type: "gaussian"
-      std: 0.01
-    }
-    bias_filler {
-      type: "constant"
-      value: 0
-    }
-  }
-}
-layers {
-  name: "relu1"
-  type: RELU
-  bottom: "conv1"
-  top: "conv1"
-}
-layers {
-  name: "pool1"
-  type: POOLING
-  bottom: "conv1"
-  top: "pool1"
-  pooling_param {
-    pool: MAX
-    kernel_size: 3
-    stride: 2
-  }
-}
-layers {
-  name: "norm1"
-  type: LRN
-  bottom: "pool1"
-  top: "norm1"
-  lrn_param {
-    local_size: 5
-    alpha: 0.0001
-    beta: 0.75
-  }
-}
+
 layers {
   name: "conv2"
   type: CONVOLUTION
-  bottom: "norm1"
+  bottom: "data"
   top: "conv2"
   blobs_lr: 1
   blobs_lr: 2
