@@ -5,22 +5,22 @@
 echo "Creating train lmdb..."
 
 GLOG_logtostderr=1 /home/dueo/caffe/caffe/build/tools/convert_imageset \
-    --resize_height=256 \
-    --resize_width=256 \
+    --resize_height=64 \
+    --resize_width=64 \
     --shuffle \
     / \
     /home/dueo/dl-playground/python/PlanktonCaffe/train_full.txt \
-    /home/dueo/data_kaggel_bowl/imagenet/train_lmdb
+    /home/dueo/data_kaggel_bowl/train_lmdb_64
 
 echo "Creating val lmdb..."
 
 GLOG_logtostderr=1 /home/dueo/caffe/caffe/build/tools/convert_imageset \
-    --resize_height=256 \
-    --resize_width=256 \
+    --resize_height=64 \
+    --resize_width=64 \
     --shuffle \
     / \
     /home/dueo/dl-playground/python/PlanktonCaffe/test_full.txt \
-    /home/dueo/data_kaggel_bowl/imagenet/val_lmdb
+    /home/dueo/data_kaggel_bowl/val_lmdb_64
 
 echo "Done..."
 
