@@ -24,11 +24,13 @@ if __name__ == "__main__":
   except:
       pass
   print("Read " + str(len(files)) + " files to be classified")
-  net = caffe.Classifier('lenet/lenet_deploy.prototxt', 'lenet/model/lenet60_iter_100000.caffemodel', image_dims=(46, 46))
+  #net = caffe.Classifier('lenet/lenet_deploy.prototxt', 'lenet/model/lenet60_iter_100000.caffemodel', image_dims=(46, 46))
+  net = caffe.Classifier('googlenet/deploy.prototxt', 'googlenet/models/googlenet_quick_iter_160000.caffemodel', image_dims=(56, 56))
   c = 0
   fs = []
   imgs = []
-  blocksize = 5
+  blocksize = 1
+  print("-------------              Starting to make predictions   \n")
   for f in files:
     c += 1
     start = time.time()
@@ -36,7 +38,9 @@ if __name__ == "__main__":
     fs.append(f)
     imgs.append(input_image)
     if (len(fs) >= blocksize):
+      s1 = time.time()
       prediction = net.predict(imgs)
+      print ("Time for a single prediction " + str((time.time() - s1)))
       for i,pred in enumerate(prediction):
         res = np.exp(pred) / sum(np.exp(pred))
         s = fs[i]
@@ -45,7 +49,7 @@ if __name__ == "__main__":
         fout.write(s + '\n')
       fs = []
       imgs = []
-      print("Wrote " + str(c) + " pre sec " + str((time.time() - start) / blocksize))
+      print("Wrote " + str(c) + "Speed  pre sec " + str((time.time() - start) / blocksize))
   prediction = net.predict(imgs)
   for i,pred in enumerate(prediction):
     res = np.exp(pred) / sum(np.exp(pred))

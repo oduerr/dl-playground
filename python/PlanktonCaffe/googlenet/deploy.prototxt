@@ -2,62 +2,10 @@ name: "GoogleNet"
 input: "data"
 input_dim: 10
 input_dim: 3
-input_dim: 224
-input_dim: 224
+input_dim: 56
+input_dim: 56
 layers {
   bottom: "data"
-  top: "conv1/7x7_s2"
-  name: "conv1/7x7_s2"
-  type: CONVOLUTION
-  blobs_lr: 1
-  blobs_lr: 2
-  weight_decay: 1
-  weight_decay: 0
-  convolution_param {
-    num_output: 64
-    pad: 3
-    kernel_size: 7
-    stride: 2
-    weight_filler {
-      type: "xavier"
-      std: 0.1
-    }
-    bias_filler {
-      type: "constant"
-      value: 0.2
-    }
-  }
-}
-layers {
-  bottom: "conv1/7x7_s2"
-  top: "conv1/7x7_s2"
-  name: "conv1/relu_7x7"
-  type: RELU
-}
-layers {
-  bottom: "conv1/7x7_s2"
-  top: "pool1/3x3_s2"
-  name: "pool1/3x3_s2"
-  type: POOLING
-  pooling_param {
-    pool: MAX
-    kernel_size: 3
-    stride: 2
-  }
-}
-layers {
-  bottom: "pool1/3x3_s2"
-  top: "pool1/norm1"
-  name: "pool1/norm1"
-  type: LRN
-  lrn_param {
-    local_size: 5
-    alpha: 0.0001
-    beta: 0.75
-  }
-}
-layers {
-  bottom: "pool1/norm1"
   top: "conv2/3x3_reduce"
   name: "conv2/3x3_reduce"
   type: CONVOLUTION
@@ -1906,7 +1854,7 @@ layers {
   weight_decay: 1
   weight_decay: 0
   inner_product_param {
-    num_output: 1000
+    num_output: 121
     weight_filler {
       type: "xavier"
     }

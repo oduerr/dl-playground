@@ -72,10 +72,10 @@ class LoadPics(object):
 
 if __name__ == '__main__':
     #path = "/Users/oli/Proj_Large_Data/kaggle_plankton/train_resized/"
-    path = "/home/dueo/data_kaggel_bowl/train_resized60x60/"
+    path = "/home/dueo/data_kaggel_bowl/train/"
     d = LoadPics(path)
-    d.writeTraining(training=True, outfile='training_60x60.txt')
-    d.writeTraining(training=False, outfile='test.txt60x60')
+    d.writeTraining(training=True, outfile='train_full.txt')
+    d.writeTraining(training=False, outfile='test_full.txt')
     print("Finished, creating files")
 
 
