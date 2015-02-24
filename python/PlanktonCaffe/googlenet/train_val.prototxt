@@ -21,28 +21,49 @@ layers {
     # mean_value: 123
   }
 }
+#layers {
+#  top: "dataDumm"
+#  top: "labeDumml"
+#  name: "dataDumm"
+#  type: DATADumm
+#  data_param {
+#    source: "/home/dueo/data_kaggel_bowl/val_lmdb_64"
+#    batch_size: 16
+#    backend: LMDB
+#  }
+#  include {
+#    phase: TEST
+#  }
+#  transform_param {
+#    mirror: false
+#    crop_size: 56
+#    mean_file: "/home/dueo/data_kaggel_bowl/train_mean_64.binaryproto"
+    # mean_value: 104
+    # mean_value: 117
+    # mean_value: 123
+#  }
+#}
 layers {
+  name: "data"
+  type: IMAGE_DATA
   top: "data"
   top: "label"
-  name: "data"
-  type: DATA
-  data_param {
-    source: "/home/dueo/data_kaggel_bowl/val_lmdb_64"
-    batch_size: 16
-    backend: LMDB
+  image_data_param {
+    source: "test.txt60x60"
+    batch_size: 32
   }
   include {
     phase: TEST
   }
   transform_param {
     mirror: false
+    scale: 0.00390625
     crop_size: 56
     mean_file: "/home/dueo/data_kaggel_bowl/train_mean_64.binaryproto"
-    # mean_value: 104
-    # mean_value: 117
-    # mean_value: 123
   }
 }
+
+
 layers {
   bottom: "data"
   top: "conv2/3x3_reduce"
