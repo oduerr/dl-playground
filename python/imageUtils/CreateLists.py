@@ -12,7 +12,7 @@ import csv
 class LoadPics(object):
     """Routines for loading pictures"""
 
-    def __init__(self, path):
+    def __init__(self, path, trainingFraction):
         random.seed(42)
         self.path = path
         # Order of the submission
@@ -38,7 +38,7 @@ class LoadPics(object):
             d[cc] = len(imgs)
             l += len(imgs)
 
-            testStart = int(len(imgs) * 0.75)
+            testStart = int(len(imgs) * trainingFraction)
             testEnd = (len(imgs)) - 1
             # A small set for debuggnig
             # testStart = int(len(imgs) * 0.05)
@@ -49,11 +49,12 @@ class LoadPics(object):
         print("Number of classes " + str(len(self.trainingsets)) + " number of images " + str(l))
 
 
-    def writeTraining(self, training=True, outfile = None):
-        fc = csv.reader(file('sampleSubmission.csv.head.csv'))
+    def writeTraining(self, training=True, outfile = None, sample='sampleSubmission.csv.head.csv'):
+        fc = csv.reader(file(sample))
         fout = open(outfile, 'w');
         head = fc.next()[1:]
         c = 0
+        lines = []
         for i, name in enumerate(head):
             if training:
                 files = self.trainingsets[name];
@@ -61,9 +62,11 @@ class LoadPics(object):
                 files = self.testsets[name];
             for f in files:
                 s = str(self.path) + name + "/" + str(f) + " " + str(i)
-                #print(s)
-                fout.write(s + '\n')
+                lines.append(s)
                 c += 1
+        random.shuffle(lines)
+        for line in lines:
+            fout.write(line + '\n')
         fout.close();
         print("Number of written files " + str(c))
 
@@ -71,11 +74,17 @@ class LoadPics(object):
 
 
 if __name__ == '__main__':
-    #path = "/Users/oli/Proj_Large_Data/kaggle_plankton/train_resized/"
-    path = "/home/dueo/data_kaggel_bowl/train/"
-    d = LoadPics(path)
-    d.writeTraining(training=True, outfile='train_full.txt')
-    d.writeTraining(training=False, outfile='test_full.txt')
+    import sys
+    if len(sys.argv) < 5:
+        print "Usage: python CreateLists input_folder namesFile prefix trainingFrac"
+        exit(1)
+    path   = sys.argv[1]
+    sample = sys.argv[2]
+    trainingFaction = sys.argv[4]
+
+    d = LoadPics(path, float(trainingFaction))
+    d.writeTraining(training=True, outfile=sys.argv[3] + 'train.txt', sample=sample)
+    d.writeTraining(training=False, outfile=sys.argv[3] + 'test.txt', sample=sample)
     print("Finished, creating files")
 
 
