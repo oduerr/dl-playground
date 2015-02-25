@@ -5,9 +5,11 @@ layers {
   top: "data"
   top: "label"
   image_data_param {
-    source: "../training_60x60.txt"
+    source: "../train_full.txt"
     batch_size: 256
     shuffle: true
+    new_height: 50
+    new_width: 50
   }
   transform_param {
     scale: 0.00390625
@@ -22,9 +24,10 @@ layers {
   top: "data"
   top: "label"
   image_data_param {
-    source: "../test.txt60x60"
+    source: "../test_full.txt"
     batch_size: 256
-    shuffle: true
+    new_height: 50
+    new_width: 50
   }
   transform_param {
     scale: 0.00390625

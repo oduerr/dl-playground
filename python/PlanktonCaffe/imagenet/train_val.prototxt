@@ -7,7 +7,7 @@ layers {
   data_param {
     source: "/home/dueo/data_kaggel_bowl/train_lmdb_64"
     backend: LMDB
-    batch_size: 128
+    batch_size: 64
   }
   transform_param {
     crop_size: 56
@@ -24,7 +24,7 @@ layers {
   data_param {
     source: "/home/dueo/data_kaggel_bowl/val_lmdb_64"
     backend: LMDB
-    batch_size: 50
+    batch_size: 16
   }
   transform_param {
     crop_size: 56
@@ -33,7 +33,6 @@ layers {
   }
   include: { phase: TEST }
 }
-
 
 layers {
   name: "conv3"
@@ -45,9 +44,10 @@ layers {
   weight_decay: 1
   weight_decay: 0
   convolution_param {
-    num_output: 384
+    num_output: 64
     pad: 1
     kernel_size: 3
+    stride: 3
     weight_filler {
       type: "gaussian"
       std: 0.01
@@ -74,7 +74,7 @@ layers {
   weight_decay: 1
   weight_decay: 0
   convolution_param {
-    num_output: 384
+    num_output: 54
     pad: 1
     kernel_size: 3
     group: 2

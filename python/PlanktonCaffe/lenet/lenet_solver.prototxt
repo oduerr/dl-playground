@@ -17,9 +17,9 @@ power: 0.75
 # Display every 100 iterations
 display: 100
 # The maximum number of iterations
-max_iter: 100000
+max_iter: 500000
 # snapshot intermediate results
 snapshot: 1000
-snapshot_prefix: "model/lenet60"
+snapshot_prefix: "model/lenet24Feb"
 # solver mode: CPU or GPU
 solver_mode: GPU

@@ -60,6 +60,12 @@ system("~/caffe/caffe/tools/extra/parse_log.sh imagenet_21_feb.log")
 train = read.table('imagenet_21_feb.log.train', header = TRUE, comment.char = 'H')
 test = read.table('imagenet_21_feb.log.test', header = TRUE, comment.char = 'H')
 
+# Smaller images
+system("~/caffe/caffe/tools/extra/parse_log.sh Alex_23_Feb.log")
+train = read.table('Alex_23_Feb.log.train', header = TRUE, comment.char = 'H')
+test = read.table('Alex_23_Feb.log.test', header = TRUE, comment.char = 'H')
+
+
 library(ggplot2)
 gg <- ggplot()
 gg <- gg + geom_line(aes(x = train$X.Iters, y = train$TrainingLoss, colour='training dropout'), size=0.25) 

@@ -1,9 +1,18 @@
 name: "GoogleNet"
-input: "data"
-input_dim: 10
-input_dim: 3
-input_dim: 56
-input_dim: 56
+layers {
+  name: "mnist"
+  type: IMAGE_DATA
+  top: "data"
+  top: "label"
+  image_data_param {
+    source: "../test_full.txt"
+    batch_size: 256
+  }
+  transform_param {
+    scale: 0.00390625
+    crop_size: 56
+  }
+}
 layers {
   bottom: "data"
   top: "conv2/3x3_reduce"
