@@ -13,7 +13,8 @@ print("Finshed imports")
 if __name__ == "__main__":
   caffe.set_mode_cpu()
   caffe.set_phase_train
-  net = caffe.Net('lenet_train_test_files.prototxt', 'snapshots/lenet25Feb_iter_12000.caffemodel')
+  #net = caffe.Net('lenet_train_test_files.prototxt', 'snapshots/lenet25Feb_iter_12000.caffemodel')
+  net = caffe.Net('lenet_train_test_files.prototxt', 'snapshots/lenet25Feb_iter_3000.caffemodel')
   start = time.time()
   res = net.forward() # this will load the next mini-batch as defined in the net (rewinds)
   logloss = res['loss'][0][0][0][0]
@@ -21,13 +22,13 @@ if __name__ == "__main__":
   print ("Time for a single forward step " + str((time.time() - start)))
   preds = net.blobs['ip2'].data 
   batchSize = np.shape(preds)[0]
-  yTrues = np.reshape(net.blobs['label'].data, batchSize).astype(int)
-  summe = 0
+  yTrues = np.reshape(net.blobs['label'].data, batchSize).astype(int) #True Labels (passed from the data layer)
+  sumLogLoss = 0
   acc = 0
   for i,yTrue in enumerate(yTrues):
-    pred = np.reshape(preds[i], 6)
-    prob = np.exp(pred)/np.sum(np.exp(pred))
+    pred = np.reshape(preds[i], 6) #Output of the final layer (no activation function)
+    prob = np.exp(pred)/np.sum(np.exp(pred)) #Calculate the activation function
     print(str(i) + " " + str(prob[yTrue]) + " yTrue " + str(yTrue) + " pred " + str(np.argmax(prob)))
-    summe -= np.log(prob[yTrue])
+    sumLogLoss -= np.log(prob[yTrue])
     acc += (np.argmax(prob) == yTrue)
-  print("Calculated  logloss()" + str(summe/batchSize) + "  acc=" + str(acc / batchSize) + " logloss(caffe layer)=" + str(logloss))
+  print("Calculated  logloss()" + str(sumLogLoss/batchSize) + "  acc=" + str(acc / batchSize) + " logloss(caffe layer)=" + str(logloss))

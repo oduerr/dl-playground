@@ -1,9 +1,9 @@
 ############ 
 # LetNet
 setwd("/home//dueo/dl-playground/python/FaceCaffe/model/")
-system("~/caffe/caffe/tools/extra/parse_log.sh log_lenet.txt")
-train = read.table('log_lenet.txt.train', header = TRUE, comment.char = 'H')
-test = read.table('log_lenet.txt.test', header = TRUE, comment.char = 'H')
+system("~/caffe/caffe/tools/extra/parse_log.sh log_lenet_log.txt")
+train = read.table('log_lenet_log.txt.train', header = TRUE, comment.char = 'H')
+test = read.table('log_lenet_log.txt.test', header = TRUE, comment.char = 'H')
 
 library(ggplot2)
 gg <- ggplot()

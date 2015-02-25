@@ -41,7 +41,7 @@ if __name__ == "__main__":
   summe = 0
   acc = 0
   for i,yTrue in enumerate(yTrues):
-    pred = np.reshape(preds[1],121)
+    pred = np.reshape(preds[i],121)
     prob = np.exp(pred)/np.sum(np.exp(pred))
     print(str(i) + " " + str(prob[yTrue]) + " yTrue " + str(yTrue) + " pred " + str(np.argmax(prob)))
     summe -= np.log(prob[yTrue])

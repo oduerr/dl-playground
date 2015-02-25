@@ -1,19 +1,18 @@
 # Experimenting with Caffe
-A short tutorial how to create a classifier from images.
+A short tutorial how to create a classifier from images. In this example we used faces, but of course the general workflow stays the same.
 
 ## Creating the images (prerequisite)
-In this repository there images but they are stored in a single, so in the first step we create the directories and convert the images to pngs.
-
+Normaly you would already have images, so you could spare this step. But in this repository there images are stored in a single file, so in the first step we create the directories and create the pngs.
 ```
 dueo@srv-lab-t-706:~/dl-playground/python/imageUtils$ ./mkdirs.sh 
 dueo@srv-lab-t-706:~/dl-playground/python/imageUtils$ python CreateImages.py 
 ```
-In the data directory, you should find a subfolder with two batches, of 48x48 images like the one below.
+In the local [data directory]('../../data'), you should find a folder called "images"" with two batches of 48x48 images like the one below.
 
 ![sample image](imgs/0.png)
 
 ## Creating the lists of images
-We have two batches of images (batch1 indoor, batch2 taken outdoors). We use batch2 to test the performance and we split batch1 in two parts, one to train the classifier and the other one to evaluate the performance (also called testset in the caffe). Caffe works on data-layes, these can come from a database (see later) or they can come from lists of files (see below). We create the lists of files using the following 2 commands.
+Now we have two batches of images (batch1 indoor, batch2 taken outdoors). We use batch2 to test the performance and we split batch1 in two parts, one to train the classifier and the other one to evaluate the performance (also called testset in the caffe). Caffe works on data-layes, these can come from a database (see later) or they can come from lists of files (see below). We create the lists of files using the following 2 commands.
 ```
   ~/dl-playground/python/FaceCaffe$ python ../imageUtils/CreateLists.py /home/dueo/dl-playground/data/images/batch1/ names2Numbers.txt batch1_ 0.80
   ~/dl-playground/python/FaceCaffe$ python ../imageUtils/CreateLists.py /home/dueo/dl-playground/data/images/batch2/ names2Numbers.txt batch2_ 1000.0
@@ -86,8 +85,78 @@ nohup ~/caffe/caffe/build/tools/caffe train -solver lenet_solver.prototxt -gpu=0
 Using the R-Script [PlotTraining](PlotTraining.R) the log-loss caluclated in the output layer can be investigated. We see a text book like overfitting.
 ![overfitting](imgs/logloss1.jpeg)
 
-## Inspecting the traing model
-We don't care about the overfitting now. But we want to have a closer look at the 
+## Inspecting the trained model
+We don't care about the overfitting now. But we want to have a closer look at the network. We can do so by loading the model in a python session see using [loadingModel.py](loadingModel.py). Using ipython *started from model subdirectory* we step until line 19.
+```
+dueo@srv-lab-t-706:~/dl-playground/python/FaceCaffe/model$ ipython
+run -d -b 19 ../loadingModel.py
+     18   res = net.forward() # this will load the next mini-batch as defined in the net (rewinds)
+```
+The variable `net` now contains the network, after a forward step using the definition `model/lenet_train_test_files.prototxt` applied to the trained model (containing the weights) `snapshots/lenet25Feb_iter_12000.caffemodel` and the variable `res` the result (the log-loss as given in the model definition).
+```
+ipdb> res['loss']
+array([[[[ 0.00128218]]]], dtype=float32)
+```
+As seen from the above figure we hava a minimal training loss (since we do an overfitting). Let's have a look at the state of the network after the forward pass. The state of the network is contained in blobs
+```
+ipdb> net.blobs
+OrderedDict([('data', <caffe._caffe.Blob object at 0x4210ed0>), ('label', <caffe._caffe.Blob object at 0x4210a50>), ('conv1', <caffe._caffe.Blob object at 0x42108d0>), ('pool1', <caffe._caffe.Blob object at 0x42107d0>), ('conv2', <caffe._caffe.Blob object at 0x4210e50>), ('pool2', <caffe._caffe.Blob object at 0x85a4050>), ('ip1', <caffe._caffe.Blob object at 0x85a40d0>), ('ip2', <caffe._caffe.Blob object at 0x85a41d0>), ('loss', <caffe._caffe.Blob object at 0x85a4250>)])
+```
+The input-data is given in the blob `data`
+```
+ipdb> data = net.blobs['data'].data
+ipdb> type(data)
+<type 'numpy.ndarray'>
+ipdb> np.shape(data)
+(256, 3, 46, 46)
+ipdb> np.min(data)
+0.0
+ipdb> np.max(data)
+0.99609375
+```
+The inspection shows that the data is accessible in python as a numpy array. The shape is 256-images (batches) with 3 color-layers each having 46x46 pixels. The values range from 0 to 1. It's a bit strange that the grayscaled image is read as a colored image. But the 3 color layers seem to have the same data:
+```
+ipdb> np.max(np.abs(data[0,0,:,:] - data[0,1,:,:]))
+0.0
+ipdb> np.max(np.abs(data[0,0,:,:] - data[0,2,:,:]))
+0.0
+```
+We can store the image again using openCV as follows
+```
+ipdb> cv2.imwrite('../imgs/first.png', data[0,0,:,:]*256)
+```
+The image is shown ![here](imgs/first.png). TODO it seem's that no random cropping happens
+
+### Other blobs
+The other blobs contain output and intermediate data. 
+
+### Recalculating the log-loss and the accuracy.
+We now compare the result of the softmax-layer `SOFTMAX_LOSS` with the output of the final logistics layer (`ip2`). The relevante lines of [loadingModel.py](loadingModel.py) are:
+```
+  preds = net.blobs['ip2'].data 
+  batchSize = np.shape(preds)[0]
+  yTrues = np.reshape(net.blobs['label'].data, batchSize).astype(int) #True Labels (passed from the data layer)
+  sumLogLoss = 0
+  acc = 0
+  for i,yTrue in enumerate(yTrues):
+    pred = np.reshape(preds[i], 6) #Output of the final layer (no activation function)
+    prob = np.exp(pred)/np.sum(np.exp(pred)) #Calculate the activation function
+    print(str(i) + " " + str(prob[yTrue]) + " yTrue " + str(yTrue) + " pred " + str(np.argmax(prob)))
+    sumLogLoss -= np.log(prob[yTrue])
+    acc += (np.argmax(prob) == yTrue)
+  print("Calculated  logloss()" + str(sumLogLoss/batchSize) + "  acc=" + str(acc / batchSize) + " logloss(caffe layer)=" + str(logloss))
+```
+In detail:
+
+* `batchSize = np.shape(preds)[0]` the batch size is evaluated
+*  `yTrues = np.reshape(net.blobs['label'].data, batchSize).astype(int)` #True Labels (passed from the data layer)
+* `pred = np.reshape(preds[i], 6)` is the result of the final 
+
+
+
+
+
+
 
 
 
