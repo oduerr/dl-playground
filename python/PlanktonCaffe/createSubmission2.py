@@ -10,15 +10,15 @@ import caffe
 print("Finshed imports")
 
 # For google net
-# predLayerName = 'loss3/classifier' #For the google-net
-# logLossName = 'loss3/loss3' 
-# description = 'googlenet/train_val.prototxt'
-# learnedModel = 'googlenet/models/googlenet_quick_iter_160000.caffemodel'
-
 predLayerName = 'loss3/classifier' #For the google-net
-logLossName = 'ip2' 
-description = 'lenet/lenet_train_test_files.prototxt'
-learnedModel = 'lenet/model/lenet60_iter_100000.caffemodel '
+logLossName = 'loss3/loss3' 
+description = 'googlenet/train_val.prototxt'
+learnedModel = 'googlenet/models/googlenet_quick_iter_160000.caffemodel'
+
+#predLayerName = 'loss3/classifier' #For the google-net
+#logLossName = 'ip2' 
+#description = 'lenet/lenet_train_test_files.prototxt'
+#learnedModel = 'lenet/model/lenet60_iter_100000.caffemodel '
 
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
-# Experimenting with Caffe
-A short tutorial how to create a classifier from images. In this example we used faces, but of course the general workflow stays the same.
+# Experimenting with Caffe (a shor tutorial from images to classifiers)
+A short tutorial how to create a classifier from png-images. In this example we used faces, but of course the general workflow stays the same. 
 
 ## Creating the images (prerequisite)
 Normaly you would already have images, so you could spare this step. But in this repository there images are stored in a single file, so in the first step we create the directories and create the pngs.
@@ -33,15 +33,15 @@ Note that the script ```CreateLists.py``` does a random shuffling. If we would n
 
 
 ## Defining the model. 
-A model is defined by chaining different layers like convolution layer, max-pooling layer, together. For the different layers see the [tutorial](http://caffe.berkeleyvision.org/tutorial/layers.html#data-layers) or [use the source luke](https://github.com/BVLC/caffe/tree/master/src/caffe/layers). 
+A model is defined by chaining different layers like convolution layer, max-pooling layer, together. The principle idea is described in http://caffe.berkeleyvision.org/tutorial/net_layer_blob.html
+For the different layers see the [tutorial](http://caffe.berkeleyvision.org/tutorial/layers.html#data-layers) or [use the source luke](https://github.com/BVLC/caffe/tree/master/src/caffe/layers). 
 
 We want to build the following architecture:
 
 ![sample image](imgs/Figure_Overview.png)
 In the first convolutional layer 20 kernels of size 5×5 were applied re- sulting in 20 42×42 “images” (C1) from which the maxi- mum of 3×3 neighboring pixels were taken (maxpooling, S2). As a next step, the results were fed into the second convolutional layer (C3)using 100 5×5 filters. Next, a max- pooling (S4) 2×2 was done resulting in 100 5×5 images. These 2500 pixels were then taken as an input for a fully connected hidden layer (H5) with an output of 200 neurons, which was then fed into a multinomial logistic regression with 6 outputs representing the 6 persons.
 
-The model is defined in [prototxt](model/letnet_train_test_files.prototxt)
-We begin with the data-layer defined in the model
+The model is defined in [prototxt](model/lenet_train_test_files.prototxt). In the following some of the layers are descriped. We begin with the data-layer which, in our case, feeds the images and labels of the training or testset in the pipline.
 
 ### The data layer
 ```
@@ -150,7 +150,13 @@ In detail:
 
 * `batchSize = np.shape(preds)[0]` the batch size is evaluated
 *  `yTrues = np.reshape(net.blobs['label'].data, batchSize).astype(int)` #True Labels (passed from the data layer)
-* `pred = np.reshape(preds[i], 6)` is the result of the final 
+* `pred = np.reshape(preds[i], 6)` is the result of the final layer no Soft-max has been applied, which is than calculated by hand.
+
+## Visualizing the weight
+See http://nbviewer.ipython.org/github/BVLC/caffe/blob/master/examples/filter_visualization.ipynb 
+```
+net.params['conv1'][0].data
+```
 
 
 

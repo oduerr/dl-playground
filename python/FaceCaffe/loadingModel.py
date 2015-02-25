@@ -13,8 +13,8 @@ print("Finshed imports")
 if __name__ == "__main__":
   caffe.set_mode_cpu()
   caffe.set_phase_train
-  #net = caffe.Net('lenet_train_test_files.prototxt', 'snapshots/lenet25Feb_iter_12000.caffemodel')
-  net = caffe.Net('lenet_train_test_files.prototxt', 'snapshots/lenet25Feb_iter_3000.caffemodel')
+  net = caffe.Net('lenet_train_test_files.prototxt', 'snapshots/lenet25Feb_iter_12000.caffemodel')
+  #net = caffe.Net('lenet_train_test_files.prototxt', 'snapshots/lenet25Feb_iter_3000.caffemodel')
   start = time.time()
   res = net.forward() # this will load the next mini-batch as defined in the net (rewinds)
   logloss = res['loss'][0][0][0][0]
