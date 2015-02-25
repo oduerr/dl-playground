@@ -7,9 +7,10 @@
 data/mnist.pkl.gz
 python/.idea/.name
 *.png
+!0.png
 *.p
 dumm*
 log*
 models*
 nohup.out
-submission*
+submission
