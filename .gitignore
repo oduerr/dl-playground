@@ -12,6 +12,7 @@ python/.idea/.name
 *.p
 dumm*
 log*
+!logloss*
 models*
 nohup.out
 submission

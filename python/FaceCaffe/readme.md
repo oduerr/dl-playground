@@ -41,31 +41,54 @@ We want to build the following architecture:
 ![sample image](imgs/Figure_Overview.png)
 In the first convolutional layer 20 kernels of size 5×5 were applied re- sulting in 20 42×42 “images” (C1) from which the maxi- mum of 3×3 neighboring pixels were taken (maxpooling, S2). As a next step, the results were fed into the second convolutional layer (C3)using 100 5×5 filters. Next, a max- pooling (S4) 2×2 was done resulting in 100 5×5 images. These 2500 pixels were then taken as an input for a fully connected hidden layer (H5) with an output of 200 neurons, which was then fed into a multinomial logistic regression with 6 outputs representing the 6 persons.
 
-We begin with the data-layer defined in the model layer
-### The model layer
+The model is defined in [prototxt](model/letnet_train_test_files.prototxt)
+We begin with the data-layer defined in the model
+
+### The data layer
 ```
 layers {
-  name: "faces ist aber egal"
+  name: "Egal"
   type: IMAGE_DATA
   top: "data"
   top: "label"
   image_data_param {
-    source: "../train_full.txt"
+    source: "../batch1_train.txt"
     batch_size: 256
-    shuffle: true
-    new_height: 50
-    new_width: 50
+    #shuffle: true
+    #new_height: 50
+    #new_width: 50
   }
   transform_param {
-    scale: 0.00390625
-    mirror: 1
-    crop_size: 46
+    scale: 0.00390625  # Image is [0,1] then
+    #mirror: 0         # We do not do random rotation, the faces are 
+    crop_size: 46      # We randomly crop 46x46
   }
-  include: { phase: TRAIN }
+  include: { phase: TRAIN } #These rules apply in the training-phase
 }
 ```
-Let's look at the individual bits and pices.
-* type: IMAGE_DATA means that we use images as a basis
+
+### The other layers
+**TODO**
+
+### The output layers (log-loss)
+```
+
+```
+
+
+## Training the model
+The model could be trained with the following command
+```
+nohup ~/caffe/caffe/build/tools/caffe train -solver lenet_solver.prototxt -gpu=0 > log_lenet.txt &
+```
+
+### The convergence
+Using the R-Script [PlotTraining](PlotTraining.R) the log-loss caluclated in the output layer can be investigated. We see a text book like overfitting.
+![overfitting](imgs/logloss1.jpeg)
+
+## Inspecting the traing model
+We don't care about the overfitting now. But we want to have a closer look at the 
+
 
 
 
