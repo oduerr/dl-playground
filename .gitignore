@@ -8,6 +8,7 @@ data/mnist.pkl.gz
 python/.idea/.name
 *.png
 !0.png
+!Figure_Overview.png
 *.p
 dumm*
 log*

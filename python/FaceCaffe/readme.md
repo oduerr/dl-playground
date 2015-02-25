@@ -9,6 +9,7 @@ dueo@srv-lab-t-706:~/dl-playground/python/imageUtils$ ./mkdirs.sh
 dueo@srv-lab-t-706:~/dl-playground/python/imageUtils$ python CreateImages.py 
 ```
 In the data directory, you should find a subfolder with two batches, of 48x48 images like the one below.
+
 ![sample image](imgs/0.png)
 
 ## Creating the lists of images
@@ -32,5 +33,39 @@ The last entry (0.8, 10000) determines the fraction of the training-set. So from
 Note that the script ```CreateLists.py``` does a random shuffling. If we would not do this random shuffeling it could be that only images of on person are in a particular mini-batch of the training set.
 
 
-## 
+## Defining the model. 
+A model is defined by chaining different layers like convolution layer, max-pooling layer, together. For the different layers see the [tutorial](http://caffe.berkeleyvision.org/tutorial/layers.html#data-layers) or [use the source luke](https://github.com/BVLC/caffe/tree/master/src/caffe/layers). 
+
+We want to build the following architecture:
+
+![sample image](imgs/Figure_Overview.png)
+In the first convolutional layer 20 kernels of size 5×5 were applied re- sulting in 20 42×42 “images” (C1) from which the maxi- mum of 3×3 neighboring pixels were taken (maxpooling, S2). As a next step, the results were fed into the second convolutional layer (C3)using 100 5×5 filters. Next, a max- pooling (S4) 2×2 was done resulting in 100 5×5 images. These 2500 pixels were then taken as an input for a fully connected hidden layer (H5) with an output of 200 neurons, which was then fed into a multinomial logistic regression with 6 outputs representing the 6 persons.
+
+We begin with the data-layer defined in the model layer
+### The model layer
+```
+layers {
+  name: "faces ist aber egal"
+  type: IMAGE_DATA
+  top: "data"
+  top: "label"
+  image_data_param {
+    source: "../train_full.txt"
+    batch_size: 256
+    shuffle: true
+    new_height: 50
+    new_width: 50
+  }
+  transform_param {
+    scale: 0.00390625
+    mirror: 1
+    crop_size: 46
+  }
+  include: { phase: TRAIN }
+}
+```
+Let's look at the individual bits and pices.
+* type: IMAGE_DATA means that we use images as a basis
+
+
 
