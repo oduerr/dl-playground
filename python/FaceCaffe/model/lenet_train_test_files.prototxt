@@ -25,7 +25,7 @@ layers {
   top: "label"
   image_data_param {
     #source: "../batch2_train.txt" #for the validation on the unseen set
-    source: "../batch1_train.txt"
+    source: "../batch1_test.txt"
     batch_size: 256
     #new_height: 46
     #new_width: 46

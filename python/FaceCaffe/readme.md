@@ -1,8 +1,8 @@
-# Experimenting with Caffe (a shor tutorial from images to classifiers)
-A short tutorial how to create a classifier from png-images. In this example we used faces, but of course the general workflow stays the same. 
+# Experimenting with Caffe 
+This notes show how to create a classifier from png-images using caffe from the beginning to end. In this example we used faces, but of course the general workflow stays the same. 
 
 ## Creating the images (prerequisite)
-Normaly you would already have images, so you could spare this step. But in this repository there images are stored in a single file, so in the first step we create the directories and create the pngs.
+Normaly you would already have images, so you could spare this step. But in this git-repository the images are stored in a single file, so in the first step we create the necessary directories and produce the pngs.
 ```
 dueo@srv-lab-t-706:~/dl-playground/python/imageUtils$ ./mkdirs.sh 
 dueo@srv-lab-t-706:~/dl-playground/python/imageUtils$ python CreateImages.py 
@@ -12,7 +12,7 @@ In the local [data directory]('../../data'), you should find a folder called "im
 ![sample image](imgs/0.png)
 
 ## Creating the lists of images
-Now we have two batches of images (batch1 indoor, batch2 taken outdoors). We use batch1 to test the performance and split it into in two parts, one to train the classifier and the other one to evaluate the performance (also called testset in the caffe). Caffe works on data-layes, these can come from a database (see later) or they can come from lists of files (see below). We also create a list of files from batch2 but do not further use them in this discussion, where we foccuss on the technical aspects. We create the lists using the following 2 commands:
+Now we have two batches of images (batch1 indoor, batch2 taken outdoors). We use batch1 to test the performance and split it into in two parts, one to train the classifier and the other one to evaluate the performance using a test-set. Caffe works on data-layes, these can come from a database (see later) or they can come from lists of files which we now create. We also create a second list of files from batch2 (images taken outdoor) but do not further use them here, where we foccuss on the technical aspects. We create the lists using the following 2 commands:
 ```
   ~/dl-playground/python/FaceCaffe$ python ../imageUtils/CreateLists.py /home/dueo/dl-playground/data/images/batch1/ names2Numbers.txt batch1_ 0.80
   ~/dl-playground/python/FaceCaffe$ python ../imageUtils/CreateLists.py /home/dueo/dl-playground/data/images/batch2/ names2Numbers.txt batch2_ 1000.0
@@ -33,13 +33,13 @@ Note that the script ```CreateLists.py``` does a random shuffling. If we would n
 
 
 ## Defining the model. 
-A model is defined by chaining different layers like convolution layer, max-pooling layer, together. The principle idea is described in http://caffe.berkeleyvision.org/tutorial/net_layer_blob.html
-For the different layers see the [tutorial](http://caffe.berkeleyvision.org/tutorial/layers.html#data-layers) or [use the source luke](https://github.com/BVLC/caffe/tree/master/src/caffe/layers). 
+A model is defined by chaining different layers like convolution layer, max-pooling layer,... together. The principle idea is described in http://caffe.berkeleyvision.org/tutorial/net_layer_blob.html
+For the possible different layers see the [tutorial](http://caffe.berkeleyvision.org/tutorial/layers.html#data-layers) or [use the source luke](https://github.com/BVLC/caffe/tree/master/src/caffe/layers). 
 
 We want to build the following architecture:
 
 ![sample image](imgs/Figure_Overview.png)
-In the first convolutional layer 20 kernels of size 5×5 were applied re- sulting in 20 42×42 “images” (C1) from which the maxi- mum of 3×3 neighboring pixels were taken (maxpooling, S2). As a next step, the results were fed into the second convolutional layer (C3)using 100 5×5 filters. Next, a max- pooling (S4) 2×2 was done resulting in 100 5×5 images. These 2500 pixels were then taken as an input for a fully connected hidden layer (H5) with an output of 200 neurons, which was then fed into a multinomial logistic regression with 6 outputs representing the 6 persons.
+In the first convolutional layer 20 kernels of size 5×5 were applied resulting in 20 42×42 “images” (C1) from which the maxi- mum of 3×3 neighboring pixels were taken (maxpooling, S2). As a next step, the results were fed into the second convolutional layer (C3) using 100 5×5 filters. Next, a maxpooling (S4) 2×2 was done resulting in 100 5×5 images. These 2500 pixels were then taken as an input for a fully connected hidden layer (H5) with an output of 200 neurons, which was then fed into a multinomial logistic regression with 6 outputs representing the 6 persons.
 
 The model is defined in [prototxt](model/lenet_train_test_files.prototxt). In the following some of the layers are descriped. We begin with the data-layer which, in our case, feeds the images and labels of the training or testset in the pipline.
 
@@ -69,12 +69,6 @@ layers {
 ### The other layers
 **TODO**
 
-### The output layers (log-loss)
-```
-
-```
-
-
 ## Training the model
 The model could be trained with the following command
 ```
@@ -88,7 +82,7 @@ We see a rapid convergence. ![convergence](imgs/convergence.jpeg)
 Bye the way there used to be an error due to setting `mirror:1` in the testing-phase, which hinderd the model to fit correctly. 
 
 ## Inspecting the trained model
-We want to have a closer look at the network. We can do so by loading the model in a python session see using [loadingModel.py](loadingModel.py). Using ipython *started from model subdirectory* we step until line 19.
+We want to have a closer look at the network. We can do so by loading the model in a python session see using [loadingModel.py](loadingModel.py). Using ipython *started from model subdirectory* we step until line 19 as follows:
 ```
 dueo@srv-lab-t-706:~/dl-playground/python/FaceCaffe/model$ ipython
 run -d -b 19 ../loadingModel.py
@@ -162,7 +156,7 @@ net.params['conv1'][0].data
 
 
 ## Evaluating on batch2
-This can be done with the same script, but one has to change in the `phase: TEST` the pointer to the file which contains all the examples of batch2. Further one has to set `caffe.set_phase_test()` in around [here](https://github.com/Oliver4242/dl-playground/blob/master/python/FaceCaffe/loadingModel.py#15). The performance drops considerably, which is due to the changes in the lighting, but that's a different storry. 
+This can be done with the same script, but one has to change in the `phase: TEST` the pointer to the file which contains all the examples of batch2. Further one has to set `caffe.set_phase_test()` in around [here](https://github.com/Oliver4242/dl-playground/blob/master/python/FaceCaffe/loadingModel.py#15). The performance drops considerably, which is due to the changes in the lighting, but that's a [different storry](readme_batch2.md). 
 
 
 

@@ -5,7 +5,7 @@ layers {
   top: "data"
   top: "label"
   image_data_param {
-    source: "../batch1_train.txt"
+    source: "../batch1LBH_train.txt"
     batch_size: 64
     #shuffle: true
     #new_height: 50
@@ -14,7 +14,7 @@ layers {
   transform_param {
     scale: 0.00390625  # Image is [0,1] then
     #mirror: 0         # We do not do random rotation
-    crop_size: 44      # We randomly crop from the 48x48
+    crop_size: 44      # We randomly crop from the 46x46
   }
   include: { phase: TRAIN } #These rules apply in the training-phase
 }
@@ -24,7 +24,8 @@ layers {
   top: "data"
   top: "label"
   image_data_param {
-    source: "../batch1_test.txt"
+    #source: "../batch1LBH_test.txt"
+    source: "../batch2LBH_train.txt"
     batch_size: 256
     #new_height: 46
     #new_width: 46
