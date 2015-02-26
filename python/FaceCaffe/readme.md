@@ -7,7 +7,7 @@ Normaly you would already have images, so you could spare this step. But in this
 dueo@srv-lab-t-706:~/dl-playground/python/imageUtils$ ./mkdirs.sh 
 dueo@srv-lab-t-706:~/dl-playground/python/imageUtils$ python CreateImages.py 
 ```
-In the local [data directory]('../../data'), you should find a folder called "images"" with two batches of 48x48 images like the one below.
+In the local data directory (../../data), you should find a folder called "images"" with two batches of 48x48 images like the one below.
 
 ![sample image](imgs/0.png)
 
