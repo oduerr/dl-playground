@@ -31,7 +31,7 @@ layers {
   }
   transform_param {
     scale: 0.00390625
-    mirror: 1
+    #mirror: 1
     crop_size: 46
   }
   include: { phase: TEST }

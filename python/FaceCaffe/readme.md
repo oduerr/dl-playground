@@ -82,8 +82,10 @@ nohup ~/caffe/caffe/build/tools/caffe train -solver lenet_solver.prototxt -gpu=0
 ```
 
 ### The convergence
-Using the R-Script [PlotTraining](PlotTraining.R) the log-loss caluclated in the output layer can be investigated. We see a text book like overfitting.
-![overfitting](imgs/logloss1.jpeg)
+Using the R-Script [PlotTraining](PlotTraining.R) the log-loss caluclated in the output layer can be investigated. 
+We see a rapid convergence. ![convergence](imgs/convergence.jpeg)
+
+Bye the way there used to be an error due to setting `mirror:1` in the testing-phase, which hinderd the model to fit correctly. 
 
 ## Inspecting the trained model
 We don't care about the overfitting now. But we want to have a closer look at the network. We can do so by loading the model in a python session see using [loadingModel.py](loadingModel.py). Using ipython *started from model subdirectory* we step until line 19.
@@ -158,6 +160,10 @@ See http://nbviewer.ipython.org/github/BVLC/caffe/blob/master/examples/filter_vi
 net.params['conv1'][0].data
 ```
 
+
+## Fixing the ovcerfitting
+* Smaller batch-size
+* Adding pading in the conv-layer, so that changes in the geometry are possible
 
 
 
