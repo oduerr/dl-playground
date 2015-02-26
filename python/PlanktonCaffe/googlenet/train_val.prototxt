@@ -46,7 +46,7 @@ layers {
   type: IMAGE_DATA
   image_data_param {
      source: "training_60x60.txt"
-     batch_size: 16
+     batch_size: 64
    }
    transform_param {
      mirror: false

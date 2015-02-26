@@ -41,14 +41,14 @@ gg + theme_light() + xlab('Iterations') + ylab('log-loss') + scale_color_manual(
 ################
 # Google Net
 setwd("/home//dueo/dl-playground/python/PlanktonCaffe/googlenet/")
-system("~/caffe/caffe/tools/extra/parse_log.sh googlenet_22_feb.log")
-train = read.table('googlenet_22_feb.log.train', header = TRUE, comment.char = 'H')
-test = read.table('googlenet_22_feb.log.test', header = TRUE, comment.char = 'H')
+system("~/caffe/caffe/tools/extra/parse_log.sh log_googlenet_22_feb.log")
+train = read.table('log_googlenet_22_feb.log.train', header = TRUE, comment.char = 'H')
+test = read.table('log_googlenet_22_feb.log.test', header = TRUE, comment.char = 'H')
 
 library(ggplot2)
 gg <- ggplot()
 gg <- gg + geom_line(aes(x = train$X.Iters, y = train$TrainingLoss, colour='training dropout'), size=0.25) 
-gg <- gg + geom_line(aes(x = test$X.Iters,  y = test$TestLoss, colour='testing dropout'), size=2)
+gg <- gg + geom_line(aes(x = test$X.Iters,  y = test$TestAccuracy, colour='testing dropout'), size=2) #Wrong naming
 gg <- gg + geom_hline(y=1.44)
 gg + geom_point(aes(x = test$X.Iters,  y = test$TestLoss, colour='testing dropout')) +theme_light() + xlab('Iterations') + ylab('log-loss')
 

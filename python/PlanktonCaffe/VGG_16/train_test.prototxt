@@ -1,16 +1,78 @@
+# Taken from: https://gist.github.com/ksimonyan/211839e770f7b538e2d8#file-vgg_ilsvrc_16_layers_deploy-prototxt
 name: "VGG_ILSVRC_16_layers"
-input: "data"
-input_dim: 10
-input_dim: 3
-input_dim: 224
-input_dim: 224
+# Alles durch 2 genommen
+
+
+#input: "data"
+#input_dim: 10
+#input_dim: 3
+#input_dim: 224
+#input_dim: 224
+layers {
+  top: "data"
+  top: "label"
+  name: "data"
+  type: DATA
+  data_param {
+    source: "/home/dueo/data_kaggel_bowl/train_lmdb_64"
+    batch_size: 32
+    backend: LMDB
+  }
+  include {
+    phase: TRAIN
+  }
+  transform_param {
+    mirror: true
+    crop_size: 56
+    mean_file: "/home/dueo/data_kaggel_bowl/train_mean_64.binaryproto"
+    # mean_value: 104
+    # mean_value: 117
+    # mean_value: 123
+  }
+}
+layers {
+  top: "data"
+  top: "label"
+  name: "data"
+  include {
+    phase: TEST
+  }
+  # ----------------------
+  # From the database 
+  type: DATA
+  data_param {
+    source: "/home/dueo/data_kaggel_bowl/val_lmdb_64"
+    batch_size: 16
+    backend: LMDB
+  }
+  transform_param {
+    mirror: false
+    crop_size: 56
+    mean_file: "/home/dueo/data_kaggel_bowl/train_mean_64.binaryproto"
+  }
+  # --------------------------
+  # From a File
+  # type: IMAGE_DATA
+  # image_data_param {
+  #   source: "training_60x60.txt"
+  #   batch_size: 64
+  # }
+  # transform_param {
+  #   mirror: false
+  #   scale: 0.00390625
+  #   crop_size: 56
+  #   mean_file: "/home/dueo/data_kaggel_bowl/train_mean_64.binaryproto"
+  # }
+  # --------------
+}
+
 layers {
   bottom: "data"
   top: "conv1_1"
   name: "conv1_1"
   type: CONVOLUTION
   convolution_param {
-    num_output: 64
+    num_output: 32
     pad: 1
     kernel_size: 3
   }
@@ -27,7 +89,7 @@ layers {
   name: "conv1_2"
   type: CONVOLUTION
   convolution_param {
-    num_output: 64
+    num_output: 32
     pad: 1
     kernel_size: 3
   }
@@ -55,7 +117,7 @@ layers {
   name: "conv2_1"
   type: CONVOLUTION
   convolution_param {
-    num_output: 128
+    num_output: 64
     pad: 1
     kernel_size: 3
   }
@@ -72,7 +134,7 @@ layers {
   name: "conv2_2"
   type: CONVOLUTION
   convolution_param {
-    num_output: 128
+    num_output: 64
     pad: 1
     kernel_size: 3
   }
@@ -100,7 +162,7 @@ layers {
   name: "conv3_1"
   type: CONVOLUTION
   convolution_param {
-    num_output: 256
+    num_output: 128
     pad: 1
     kernel_size: 3
   }
@@ -117,7 +179,7 @@ layers {
   name: "conv3_2"
   type: CONVOLUTION
   convolution_param {
-    num_output: 256
+    num_output: 128
     pad: 1
     kernel_size: 3
   }
@@ -134,7 +196,7 @@ layers {
   name: "conv3_3"
   type: CONVOLUTION
   convolution_param {
-    num_output: 256
+    num_output: 128
     pad: 1
     kernel_size: 3
   }
@@ -162,7 +224,7 @@ layers {
   name: "conv4_1"
   type: CONVOLUTION
   convolution_param {
-    num_output: 512
+    num_output: 256
     pad: 1
     kernel_size: 3
   }
@@ -179,7 +241,7 @@ layers {
   name: "conv4_2"
   type: CONVOLUTION
   convolution_param {
-    num_output: 512
+    num_output: 256
     pad: 1
     kernel_size: 3
   }
@@ -196,7 +258,7 @@ layers {
   name: "conv4_3"
   type: CONVOLUTION
   convolution_param {
-    num_output: 512
+    num_output: 256
     pad: 1
     kernel_size: 3
   }
@@ -224,7 +286,7 @@ layers {
   name: "conv5_1"
   type: CONVOLUTION
   convolution_param {
-    num_output: 512
+    num_output: 256
     pad: 1
     kernel_size: 3
   }
@@ -241,7 +303,7 @@ layers {
   name: "conv5_2"
   type: CONVOLUTION
   convolution_param {
-    num_output: 512
+    num_output: 256
     pad: 1
     kernel_size: 3
   }
@@ -258,7 +320,7 @@ layers {
   name: "conv5_3"
   type: CONVOLUTION
   convolution_param {
-    num_output: 512
+    num_output: 256
     pad: 1
     kernel_size: 3
   }
@@ -286,7 +348,7 @@ layers {
   name: "fc6"
   type: INNER_PRODUCT
   inner_product_param {
-    num_output: 4096
+    num_output: 1024
   }
 }
 layers {
@@ -310,7 +372,7 @@ layers {
   name: "fc7"
   type: INNER_PRODUCT
   inner_product_param {
-    num_output: 4096
+    num_output: 1024
   }
 }
 layers {
@@ -334,12 +396,27 @@ layers {
   name: "fc8"
   type: INNER_PRODUCT
   inner_product_param {
-    num_output: 1000
+    num_output: 121
   }
 }
 layers {
+  name: "accuracy"
+  type: ACCURACY
   bottom: "fc8"
-  top: "prob"
-  name: "prob"
-  type: SOFTMAX
+  bottom: "label"
+  top: "accuracy"
+  include: { phase: TEST }
 }
+layers {
+  name: "loss"
+  type: SOFTMAX_LOSS
+  bottom: "fc8"
+  bottom: "label"
+  top: "loss"
+}
+
+
+
+
+
+

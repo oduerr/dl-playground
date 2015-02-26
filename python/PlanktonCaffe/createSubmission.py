@@ -10,7 +10,7 @@ import caffe
 print("Finshed imports")
 
 if __name__ == "__main__":
-  caffe.set_mode_cpu()
+  caffe.set_mode_gpu()
   fc = csv.reader(file('sampleSubmission.csv.head.csv'))
   fst =  fc.next()
   fout = open('submission_caffeLeNet.txt', 'w');
@@ -24,17 +24,17 @@ if __name__ == "__main__":
   except:
       pass
   print("Read " + str(len(files)) + " files to be classified")
-  #net = caffe.Classifier('lenet/lenet_deploy.prototxt', 'lenet/model/lenet60_iter_100000.caffemodel', image_dims=(46, 46))
+  net = caffe.Classifier('lenet/lenet_deploy.prototxt', 'lenet/model/lenet60_iter_100000.caffemodel', image_dims=(46, 46))
   #net = caffe.Classifier('googlenet/deploy.prototxt', 'googlenet/models/googlenet_quick_iter_160000.caffemodel', image_dims=(56, 56))
   # Taken from:https://github.com/BVLC/caffe/issues/1774
-  net = caffe.Net('googlenet/train_val.prototxt', 'googlenet/models/googlenet_quick_iter_160000.caffemodel')
-  net.forward() # this will load the next mini-batch as defined in the net
-  fc7 = net.blobs['fc7'].data 
+  #net = caffe.Net('googlenet/train_val.prototxt', 'googlenet/models/googlenet_quick_iter_160000.caffemodel')
+  #net.forward() # this will load the next mini-batch as defined in the net
+  #fc7 = net.blobs['fc7'].data 
   
   c = 0
   fs = []
   imgs = []
-  blocksize = 1
+  blocksize = 10
   print("-------------              Starting to make predictions   \n")
   for f in files:
     c += 1
