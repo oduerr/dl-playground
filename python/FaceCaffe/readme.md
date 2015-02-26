@@ -12,7 +12,7 @@ In the local [data directory]('../../data'), you should find a folder called "im
 ![sample image](imgs/0.png)
 
 ## Creating the lists of images
-Now we have two batches of images (batch1 indoor, batch2 taken outdoors). We use batch2 to test the performance and we split batch1 in two parts, one to train the classifier and the other one to evaluate the performance (also called testset in the caffe). Caffe works on data-layes, these can come from a database (see later) or they can come from lists of files (see below). We create the lists of files using the following 2 commands.
+Now we have two batches of images (batch1 indoor, batch2 taken outdoors). We use batch1 to test the performance and split it into in two parts, one to train the classifier and the other one to evaluate the performance (also called testset in the caffe). Caffe works on data-layes, these can come from a database (see later) or they can come from lists of files (see below). We also create a list of files from batch2 but do not further use them in this discussion, where we foccuss on the technical aspects. We create the lists using the following 2 commands:
 ```
   ~/dl-playground/python/FaceCaffe$ python ../imageUtils/CreateLists.py /home/dueo/dl-playground/data/images/batch1/ names2Numbers.txt batch1_ 0.80
   ~/dl-playground/python/FaceCaffe$ python ../imageUtils/CreateLists.py /home/dueo/dl-playground/data/images/batch2/ names2Numbers.txt batch2_ 1000.0
@@ -162,7 +162,7 @@ net.params['conv1'][0].data
 
 
 ## Evaluating on batch2
-This can be done with the same script, but one has to change in the `phase: TEST` the pointer to the file which contains all the examples of batch2. Further one has to set `caffe.set_phase_test()` in around [here](https://github.com/Oliver4242/dl-playground/blob/master/python/FaceCaffe/loadingModel.py#15). The performance 
+This can be done with the same script, but one has to change in the `phase: TEST` the pointer to the file which contains all the examples of batch2. Further one has to set `caffe.set_phase_test()` in around [here](https://github.com/Oliver4242/dl-playground/blob/master/python/FaceCaffe/loadingModel.py#15). The performance drops considerably, which is due to the changes in the lighting, but that's a different storry. 
 
 
 
