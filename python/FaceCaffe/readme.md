@@ -88,7 +88,7 @@ We see a rapid convergence. ![convergence](imgs/convergence.jpeg)
 Bye the way there used to be an error due to setting `mirror:1` in the testing-phase, which hinderd the model to fit correctly. 
 
 ## Inspecting the trained model
-We don't care about the overfitting now. But we want to have a closer look at the network. We can do so by loading the model in a python session see using [loadingModel.py](loadingModel.py). Using ipython *started from model subdirectory* we step until line 19.
+We want to have a closer look at the network. We can do so by loading the model in a python session see using [loadingModel.py](loadingModel.py). Using ipython *started from model subdirectory* we step until line 19.
 ```
 dueo@srv-lab-t-706:~/dl-playground/python/FaceCaffe/model$ ipython
 run -d -b 19 ../loadingModel.py
@@ -161,9 +161,8 @@ net.params['conv1'][0].data
 ```
 
 
-## Fixing the ovcerfitting
-* Smaller batch-size
-* Adding pading in the conv-layer, so that changes in the geometry are possible
+## Evaluating on batch2
+This can be done with the same script, but one has to change in the `phase: TEST` the pointer to the file which contains all the examples of batch2. Further one has to set `caffe.set_phase_test()` in around [here](https://github.com/Oliver4242/dl-playground/blob/master/python/FaceCaffe/loadingModel.py#15). The performance 
 
 
 
