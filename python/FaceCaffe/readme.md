@@ -41,7 +41,18 @@ We want to build the following architecture:
 ![sample image](imgs/Figure_Overview.png)
 In the first convolutional layer 20 kernels of size 5×5 were applied resulting in 20 42×42 “images” (C1) from which the maxi- mum of 3×3 neighboring pixels were taken (maxpooling, S2). As a next step, the results were fed into the second convolutional layer (C3) using 100 5×5 filters. Next, a maxpooling (S4) 2×2 was done resulting in 100 5×5 images. These 2500 pixels were then taken as an input for a fully connected hidden layer (H5) with an output of 200 neurons, which was then fed into a multinomial logistic regression with 6 outputs representing the 6 persons.
 
-The model is defined in [prototxt](model/lenet_train_test_files.prototxt). In the following some of the layers are descriped. We begin with the data-layer which, in our case, feeds the images and labels of the training or testset in the pipline.
+The model is defined in [prototxt](model/lenet_train_test_files.prototxt) and can be visualized via
+```
+  python ~/caffe/caffe/python/draw_net.py lenet_train_test_files.prototxt ../imgs/train_test.png
+```
+resulting in: 
+
+![](imgs/train_test.jpg)
+
+
+### The layers used
+
+In the following some of the layers are descriped. We begin with the data-layer which, in our case, feeds the images and labels of the training or testset in the pipline.
 
 ### The data layer
 ```
@@ -68,6 +79,8 @@ layers {
 
 ### The other layers
 **TODO**
+
+
 
 ## Training the model
 The model could be trained with the following command
