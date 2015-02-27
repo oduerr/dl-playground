@@ -39,6 +39,22 @@ gg + theme_light() + xlab('Iterations') + ylab('log-loss') + scale_color_manual(
 
 
 ################
+# alex net (on 256x256)
+setwd("/home//dueo/dl-playground/python/PlanktonCaffe/alexnet/")
+system("~/caffe/caffe/tools/extra/parse_log.sh 27Feb.log")
+train = read.table('27Feb.log.train', header = TRUE, comment.char = 'H')
+test = read.table('27Feb.log.test', header = TRUE, comment.char = 'H')
+
+library(ggplot2)
+gg <- ggplot()
+gg <- gg + geom_line(aes(x = train$X.Iters, y = train$TrainingLoss, colour='training'), size=0.25) 
+gg <- gg + geom_line(aes(x = test$X.Iters,  y = test$TestLoss, colour='testing'), size=2) #Wrong naming
+gg <- gg + geom_hline(y=1.44)
+gg + geom_point(aes(x = test$X.Iters,  y = test$TestLoss, colour='testing dropout')) +theme_light() + xlab('Iterations') + ylab('log-loss')
+
+
+
+################
 # Google Net
 setwd("/home//dueo/dl-playground/python/PlanktonCaffe/googlenet/")
 system("~/caffe/caffe/tools/extra/parse_log.sh log_googlenet_22_feb.log")

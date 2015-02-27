@@ -1,3 +1,11 @@
+# Model taken from caffe 
+Original comments below
+
+##
+![](train_val_mani.jpg)
+
+
+
 ---
 name: BVLC AlexNet Model
 caffemodel: bvlc_alexnet.caffemodel
