@@ -6,10 +6,10 @@ import numpy as np
 import csv
 import math
 
-filenameTraining    = "../../data/training_48x48_unaligned_large.p_R.csv.gz"
-filenameValidation = "../../data/testing_48x48_unaligned_large.p_R.csv.gz"
+filenameTraining    = "../../data/batch1_46_lph.csv.gz"
+filenameValidation  = "../../data/batch2_46_lph.csv.gz"
 names_for_y =  ('Dejan', 'Diego', 'Martin', 'Oliver', 'Rebekka', 'Ruedi')
-show = False
+show = True
 
 def Mask(vals):
     sizeIn = int(math.sqrt(len(vals)))
@@ -63,8 +63,8 @@ def imgsFromCSV(filename, directory):
 
 
 if __name__ == '__main__':
-    imgsFromCSV(filenameTraining, "../../data/images/batch1")
-    imgsFromCSV(filenameValidation, "../../data/images/batch2")
+    imgsFromCSV(filenameTraining, "../../data/imagesLBH/batch1")
+    imgsFromCSV(filenameValidation, "../../data/imagesLBH/batch2")
 
 
 

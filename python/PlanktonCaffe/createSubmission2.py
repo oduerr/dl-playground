@@ -41,8 +41,8 @@ if __name__ == "__main__":
     preds = net.blobs[predLayerName].data 
     batchSize = np.shape(preds)[0]
     for i in range(0,batchSize):
-      pred = np.reshape(preds[i],1000)[0:121] #Todo change to 121
-      #pred = np.reshape(preds[i],121)
+      #pred = np.reshape(preds[i],1000)[0:121] #Todo change to 121
+      pred = np.reshape(preds[i],121)
       prob = np.exp(pred)/np.sum(np.exp(pred))
       s = names[read]
       for r in prob:

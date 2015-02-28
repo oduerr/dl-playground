@@ -21,7 +21,7 @@ import csv
 scale_fac = 0.2
 borderProb = 0.85
 show = True
-createOverviewFigs = True
+createOverviewFigs = False
 webcam = False
 rocWriter = csv.writer(open('roc.csv', 'w'))
 
