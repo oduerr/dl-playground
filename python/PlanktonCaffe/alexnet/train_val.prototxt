@@ -5,13 +5,19 @@ layers {
   top: "data"
   top: "label"
   data_param {
-    source: "/home/dueo/data_kaggel_bowl/train_lmdb_256"
+    #source: "/home/dueo/data_kaggel_bowl/train_augmented_30_lmdb_128/"
+    source: "/home/dueo/data_kaggel_bowl/train_augmented_lmdb_128/"
+    #source: "/home/dueo/data_kaggel_bowl/train_lmdb_256/"
     backend: LMDB
-    batch_size: 64
+    batch_size: 256
   }
   transform_param {
-    crop_size: 227
-    mean_file: "/home/dueo/data_kaggel_bowl/train_mean_256.binaryproto"
+    crop_size: 99
+    #mean_file: "/home/dueo/data_kaggel_bowl/train_augmented_30_mean.binaryproto"
+    mean_file: "/home/dueo/data_kaggel_bowl/train_augmented_mean.binaryproto"
+    # Big one
+    #crop_size: 227
+    #mean_file: "/home/dueo/data_kaggel_bowl/train_mean_256.binaryproto"
     mirror: true
   }
   include: { phase: TRAIN }
@@ -22,17 +28,31 @@ layers {
   top: "data"
   top: "label"
   data_param {
-    source: "/home/dueo/data_kaggel_bowl/val_lmdb_256"
+    source: "/home/dueo/data_kaggel_bowl/test_lmdb_128/"
+    #source: "/home/dueo/data_kaggel_bowl/val_kaggle_lmdb_128/"
     backend: LMDB
-    batch_size: 64
+    batch_size: 32
   }
   transform_param {
-    crop_size: 227
-    mean_file: "/home/dueo/data_kaggel_bowl/train_mean_256.binaryproto"
+    crop_size: 99
+    #mean_file: "/home/dueo/data_kaggel_bowl/train_augmented_30_mean.binaryproto"
+    mean_file: "/home/dueo/data_kaggel_bowl/train_augmented_mean.binaryproto"
+    #crop_size: 227
+    #mean_file: "/home/dueo/data_kaggel_bowl/train_mean_256.binaryproto"
     mirror: false
   }
   include: { phase: TEST }
 }
+# layers {
+#   name: "drop1"
+#   type: DROPOUT
+#   bottom: "data"
+#   top: "data"
+#   dropout_param {
+#     dropout_ratio: 0.3
+#   }
+#   #include: { phase: TRAIN } in training only anyway
+# }
 layers {
   name: "conv1"
   type: CONVOLUTION
@@ -62,16 +82,6 @@ layers {
   bottom: "conv1"
   top: "conv1"
 }
-layers {
-  name: "drop1"
-  type: DROPOUT
-  bottom: "conv1"
-  top: "conv1"
-  dropout_param {
-    dropout_ratio: 0.5
-  }
-}
-
 layers {
   name: "norm1"
   type: LRN
@@ -125,16 +135,6 @@ layers {
   top: "conv2"
 }
 layers {
-  name: "drop2"
-  type: DROPOUT
-  bottom: "conv2"
-  top: "conv2"
-  dropout_param {
-    dropout_ratio: 0.5
-  }
-}
-
-layers {
   name: "norm2"
   type: LRN
   bottom: "conv2"
@@ -145,21 +145,21 @@ layers {
     beta: 0.75
   }
 }
-layers {
-  name: "pool2"
-  type: POOLING
-  bottom: "norm2"
-  top: "pool2"
-  pooling_param {
-    pool: MAX
-    kernel_size: 3
-    stride: 2
-  }
-}
+# layers {
+#   name: "pool2"
+#   type: POOLING
+#   bottom: "norm2"
+#   top: "pool2"
+#   pooling_param {
+#     pool: MAX
+#     kernel_size: 3
+#     stride: 2
+#   }
+# }
 layers {
   name: "conv3"
   type: CONVOLUTION
-  bottom: "pool2"
+  bottom: "norm2"
   top: "conv3"
   blobs_lr: 1
   blobs_lr: 2
@@ -177,15 +177,6 @@ layers {
       type: "constant"
       value: 0
     }
-  }
-}
-layers {
-  name: "drop3"
-  type: DROPOUT
-  bottom: "conv3"
-  top: "conv3"
-  dropout_param {
-    dropout_ratio: 0.5
   }
 }
 layers {
@@ -225,16 +216,6 @@ layers {
   top: "conv4"
 }
 layers {
-  name: "drop4"
-  type: DROPOUT
-  bottom: "conv4"
-  top: "conv4"
-  dropout_param {
-    dropout_ratio: 0.5
-  }
-}
-
-layers {
   name: "conv5"
   type: CONVOLUTION
   bottom: "conv4"
@@ -264,16 +245,6 @@ layers {
   bottom: "conv5"
   top: "conv5"
 }
-layers {
-  name: "drop5"
-  type: DROPOUT
-  bottom: "conv5"
-  top: "conv5"
-  dropout_param {
-    dropout_ratio: 0.5
-  }
-}
-
 layers {
   name: "pool5"
   type: POOLING
@@ -311,15 +282,6 @@ layers {
   type: RELU
   bottom: "fc6"
   top: "fc6"
-}
-layers {
-  name: "drop6"
-  type: DROPOUT
-  bottom: "fc6"
-  top: "fc6"
-  dropout_param {
-    dropout_ratio: 0.5
-  }
 }
 layers {
   name: "fc7"

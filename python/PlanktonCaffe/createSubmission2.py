@@ -8,10 +8,13 @@ sys.path.insert(0, caffe_root + 'python')
 import caffe
 
 predLayerName = 'fc8' #Output of the last inner product layer
-description = 'val_kaggle.prototxt'
-learnedModel = 'models/alexnet_train_iter_5000.caffemodel'
+description = 'train_val.prototxt'
+#learnedModel = 'models/alexnet_train_iter_10000.caffemodel'
+#learnedModel = 'models/alexnet_128_aug_iter_6000.caffemodel'
+learnedModel = 'models/alexnet_128_test_iter_2900.caffemodel'
+
 sampleSub    ='../sampleSubmission.csv.head.csv' #We just need the header
-submissionName = 'submission.txt'
+submissionName = 'submission1.txt'
 
 if __name__ == "__main__":
   # Getting the names of the validation set
@@ -30,7 +33,8 @@ if __name__ == "__main__":
   w.writerow(fst)
   
   caffe.set_mode_gpu()
-  caffe.set_phase_test()
+  #caffe.set_phase_test()
+  caffe.set_phase_train() #TODO delete
   # Taken from: https://github.com/BVLC/caffe/issues/1774
   net = caffe.Net(description, learnedModel)
   read = 0
