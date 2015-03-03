@@ -116,7 +116,7 @@ def evaluate_lenet5(topo, loadPics, learning_rate=0.005, n_epochs=500, stateIn =
     theano_rng = RandomStreams(numpy.random.randint(2 ** 30))
 
     print "Loading the datasets for testing and validation..."
-    # Images for face recognition
+    # Images
     valid_set_x, valid_set_y = loadPics.getValidationData();
     test_set_x, test_set_y = loadPics.getTestData();
     print "... Loading the datasets"
@@ -298,9 +298,7 @@ def evaluate_lenet5(topo, loadPics, learning_rate=0.005, n_epochs=500, stateIn =
                                           x: train_set_x[index * batch_size: (index + 1) * batch_size],
                                           y: train_set_y[index * batch_size: (index + 1) * batch_size]}
         )
-
         print("  Finished compiling the training set")
-
         epoch = epoch + 1
         for minibatch_index in xrange(n_train_batches): #Alle einmal anfassen
             iter = (epoch - 1) * n_train_batches + minibatch_index

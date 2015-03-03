@@ -5,7 +5,7 @@ import numpy as np
 
 __author__ = 'oli'
 
-show = False
+show = True
 #rots = (30,  60,  90, 120, 150, 180, 210, 240, 270, 300, 330)
 
 
@@ -43,17 +43,21 @@ if __name__ == '__main__':
         rots = np.random.uniform(0,360,10).astype(int) #10 random rotations
         for i, rot in enumerate(rots):
             im_size = img_org.shape[0]
-            scale = np.random.uniform(0.7,1.30)
+            if (np.random.rand() > 0.5):
+                if (np.random.rand() > 0.5):
+                    img_org = cv2.flip(img_org,0)
+                else:
+                    img_org = cv2.flip(img_org,1)
+            scale = np.random.uniform(0.9,1.1)
             mat = cv2.getRotationMatrix2D((im_size / 2, im_size / 2), rot, scale=scale)
             img_rotated = cv2.warpAffine(img_org, mat, (im_size, im_size), flags=cv2.INTER_LINEAR, borderValue=(255,255,255))
             if show:
-              cv2.imshow('Rot', img_rotated)
+              cv2.imshow('Rot_' + str(i), img_rotated)
             writeImg(outPath, img_rotated, kind, file, i+1) #Original
-
         if show:
-            cv2.waitKey(200)
-        lineNum += 1
-#         if (lineNum > 20):
-#             break
+            cv2.waitKey(20000 )
+            lineNum += 1
+            if (lineNum > 20):
+                break
 
 
