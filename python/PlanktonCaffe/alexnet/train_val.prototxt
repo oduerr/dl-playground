@@ -83,6 +83,16 @@ layers {
   top: "conv1"
 }
 layers {
+  name: "drop1"
+  type: DROPOUT
+  bottom: "conv1"
+  top: "conv1"
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+
+layers {
   name: "norm1"
   type: LRN
   bottom: "conv1"
@@ -135,6 +145,16 @@ layers {
   top: "conv2"
 }
 layers {
+  name: "drop2"
+  type: DROPOUT
+  bottom: "conv2"
+  top: "conv2"
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+
+layers {
   name: "norm2"
   type: LRN
   bottom: "conv2"
@@ -157,9 +177,20 @@ layers {
 #   }
 # }
 layers {
+  name: "pool2"
+  type: POOLING
+  bottom: "norm2"
+  top: "pool2"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+  }
+}
+layers {
   name: "conv3"
   type: CONVOLUTION
-  bottom: "norm2"
+  bottom: "pool2"
   top: "conv3"
   blobs_lr: 1
   blobs_lr: 2
@@ -177,6 +208,15 @@ layers {
       type: "constant"
       value: 0
     }
+  }
+}
+layers {
+  name: "drop3"
+  type: DROPOUT
+  bottom: "conv3"
+  top: "conv3"
+  dropout_param {
+    dropout_ratio: 0.5
   }
 }
 layers {
@@ -216,6 +256,16 @@ layers {
   top: "conv4"
 }
 layers {
+  name: "drop4"
+  type: DROPOUT
+  bottom: "conv4"
+  top: "conv4"
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+
+layers {
   name: "conv5"
   type: CONVOLUTION
   bottom: "conv4"
@@ -245,6 +295,16 @@ layers {
   bottom: "conv5"
   top: "conv5"
 }
+layers {
+  name: "drop5"
+  type: DROPOUT
+  bottom: "conv5"
+  top: "conv5"
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+
 layers {
   name: "pool5"
   type: POOLING
@@ -282,6 +342,15 @@ layers {
   type: RELU
   bottom: "fc6"
   top: "fc6"
+}
+layers {
+  name: "drop6"
+  type: DROPOUT
+  bottom: "fc6"
+  top: "fc6"
+  dropout_param {
+    dropout_ratio: 0.5
+  }
 }
 layers {
   name: "fc7"
