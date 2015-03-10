@@ -185,7 +185,7 @@ layers {
   name: "conv1"
   ...
 ```
-no data-labels at the end of the network definition (see file [model/lenet_evaluate_image.prototxt](model/lenet_evaluate_image.prototxt).
+**no data-labels** at the end of the network definition (see file [model/lenet_evaluate_image.prototxt](model/lenet_evaluate_image.prototxt).
 
 2. The followin python code reads the network and loads the image data
 ```
@@ -211,7 +211,9 @@ in_blob = np.asarray([inn_resized]).transpose(0,3,1,2)
 np.shape(inn_batch) #==> (1, 3, 46, 46) as it should
 net.forward_all(data=in_blob) #Forward-pass with the data
 pred = net.blobs['ip2'].data # The resulting layer 
-np.exp(pred)/np.sum(pred) #The normalized probabilities
+ep = np.exp(pred)
+summe = np.sum(ep, axis=1)
+pVals = ep / summe[:, np.newaxis] #The normalized probabilities
 ```
 
 
