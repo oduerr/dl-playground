@@ -171,6 +171,52 @@ net.params['conv1'][0].data
 ## Evaluating on batch2
 This can be done with the same script, but one has to change in the `phase: TEST` the pointer to the file which contains all the examples of batch2. Further one has to set `caffe.set_phase_test()` in around [here](https://github.com/Oliver4242/dl-playground/blob/master/python/FaceCaffe/loadingModel.py#15). The performance drops considerably, which is due to the changes in the lighting, but that's a [different storry](readme_batch2.md). 
 
+## Evaluating on Images
+Loading images and their evalutaion can be done as follows. 
+
+1. First the network definition file must be changed, so that it contains the following header and 
+```
+input: "data"
+input_dim: 1
+input_dim: 1 #For color put 1 here if no color
+input_dim: 46
+input_dim: 46
+layers {
+  name: "conv1"
+  ...
+```
+**no data-labels** at the end of the network definition (see file [model/lenet_evaluate_image.prototxt](model/lenet_evaluate_image.prototxt).
+
+2. The followin python code reads the network and loads the image data
+```
+import sys
+import csv,os
+import numpy as np
+import time
+sys.path.append('~/caffe/caffe/python/caffe')
+caffe_root = '/home/dueo/caffe/caffe/' #Needs to be changed
+sys.path.insert(0, caffe_root + 'python')
+import caffe
+import cv2
+caffe.set_phase_test()
+caffe.set_mode_cpu()
+# Loading the trained model
+net = caffe.Net('model/lenet_evaluate_image.prototxt', 'model/snapshots/lenet_iter_241000.caffemodel') 
+# Loading the image
+inn = caffe.io.load_image('../../data/images/batch1/Diego/86.png', color=True)
+# We have 46x46 images
+inn_resized = cv2.resize(inn, (46, 46))
+# Make a proper blob (batch-size x colors x dim_X x dim_Y)
+in_blob = np.asarray([inn_resized]).transpose(0,3,1,2)
+np.shape(inn_batch) #==> (1, 3, 46, 46) as it should
+net.forward_all(data=in_blob) #Forward-pass with the data
+pred = net.blobs['ip2'].data # The resulting layer 
+ep = np.exp(pred)
+summe = np.sum(ep, axis=1)
+pVals = ep / summe[:, np.newaxis] #The normalized probabilities
+```
+
+
 
 
 
