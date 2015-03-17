@@ -4,7 +4,7 @@ import shutil
 import glob
 
 
-GPU = 0
+GPU = 1
 
 ##########################
 # Augmentation
@@ -25,7 +25,8 @@ list_name = ' /home/dueo/dl-playground/python/PlanktonCaffe/full_augmented_'
 ###################
 # Convertion
 convert_cmd = '/home/dueo/caffe/caffe/build/tools/convert_imageset'
-convert_opt =  ' --resize_height=128 --resize_width=128 --gray /'
+convert_opt =  ' --resize_height=128 --resize_width=128 --gray --shuffle /'
+convert_opt =  ' --resize_height=128 --resize_width=128 --shuffle /'
 convert_list = ' ' + list_name + 'train.txt'
 convert_db = '/home/dueo/data_kaggel_bowl/train_augmented_lmdb_128'
 
@@ -40,7 +41,7 @@ mean_fn = '/home/dueo/data_kaggel_bowl/train_augmented_mean.binaryproto'
 # Running the cmd
 # nohup ~/caffe/caffe/build/tools/caffe train -solver lenet_solver.prototxt --gpu=1 > log_lenet.txt
 cmd_dir = '/home/dueo/caffe/caffe/build/tools/caffe'
-model_dir = '/home/dueo/dl-playground/python/PlanktonCaffe/alexnet/models/'
+model_dir = '/home/dueo/dl-playground/python/PlanktonCaffe/alexnet/models9/'
 cmd_opt = ' train -solver /home/dueo/dl-playground/python/PlanktonCaffe/alexnet/solver.auto.prototxt'
 
 for iter in range(0,100):

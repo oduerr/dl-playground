@@ -2,10 +2,13 @@ import csv
 import cv2
 import os
 import numpy as np
+from skimage import io
+from skimage.util import img_as_ubyte
+from skimage.morphology import black_tophat, white_tophat, disk
 
 __author__ = 'oli'
 
-show = True
+show = False
 #rots = (30,  60,  90, 120, 150, 180, 210, 240, 270, 300, 330)
 
 
@@ -15,7 +18,7 @@ def writeImg(path, img, kind, file, mani_num):
         os.mkdir(dir)
     cv2.imwrite(dir + '/' + file + '_' + str(mani_num) + '.jpg', img)
 
-
+selem = disk(1)
 if __name__ == '__main__':
     import sys
     if len(sys.argv) > 3:
@@ -48,9 +51,19 @@ if __name__ == '__main__':
                     img_org = cv2.flip(img_org,0)
                 else:
                     img_org = cv2.flip(img_org,1)
-            scale = np.random.uniform(0.9,1.1)
+            scale = np.random.uniform(0.7,1.3)
             mat = cv2.getRotationMatrix2D((im_size / 2, im_size / 2), rot, scale=scale)
             img_rotated = cv2.warpAffine(img_org, mat, (im_size, im_size), flags=cv2.INTER_LINEAR, borderValue=(255,255,255))
+
+            img_out = np.zeros((img_rotated.shape[0], img_rotated.shape[1], 3), dtype=np.uint8)
+            img_orig = img_rotated[:,:,0]
+            img_btop = 255-black_tophat(img_orig, selem)
+            img_wtop = 255-white_tophat(img_orig, selem)
+            img_out[:, :, 1] = img_btop
+            img_out[:, :, 2] = img_wtop
+
+            img_rotated = img_out
+
             if show:
               cv2.imshow('Rot_' + str(i), img_rotated)
             writeImg(outPath, img_rotated, kind, file, i+1) #Original

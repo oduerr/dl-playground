@@ -7,20 +7,74 @@ write.table(file='../labelList.csv', dd, sep="\t", quote=FALSE)
 ###########
 # Test resuming
 setwd("/home//dueo/dl-playground/python/PlanktonCaffe/alexnet/")
-#system("~/caffe/caffe/tools/extra/parse_log.sh log.txt")
-train.full = read.table('bigrun.txt.train', header = TRUE, comment.char = 'H')
-test.full =  read.table('bigrun.txt.test', header = TRUE, comment.char = 'H')
-#system("~/caffe/caffe/tools/extra/parse_log.sh bigrun_large_scaling.txt")
-#system('cat bigrun_large_scaling.txt.train | awk \'{print $1\" \"$2\" \"$3\" 0.1\"}\' > d.txt}') #Training often corrupted
-train.restart = read.table('d.txt', header = TRUE, comment.char = 'H')
-test.restart =  read.table('bigrun_large_scaling.txt.test', header = TRUE, comment.char = 'H')
-qplot() +
-  geom_point(aes(x = train.full$X.Iters, y = train.full$TrainingLoss, colour ='1st Training')) +
-  geom_point(aes(x = train.restart$X.Iters, y = train.restart$TrainingLoss, colour='2nd Training')) +
-  geom_line(aes(x = test.full$X.Iters,  y = test.full$TestLoss, colour='1st test'), size=2) +
-  geom_line(aes(x = test.restart$X.Iters,  y = test.restart$TestLoss, colour='2nd Test'), size=2) +
-  xlim(0,20000)
+#system("~/caffe/caffe/tools/extra/parse_log.sh bigrun_4.txt")
+#train.full = read.table('bigrun_4.txt.train', header = TRUE, comment.char = 'H')
+train.full = read.table('dd.txt', header = TRUE, comment.char = 'H')
+test.full =  read.table('bigrun_4.txt.test', header = TRUE, comment.char = 'H')
 
+run4 = data.frame(iter = c(test.full$X.Iters, train.full$X.Iters), 
+           loss = c(test.full$TestLoss, train.full$TrainingLoss),
+           type = c(rep('Testing', length(test.full$X.Iters)), rep('Training', length(train.full$X.Iters))))
+qplot(run4, x=iter, y=loss, size=type)
+
+system("~/caffe/caffe/tools/extra/parse_log.sh bigrun_6.txt")
+#system('cat bigrun_large_scaling.txt.train | awk \'{print $1\" \"$2\" \"$3\" 0.1\"}\' > d.txt}') #Training often corrupted
+train.restart = read.table('bigrun_6.txt.train', header = TRUE, comment.char = 'H', nrows = 2200)
+test.restart =  read.table('bigrun_6.txt.test', header = TRUE, comment.char = 'H')
+
+run6 = data.frame(iter = c(test.restart$X.Iters, train.restart$X.Iters), 
+                  loss = c(test.restart$TestLoss, train.restart$TrainingLoss),
+                  type = c(rep('Testing', length(test.restart$X.Iters)), rep('Training', length(train.restart$X.Iters))))
+
+system("~/caffe/caffe/tools/extra/parse_log.sh bigrun_7.txt")
+train.restart = read.table('bigrun_7.txt.train', header = TRUE, comment.char = 'H', nrows= 2600)
+test.restart =  read.table('bigrun_7.txt.test', header = TRUE, comment.char = 'H')
+run7 = data.frame(iter = c(test.restart$X.Iters, train.restart$X.Iters), 
+                  loss = c(test.restart$TestLoss, train.restart$TrainingLoss),
+                  type = c(rep('Testing', length(test.restart$X.Iters)), rep('Training', length(train.restart$X.Iters))))
+
+system("~/caffe/caffe/tools/extra/parse_log.sh bigrun_8.txt")
+train.restart = read.table('bigrun_8.txt.train', header = TRUE, comment.char = 'H', nrows= 10000)
+test.restart =  read.table('bigrun_8.txt.test', header = TRUE, comment.char = 'H')
+run8 = data.frame(iter = c(test.restart$X.Iters, train.restart$X.Iters), 
+                  loss = c(test.restart$TestLoss, train.restart$TrainingLoss),
+                  type = c(rep('Testing', length(test.restart$X.Iters)), rep('Training', length(train.restart$X.Iters))))
+
+system("~/caffe/caffe/tools/extra/parse_log.sh run9.txt")
+train.restart = read.table('run9.txt.train', header = TRUE, comment.char = 'H', nrows= 10000)
+test.restart =  read.table('run9.txt.test', header = TRUE, comment.char = 'H')
+run9 = data.frame(iter = c(test.restart$X.Iters, train.restart$X.Iters), 
+                  loss = c(test.restart$TestLoss, train.restart$TrainingLoss),
+                  type = c(rep('Testing', length(test.restart$X.Iters)), rep('Training', length(train.restart$X.Iters))))
+
+
+
+#df = rbind(run4,run6, run7, run8, run9)
+#df$run <- c(rep('run4', nrow(run4)), rep('run6', nrow(run6)),  rep('run7', nrow(run7)), rep('run8', nrow(run8)), rep('run9', nrow(run9)))
+df = rbind(run8, run9)
+df$run <- c(rep('run8', nrow(run8)), rep('run9', nrow(run9)))
+
+(y=min(subset(df, type == 'Testing')$loss))
+
+
+ggplot(data=subset(df, type=='Training')) + aes(x = iter, y = loss, colour = run) + geom_point(alpha=0.3, size=2) +
+  geom_line(data=subset(df, type == 'Testing'), aes(x = iter, y = loss),size=2) +
+  xlab('Iterations (batchsize=256)') + ylab("Log-Loss") + 
+  geom_hline(y=y, col='lightgray') + 
+  theme(axis.title.x = element_text(colour="darkred", size=14)) + theme(axis.title.y = element_text(colour="darkred", size=14)) 
+  #xlim(90000,110000) + ylim(0.5,1.5)
+  #facet_grid(.~run)
+  
+  
+
+
+ggplot() +   
+  geom_point(aes(x = train.full$X.Iters, y = train.full$TrainingLoss, colour = '4th Training'), color='red', size=0.9) +
+  geom_point(aes(x = train.restart$X.Iters, y = train.restart$TrainingLoss, colour='6th Training')) +
+  geom_line(aes(x = test.full$X.Iters,  y = test.full$TestLoss, colour='4th test'), size=2) +
+  geom_line(aes(x = test.restart$X.Iters,  y = test.restart$TestLoss, colour='6th Test'), size=2) +
+  xlim(0,40000) +  xlab('Iterations (batchsize 256)')
+  geom_vline(xintercept=c(1000,3000,5000), color='lightgray') + theme_bw()
 
 ##################
 # Big Run

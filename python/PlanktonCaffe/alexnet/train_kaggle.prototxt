@@ -28,10 +28,10 @@ layers {
   top: "data"
   top: "label"
   data_param {
-    source: "/home/dueo/data_kaggel_bowl/test_lmdb_128/"
-    #source: "/home/dueo/data_kaggel_bowl/val_kaggle_lmdb_128/"
+    #source: "/home/dueo/data_kaggel_bowl/test_lmdb_128/"
+    source: "/home/dueo/data_kaggel_bowl/val_kaggle_lmdb_128/"
     backend: LMDB
-    batch_size: 1
+    batch_size: 8
   }
   transform_param {
     crop_size: 99
@@ -88,7 +88,7 @@ layers {
   bottom: "conv1"
   top: "conv1"
   dropout_param {
-    dropout_ratio: 0.20
+    dropout_ratio: 0.15
   }
 }
 
@@ -150,7 +150,7 @@ layers {
   bottom: "conv2"
   top: "conv2"
   dropout_param {
-    dropout_ratio: 0.20
+    dropout_ratio: 0.15
   }
 }
 
@@ -216,7 +216,7 @@ layers {
   bottom: "conv3"
   top: "conv3"
   dropout_param {
-    dropout_ratio: 0.20
+    dropout_ratio: 0.15
   }
 }
 layers {
@@ -261,7 +261,7 @@ layers {
   bottom: "conv4"
   top: "conv4"
   dropout_param {
-    dropout_ratio: 0.20
+    dropout_ratio: 0.15
   }
 }
 
@@ -301,7 +301,7 @@ layers {
   bottom: "conv5"
   top: "conv5"
   dropout_param {
-    dropout_ratio: 0.20
+    dropout_ratio: 0.15
   }
 }
 

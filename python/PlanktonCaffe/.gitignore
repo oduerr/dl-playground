@@ -1,3 +1,13 @@
 model
 submission.txt*
 test*
+*.log
+1March_nopool2_augmented.log
+Readme.html
+full_augmented_30_test.txt
+full_augmented_test.txt
+labelList.csv
+train_1000.txt
+train_full_100.txt
+run9.txt
+submission_caffeLeNet.txt
