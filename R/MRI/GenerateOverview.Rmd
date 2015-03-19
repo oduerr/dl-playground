@@ -3,6 +3,9 @@ title: "GenerateOverview"
 output: html_document
 ---
 ```{r, echo=FALSE}
+#baseDir = "/home/dueo/data/Inselspital_2015_01_21/"
+baseDir = "/home/dueo/data/04_March/"
+
 createOverview <- function(filename) {
   print(filename)
   print(file.exists(filename))
@@ -38,7 +41,7 @@ createOverview <- function(filename) {
 
 ```{r}
   library(oro.dicom)
-  setwd("/home/dueo/data/Inselspital_2015_01_21")
+  setwd(baseDir)
   files = list.files(pattern=".+ep2d_diff.+ADC.+dcm", recursive = TRUE)
   N = length(files)
   dirs = rep("", N)
@@ -59,9 +62,11 @@ You can also embed plots, for example:
   for (i in 1:length(dirs.u)) {
     cat(dirs.u[i])
     try(
-      createOverview(paste0("/home/dueo/data/Inselspital_2015_01_21/",dirs.u[i]))
+      createOverview(paste0(baseDir,dirs.u[i]))
     )
   }
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
