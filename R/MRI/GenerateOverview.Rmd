@@ -3,8 +3,8 @@ title: "GenerateOverview"
 output: html_document
 ---
 ```{r, echo=FALSE}
-#baseDir = "/home/dueo/data/Inselspital_2015_01_21/"
-baseDir = "/home/dueo/data/04_March/"
+baseDir = "/home/dueo/data/Inselspital_2015_01_21/"
+#baseDir = "/home/dueo/data/04_March/"
 
 createOverview <- function(filename) {
   print(filename)

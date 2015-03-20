@@ -1,0 +1,96 @@
+---
+title: "Generate Lists"
+output: html_document
+---
+### This page describes how to pngs from the provided dcim - files
+
+
+After GenerateOverview store the lists.
+```
+write.csv(dirs.u, file = 'march4.txt', row.names=F, quote = F)
+write.csv(dirs.u, file = 'jan21.txt', row.names=F, quote = F)
+```
+and manually remove some duplicates.
+
+
+# Loading the images (complete path)
+```{r}
+  options(stringsAsFactors = FALSE)
+  
+  makeList <- function(listFile, offSet, len) {
+    rel = read.csv(listFile,header = FALSE)[,1]
+    march4 = data.frame(src=paste0(offSet,rel), relPath = rel)
+    names = rep('',len)
+    for (i in 1:len) names[i] = strsplit(rel[i], '/')[[1]][2]
+    march4$name = names
+    type = rep('gbm', len)
+    type[grep('.+metas.+', march4$src[1:46])] = 'metas'
+    march4$type <- type
+    march4
+  }
+
+  march4$src[1]
+
+  march4 = makeList('/home/dueo/data/04_March/march4_manu.txt', '/home/dueo/data/04_March/', 44)
+  jan21 = makeList('/home/dueo/data/Inselspital_2015_01_21/jan21.txt',' /home/dueo/data/Inselspital_2015_01_21/', 61)
+    
+  all = data.frame(src=c(march4$src, jan21$src), type=c(march4$type, jan21$type), name = c(march4$name, jan21$name))
+  table(all$type)
+```
+
+# Splitting in Training and Validationset (here validation is test set)
+```{r}
+  nrow(all)
+  sum(duplicated(all$name)) #Should be 0 and is
+  
+  all.shuffel <- all[sample(nrow(all)),]
+  
+  training = all.shuffel[1:78,] #75% Training set
+  testing  = all.shuffel[79:nrow(all),]
+  save(training, testing, file="/home/dueo/dl-playground/R/MRI/training_testing_split.Rdata")
+```
+
+# Creating images from the split
+The directories 'training/gbm' and 'training/metas' must exist (same for testing).
+
+```{r}
+  load('/home/dueo/dl-playground/R/MRI/training_testing_split.Rdata')
+  library(oro.dicom)
+  library(png)
+  setwd('/home/dueo/data/inselpng/')
+  trim <- function (x) gsub("^\\s+|\\s+$", "", x)
+
+  writeFiles <- function(set, person) {
+    filename = trim(person$src)
+    dir = paste0(set, '/', person$type, '/', person$name)
+    dir.create(file.path(dir), showWarnings = FALSE)
+    print(file.exists(filename))
+    dcmImages <- readDICOM(filename, verbose = FALSE,recursive = FALSE, exclude = "sql")
+    dcm.info <- dicomTable(dcmImages$hdr)
+    loc = as.numeric(dcm.info$"0020-1041-SliceLocation")
+    idx = sort(loc, index.return=TRUE)$ix
+    count = 0
+    for (i in idx) {
+      pixels = dcmImages$img[[i]] 
+      img = pixels / max(pixels)
+      #image(t(pixels), col = grey(0:256/256), axes = FALSE,xlab = "", ylab = "", main=round(loc[i],2))  
+      writePNG(img, paste0(dir, '/', count, '.png'))
+      count = count +  1
+    }
+  }
+
+  set = 'training'
+  for (i in 1:nrow(training)) {
+    print(i)
+    writeFiles(set, training[i,])
+  }
+
+  set = 'testing'
+  for (i in 1:nrow(testing)) {
+    print(i)
+    writeFiles(set, testing[i,])
+  }
+
+```
+
+
