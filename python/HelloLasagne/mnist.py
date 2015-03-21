@@ -12,6 +12,8 @@ import lasagne
 import theano
 import theano.tensor as T
 
+import time
+
 
 DATA_URL = 'http://deeplearning.net/data/mnist/mnist.pkl.gz'
 DATA_FILENAME = 'mnist.pkl.gz'
@@ -180,12 +182,14 @@ def main(num_epochs=NUM_EPOCHS):
     iter_funcs = create_iter_functions(dataset, output_layer)
 
     print("Starting training...")
+    start = time.time()
     for epoch in train(iter_funcs, dataset):
-        print("Epoch %d of %d" % (epoch['number'], num_epochs))
+        print("Epoch %d of %d in %.4f" % (epoch['number'], num_epochs, (time.time() - start)))
         print("  training loss:\t\t%.6f" % epoch['train_loss'])
         print("  validation loss:\t\t%.6f" % epoch['valid_loss'])
         print("  validation accuracy:\t\t%.2f %%" %
               (epoch['valid_accuracy'] * 100))
+        start = time.time()
 
         if epoch['number'] >= num_epochs:
             break
