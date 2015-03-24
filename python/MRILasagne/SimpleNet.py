@@ -3,6 +3,7 @@ __author__ = 'oli'
 from lasagne import layers
 from lasagne import nonlinearities
 from nolearn.lasagne import BatchIterator
+from lasagne import nonlinearities
 from nolearn.lasagne import NeuralNet
 from dataloading import *
 
@@ -25,7 +26,7 @@ net1 = NeuralNet(
     conv1_num_filters=32, conv1_filter_size=(3, 3), pool1_ds=(2, 2),
     conv2_num_filters=64, conv2_filter_size=(2, 2), pool2_ds=(2, 2),
     hidden4_num_units=500,
-    output_num_units=2, output_nonlinearity=None,
+    output_num_units=2, output_nonlinearity=nonlinearities.softmax,
 
     update_learning_rate=0.01,
     update_momentum=0.9,
@@ -33,6 +34,7 @@ net1 = NeuralNet(
     regression=False,
     max_epochs=1000,
     verbose=1,
+
     )
 
 net1.fit(X, y)
