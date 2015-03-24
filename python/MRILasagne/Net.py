@@ -29,7 +29,7 @@ net2 = NeuralNet(
     conv2_num_filters=64, conv2_filter_size=(2, 2), pool2_ds=(2, 2),
     conv3_num_filters=128, conv3_filter_size=(2, 2), pool3_ds=(2, 2),
     hidden4_num_units=500, hidden5_num_units=500,
-    output_num_units=30, output_nonlinearity=None,
+    output_num_units=2, output_nonlinearity=None,
 
     update_learning_rate=0.01,
     update_momentum=0.9,

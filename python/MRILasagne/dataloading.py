@@ -24,7 +24,13 @@ class loadSimpleData:
         return x,y
 
     def load2d(self, filename):
-        X, y = self.load_data(filename)
+        X, y = self.load_data(filename) #
+
+        # Batch normalization
+        Xmean = X.mean(axis = 0)
+        XStd = np.sqrt(X.var(axis=0))
+        X = (X-Xmean)/(XStd + 0.1)
+
         X = X.reshape(-1, 1, self.PIXELS, self.PIXELS) #shape e.g. (2101, 1, 56, 56)
         return X, y
 
