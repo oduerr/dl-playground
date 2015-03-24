@@ -1,5 +1,5 @@
 """
-    Creates pickeld data set from lists of file, label
+    Creates pickeld data set from training and tests files
 """
 import os
 
@@ -8,7 +8,7 @@ from pandas.io.parsers import read_csv
 import cv2
 import pickle
 
-SHOW = False;
+SHOW = False
 laptop = True
 pixels = 56
 
@@ -23,7 +23,7 @@ def createData(file, pixels = 56, laptop=False):
     for row in df.iterrows():
         i = row[0]
         fn = row[1][0]
-        # On the Laptop, replace part
+        # On the Laptop, replace part of the path
         if laptop:
             fn = fn.replace('/home/dueo/data/inselpng/', '/Users/oli/Proj_Large_Data/Deep_Learning_MRI/inselpng/')
         label = int(row[1][1])
