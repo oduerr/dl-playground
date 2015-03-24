@@ -10,18 +10,19 @@ class loadSimpleData:
     def load_data(self, filename):
         with open(filename, 'rb') as f:
             data = pickle.load(f)
-        x,y = data[0]
+        X,y = data[0]
         for i in range(1,len(data)): #We put all together since the splitting into training and test set is done anyway
             xc, yc = data[i]
-            x = np.vstack((x, xc))
+            X = np.vstack((X, xc))
             y = np.hstack((y, yc))
-        x = x.astype(np.float32)
+        X = X.astype(np.float32)
         y = y.astype(np.int32)
-        x, y = shuffle(x, y, random_state=42)
-        self.PIXELS = int(np.sqrt(x.shape[1]))
-        print ("Shape of X " + str(x.shape) + " Number of pixels " + str(self.PIXELS))
+        X, y = shuffle(X, y, random_state=42)
+        self.PIXELS = int(np.sqrt(X.shape[1]))
+        print ("Shape of X " + str(X.shape) + " Number of pixels " + str(self.PIXELS))
+        print (" Min / Max X " + str(np.min(X)) + " " + str(np.max(X)))
         print ("Shape of Y " + str(y.shape))
-        return x,y
+        return X,y
 
     def load2d(self, filename):
         X, y = self.load_data(filename) #
@@ -29,8 +30,9 @@ class loadSimpleData:
         # Batch normalization
         Xmean = X.mean(axis = 0)
         XStd = np.sqrt(X.var(axis=0))
-        X = (X-Xmean)/(XStd + 0.1)
+        X = (X-Xmean)/(XStd + 0.01)
 
+        print ("After Batchnormalization Min / Max X " + str(np.min(X)) + " " + str(np.max(X)))
         X = X.reshape(-1, 1, self.PIXELS, self.PIXELS) #shape e.g. (2101, 1, 56, 56)
         return X, y
 
