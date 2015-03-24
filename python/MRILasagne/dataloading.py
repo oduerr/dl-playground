@@ -21,7 +21,8 @@ class loadSimpleData:
         self.PIXELS = int(np.sqrt(X.shape[1]))
         print ("Shape of X " + str(X.shape) + " Number of pixels " + str(self.PIXELS))
         print (" Min / Max X " + str(np.min(X)) + " " + str(np.max(X)))
-        print ("Shape of Y " + str(y.shape))
+        print (" Min / Max Y " + str(np.min(y)) + " " + str(np.max(y)))
+        print (" Shape of Y " + str(y.shape))
         return X,y
 
     def load2d(self, filename):
@@ -32,7 +33,7 @@ class loadSimpleData:
         XStd = np.sqrt(X.var(axis=0))
         X = (X-Xmean)/(XStd + 0.01)
 
-        print ("After Batchnormalization Min / Max X " + str(np.min(X)) + " " + str(np.max(X)))
+        print ("After Batchnormalization Min / Max X / Mean " + str(np.min(X)) + " / " + str(np.max(X)) + " / " + str(np.mean(X)))
         X = X.reshape(-1, 1, self.PIXELS, self.PIXELS) #shape e.g. (2101, 1, 56, 56)
         return X, y
 
