@@ -10,6 +10,13 @@ from dataloading import *
 sl = loadSimpleData()
 X,y = sl.load2d('data/data56.pkl')
 PIXELS = sl.PIXELS
+
+# for i in range(10):
+#     import cv2
+#     ddd=X[i,0,:,:]
+#     cv2.imshow('Test', cv2.resize(ddd, (PIXELS*10, PIXELS*10), interpolation =cv2.INTER_NEAREST))
+#     cv2.waitKey(1000)
+
 print("Loaded data")
 
 net1 = NeuralNet(
@@ -36,6 +43,8 @@ net1 = NeuralNet(
     verbose=1,
 
     )
+
+
 
 net1.fit(X, y)
 
