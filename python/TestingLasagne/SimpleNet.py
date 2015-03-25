@@ -1,4 +1,3 @@
-__author__ = 'oli'
 from lasagne import layers
 from lasagne import nonlinearities
 from nolearn.lasagne import BatchIterator
