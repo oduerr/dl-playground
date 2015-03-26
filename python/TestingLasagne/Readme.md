@@ -9,3 +9,4 @@ The correponding functionality can be also found in [SimpleNet.py](SimpleNet.py)
 
 * [Great Tutorial](http://danielnouri.org/notes/2014/12/17/using-convolutional-neural-nets-to-detect-facial-keypoints-tutorial/) describing the use of Lasagne in facial keypoint detection
 * [Code Plankton](https://github.com/msegala/Kaggle-National_Data_Science_Bowl) quite simple code, containing also a Batchiterator
+* [Lasagne Github Page] (https://github.com/benanne/Lasagne) 
