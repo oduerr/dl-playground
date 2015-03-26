@@ -7,7 +7,7 @@ from nolearn.lasagne import NeuralNet
 from load_mnist import *
 
 X,y,PIXELS = load_data_2d(file='../../data/mnist.pkl.gz')
-
+print('Loaded pixels')
 
 net1 = NeuralNet(
     # Geometrie of the network
@@ -38,4 +38,7 @@ net1 = NeuralNet(
     eval_size = 0.2
     )
 
-net1.fit(X[0:60000,:,:,:],y[0:60000])
+
+if __name__ == '__main__':
+    net1.fit(X[0:1000,:,:,:],y[0:1000])
+
