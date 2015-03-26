@@ -1,5 +1,3 @@
-__author__ = 'oli'
-
 import cPickle as pickle
 import gzip
 import numpy as np

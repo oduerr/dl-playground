@@ -1,4 +1,3 @@
-__author__ = 'oli'
 from lasagne import layers
 from lasagne import nonlinearities
 from nolearn.lasagne import BatchIterator
@@ -39,4 +38,4 @@ net1 = NeuralNet(
     eval_size = 0.2
     )
 
-net1.fit(X[0:1000,:,:,:],y[0:1000])
+net1.fit(X[0:60000,:,:,:],y[0:60000])
