@@ -41,11 +41,18 @@ net1 = NeuralNet(
     regression=False,
     max_epochs=1000,
     verbose=1,
-
     )
 
+class SimpleBatchIterator(BatchIterator):
+
+    def transform(self, Xb, yb):
+        Xb, yb = super(SimpleBatchIterator, self).transform(Xb, yb)
+        # The 'incomming' and outcomming shape is (batchsize, 1, 28, 28)
 
 
+        return Xb[:,:,::-1,:], yb #<--- Here we do the flipping
+
+net1.batch_iterator_train = SimpleBatchIterator(batch_size=128)
 net1.fit(X, y)
 
 
