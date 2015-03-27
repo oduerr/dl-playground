@@ -31,9 +31,9 @@ class loadSimpleData:
         # Batch normalization
         Xmean = X.mean(axis = 0)
         XStd = np.sqrt(X.var(axis=0))
-        X = (X-Xmean)/(XStd + 0.01)
+        X = 100*(X-Xmean)/(XStd + 0.01)
 
-        print ("After Batchnormalization Min / Max X / Mean " + str(np.min(X)) + " / " + str(np.max(X)) + " / " + str(np.mean(X)))
+        print ("AAAfter Batchnormalization Min / Max X / Mean " + str(np.min(X)) + " / " + str(np.max(X)) + " / " + str(np.mean(X)))
         X = X.reshape(-1, 1, self.PIXELS, self.PIXELS) #shape e.g. (2101, 1, 56, 56)
         return X, y
 
