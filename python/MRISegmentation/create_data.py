@@ -41,6 +41,15 @@ def createTrainingData(file = '/Users/oli/Proj_Large_Data/Deep_Learning_MRI/BRAT
                 plt.pause(1)
     return X,Y
 
+
+
+
+
+
+
+
+
+
 if __name__ == '__main__':
     import time
     start = time.time()
