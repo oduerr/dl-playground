@@ -28,10 +28,14 @@ class MyNeuralNet(NeuralNet):
 class SimpleBatchIterator(BatchIterator):
 
     def transform(self, Xb, yb):
-        x,y = np.random.randint(PIXELS/2, 160-PIXELS/2,2)
         if  not yb == None:
+            for i in range(10):
+                x,y = np.random.randint(PIXELS/2, 160-PIXELS/2,2)
+                retY = yb[:,:,x,y].reshape(len(yb))
+                if (retY.max() != 0):
+                    break
+            #print(i)
             retX = Xb[:,:,(x-PIXELS/2):(x+PIXELS/2),(y-PIXELS/2):(y+PIXELS/2)]
-            retY = yb[:,:,x,y].reshape(len(yb))
             #print("Made Patches around " + str(x) + "," + str(y) + " width " +  str(retX.shape) + "  " + str(retY.shape))
             return retX,retY#TODO check if x,y are correct
         else:

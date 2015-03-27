@@ -42,3 +42,4 @@ net1 = NeuralNet(
 if __name__ == '__main__':
     net1.fit(X[0:1000,:,:,:],y[0:1000])
 
+
