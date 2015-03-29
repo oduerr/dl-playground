@@ -29,12 +29,16 @@ class SimpleBatchIterator(BatchIterator):
 
     def transform(self, Xb, yb):
         if  not yb == None:
-            for i in range(10):
+            for i in range(100): #Trying to find a cancer
                 x,y = np.random.randint(PIXELS/2, 160-PIXELS/2,2)
                 retY = yb[:,:,x,y].reshape(len(yb))
-                if (retY.max() != 0):
+                sumGTNot0 = 0.0
+                for ret in retY:
+                    if ret > 0:
+                        sumGTNot0 += 1.0
+                if (sumGTNot0 / len(retY) > 0.3):
                     break
-            #print(i)
+            #print(str(i) + " " + str(retY.mean()))
             retX = Xb[:,:,(x-PIXELS/2):(x+PIXELS/2),(y-PIXELS/2):(y+PIXELS/2)]
             #print("Made Patches around " + str(x) + "," + str(y) + " width " +  str(retX.shape) + "  " + str(retY.shape))
             return retX,retY#TODO check if x,y are correct
@@ -57,7 +61,7 @@ net1 = MyNeuralNet(
     conv1_num_filters=32, conv1_filter_size=(3, 3), pool1_ds=(2, 2),
     conv2_num_filters=64, conv2_filter_size=(2, 2), pool2_ds=(2, 2),
     hidden4_num_units=500,
-    output_num_units=10, output_nonlinearity=nonlinearities.softmax,
+    output_num_units=5, output_nonlinearity=nonlinearities.softmax,
 
     # learning rate parameters
     update_learning_rate=0.01,
