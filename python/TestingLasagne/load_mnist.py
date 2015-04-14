@@ -26,10 +26,10 @@ def load_data(file):
         y = np.hstack((y, yc))
     X = X.astype(np.float32)
     y = y.astype(np.int32)
-    print ("Shape of X " +   str(X.shape))
-    print ("  Min / Max X " + str(np.min(X)) + " " + str(np.max(X)))
-    print ("Shape of Y " + str(y.shape))
-    print ("  Min / Max Y " + str(np.min(y)) + " " + str(np.max(y)))
+#     print ("Shape of X " +   str(X.shape))
+#     print ("  Min / Max X " + str(np.min(X)) + " " + str(np.max(X)))
+#     print ("Shape of Y " + str(y.shape))
+#     print ("  Min / Max Y " + str(np.min(y)) + " " + str(np.max(y)))
     return X,y
 
 def load_data_2d(file):
@@ -41,7 +41,7 @@ def load_data_2d(file):
     XStd = np.sqrt(X.var(axis=0))
     X = (X-Xmean)/(XStd + 0.01)
 
-    print ("After Batchnormalization Min / Max X / Mean " + str(np.min(X)) + " / " + str(np.max(X)) + " / " + str(np.mean(X)))
+    print ("After Batchnormalization (z-Trafo) Min / Max X / Mean " + str(np.min(X)) + " / " + str(np.max(X)) + " / " + str(np.mean(X)))
     X = X.reshape(-1, 1, PIXELS, PIXELS) #(70000, 1, 28, 28)
     return X, y, PIXELS
 

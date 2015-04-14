@@ -1,9 +1,9 @@
 # Testing Lasagne
 
 ### Basic usage on the MNIST data
-* [load_mnist.py](load_mnist.py) provides means to load the MNIST dataset in blobs needed for lasagne.
-* The notebook [Minimal%20Lasagne.ipynb](http://nbviewer.ipython.org/github/oduerr/dl-playground/blob/master/python/TestingLasagne/Minimal%20Lasagne.ipynb) shows how to define, train, store, reload, refine and predict using lasagne. 
-The correponding functionality can be also found in [SimpleNet.py](SimpleNet.py).
+* [load_mnist.py](load_mnist.py) provides means to load the MNIST dataset in blobs needed for the flowing tutorials. A simple z-transformation is done.
+* The notebook [Minimal%20Lasagne.ipynb](http://nbviewer.ipython.org/github/oduerr/dl-playground/blob/master/python/TestingLasagne/Minimal%20Lasagne.ipynb) shows how to define, train, store, reload, refine and predict using lasagne. The correponding functionality can be also found in [SimpleNet.py](SimpleNet.py).
+* The notebook [Checking%20for%20overfitting.ipynb](http://nbviewer.ipython.org/github/oduerr/dl-playground/blob/master/python/TestingLasagne/Checking%20for%20overfitting.ipynb) shows how to investigate the training and test loss to find signs of overfitting.
 
 ### Augmenting the training data
 * [Code](TrainingIterator.py) and [notebook](http://nbviewer.ipython.org/github/oduerr/dl-playground/blob/master/python/TestingLasagne/DataAugmentation.ipynb)
