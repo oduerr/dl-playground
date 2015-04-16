@@ -9,7 +9,7 @@ import cv2
 import pickle
 
 SHOW = False
-laptop = True
+laptop = False
 pixels = 56
 
 
