@@ -41,7 +41,7 @@ def load_data_2d(file):
     XStd = np.sqrt(X.var(axis=0))
     X = (X-Xmean)/(XStd + 0.01)
 
-    print ("After Batchnormalization (z-Trafo) Min / Max X / Mean " + str(np.min(X)) + " / " + str(np.max(X)) + " / " + str(np.mean(X)))
+    print ("After Batchnormalization (Pixelwise z-Trafo) Min / Max X / Mean " + str(np.min(X)) + " / " + str(np.max(X)) + " / " + str(np.mean(X)))
     X = X.reshape(-1, 1, PIXELS, PIXELS) #(70000, 1, 28, 28)
     return X, y, PIXELS
 
