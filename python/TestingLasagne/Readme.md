@@ -1,3 +1,6 @@
+** Newer version at [https://github.com/oduerr/dl_tutorial/tree/master/lasagne] **
+
+
 # Testing Lasagne
 
 ### Basic usage on the MNIST data
