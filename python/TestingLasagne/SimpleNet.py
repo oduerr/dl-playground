@@ -10,7 +10,7 @@ X,y,PIXELS = load_data_2d(file='../../data/mnist.pkl.gz')
 print('Loaded pixels')
 
 net1 = NeuralNet(
-    # Geometrie of the network
+    # Geometry of the network
     layers=[
         ('input', layers.InputLayer),
         ('conv1', layers.Conv2DLayer),
@@ -30,6 +30,7 @@ net1 = NeuralNet(
     update_learning_rate=0.01,
     update_momentum=0.9,
     regression=False,
+
     # We only train for 10 epochs
     max_epochs=10,
     verbose=1,

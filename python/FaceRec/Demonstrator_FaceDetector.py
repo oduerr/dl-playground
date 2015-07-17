@@ -21,8 +21,8 @@ import csv
 scale_fac = 0.2
 borderProb = 0.85
 show = True
-createOverviewFigs = False
-webcam = False
+createOverviewFigs = True
+webcam = True
 rocWriter = csv.writer(open('roc.csv', 'w'))
 
 
@@ -189,26 +189,26 @@ class FaceDetectorAll:
                 # Kernels of Layer 0
                 #plt.subplot(425)
                 plt.subplot2grid((4,2),(2,0), colspan=2)
-                d = self.pred.getPool0Out(X)
+                #d = self.pred.getPool0Out(X)
                 #d = self.pred.getConv0Out(X)
-                plt.title('Result after first max-pooling layer ' + str(d.shape))
-                maxPool0 = d[0]
-                nkerns0 = maxPool0.shape[0]
-                s0 = maxPool0.shape[1]
-                ddd = plt.imshow(np.reshape(maxPool0, (s0, s0 * nkerns0)),interpolation="nearest")
-                ddd.set_cmap('gray')
-
-                # Kernels of Layer 1
-                plt.subplot2grid((4,2),(3,0), colspan=2)
-                d = self.pred.getPool1Out(X)
-                maxPool1 = d[0]
-                nkerns1 = maxPool1.shape[0]
-                s1 = maxPool1.shape[1]
-                nkerns1 = min(nkerns1, 100)
-                plt.title('Result after second max-pooling layer. ' + str(d.shape))
-                dddd = plt.imshow(np.reshape(maxPool1[0:nkerns1], (s1, nkerns1 * s1)),interpolation="nearest")
-                dddd.set_cmap('gray')
-                plt.draw()
+                #plt.title('Result after first max-pooling layer ' + str(d.shape))
+                #maxPool0 = d[0]
+                # nkerns0 = maxPool0.shape[0]
+                # s0 = maxPool0.shape[1]
+                # ddd = plt.imshow(np.reshape(maxPool0, (s0, s0 * nkerns0)),interpolation="nearest")
+                # ddd.set_cmap('gray')
+                #
+                # # Kernels of Layer 1
+                # plt.subplot2grid((4,2),(3,0), colspan=2)
+                # d = self.pred.getPool1Out(X)
+                # maxPool1 = d[0]
+                # nkerns1 = maxPool1.shape[0]
+                # s1 = maxPool1.shape[1]
+                # nkerns1 = min(nkerns1, 100)
+                # plt.title('Result after second max-pooling layer. ' + str(d.shape))
+                # dddd = plt.imshow(np.reshape(maxPool1[0:nkerns1], (s1, nkerns1 * s1)),interpolation="nearest")
+                # dddd.set_cmap('gray')
+                # plt.draw()
 
                 # Creation of the Overviewfigure
                 if createOverviewFigs:
@@ -217,13 +217,13 @@ class FaceDetectorAll:
                     plt.clf()
                     plt.ioff()
 
-                    plt.subplot(341)
-                    d1 = plt.imshow(maxPool0[0],interpolation="nearest")
-                    d1.set_cmap('gray')
-
-                    plt.subplot(342)
-                    d2 = plt.imshow(maxPool1[0],interpolation="nearest")
-                    d2.set_cmap('gray')
+                    # plt.subplot(341)
+                    # d1 = plt.imshow(maxPool0[0],interpolation="nearest")
+                    # d1.set_cmap('gray')
+                    #
+                    # plt.subplot(342)
+                    # d2 = plt.imshow(maxPool1[0],interpolation="nearest")
+                    # d2.set_cmap('gray')
 
                     plt.subplot(343)
                     d2 = plt.imshow(img_org,interpolation="nearest")
