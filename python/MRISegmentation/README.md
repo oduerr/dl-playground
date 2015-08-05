@@ -1,3 +1,8 @@
+[PPT-Report](https://www.dropbox.com/s/p7798zpyevtf2wb/First_Experiments_CNN.pptx?dl=0)
+
+## Task 1
+Classify croped images in Tumor / No-Tumor
+
 #### Files
 
 * creation_of_data_inselpital.ipynb reads in the annotation and data and creates 4-Dimensional blobs
