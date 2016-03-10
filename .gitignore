@@ -16,3 +16,7 @@ log*
 models*
 nohup.out
 submission
+python/imageUtils/tmp/*
+data/images/batch1/Dejan/0.png
+
+data/images/batch2/Dejan/0.png
